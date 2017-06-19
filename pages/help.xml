@@ -1,0 +1,258 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta content="text/html; charset=us-ascii" http-equiv="content-type" />
+    <title><!-- TITLE BEGIN -->Electric Flow integration for zOSMF<!-- TITLE END --></title>
+    <link rel="stylesheet" href="../../plugins/@PLUGIN_KEY@/pluginhelp.css" type="text/css" media="screen" />
+</head>
+<!-- REST PLUGIN WIZARD HELP -->
+<body>
+    <div class="help">
+        <h1>@PLUGIN_KEY@</h1>
+        <p>Plugin Version @PLUGIN_VERSION@</p>
+        <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
+        <p>Revised on <!-- REVISION DATE BEGIN -->June 16, 2017<!-- REVISION DATE END --></p>
+        <p>
+            <!-- DESCRIPTION BEGIN -->This plugin allows to work with zOSMF REST API.
+<!-- DESCRIPTION END -->
+        </p>
+        <h2>Links</h2>
+        <!-- LINKS BEGIN -->
+<a href="https://www.ibm.com/support/knowledgecenter/SSLTBW_2.1.0/com.ibm.zos.v2r1.izua700/IZUHPINFO_RESTServices.htm" target="_blank">https://www.ibm.com/support/knowledgecenter/SSLTBW_2.1.0/com.ibm.zos.v2r1.izua700/IZUHPINFO_RESTServices.htm</a>
+<!-- LINKS END -->
+        <h1>Contents</h1>
+        <ul>
+        <!-- TOC BEGIN --><li><a href="#JobsSubmitajob">Jobs - Submit a job</a></li>
+<li><a href="#DataSetListzOSdatasetsonasystem">Data Set - List zOS data sets on a system</a></li><!-- TOC END -->
+        </ul>
+        <h2>Configuration</h2>
+        <div id="CreateConfiguration">
+            <a name="CreateConfiguration" id="CreateConfigurationLink"></a>
+            <h2>Plugin Configurations</h2>
+            <p>
+                Plugin configurations are sets of parameters that apply
+                across some or all of the plugin procedures. They
+                reduce repetition of common values, create
+                predefined parameter sets for end users, and
+                securely store credentials where needed. Each configuration
+                is given a unique name that is entered in designated
+                parameters on procedures that use them.<br /><br />
+            </p>
+            <h3>Creating Plugin Configurations</h3>
+            <p>To create plugin configurations in ElectricFlow,
+            do these steps:</p>
+            <ol>
+                <li>Go to <b>Administration</b> &gt; <b>Plugins</b> to open the Plugin Manager.</li>
+                <li>Find the @PLUGIN_KEY@ row.</li>
+                <li>Click <b>Configure</b> to open the
+                @PLUGIN_KEY@ Configurations page.</li>
+                <li>Click <b>Create Configuration</b>.</li>
+                <li>To enable ElectricFlow server to communicate with the API,
+                enter the following information:<br /></li>
+                <!-- CONFIG PARAMS BEGIN -->
+    <table class="grid">
+        <thead>
+            <tr>
+                <th>Parameter</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="required">
+                    Server Configuration
+                </td>
+                <td>
+                    zOSMF REST API configuration.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Description:
+                </td>
+                <td>
+                    Description for the plugin configuration.
+                </td>
+            </tr>
+            <tr>
+                <td class="required">
+                    Protocol:
+                </td>
+                <td>
+                    Specifies whether to preceed hostname with https:// or leave http://
+                </td>
+            </tr>
+            <tr>
+                <td class="required">
+                    Host:
+                </td>
+                <td>
+                    Host name of the zOSMF API.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    URL Path to zOSMF API, e.g. "/zosmf"
+                </td>
+                <td>
+                    URL Path to zOSMF. Leave Blank if None.
+                </td>
+            </tr>
+            <tr>
+                <td class="required">
+                    zOSMF server port, e.g. 10443:
+                </td>
+                <td>
+                    zOSMF server port, e.g. 10443.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    zOSMF Credentials
+                </td>
+                <td>
+                     Will be used in basic authorization.
+                </td>
+            </tr>
+        </tbody>
+    </table><!-- CONFIG PARAMS END -->
+            </ol>
+            <p>The @PLUGIN_KEY@ Configurations page now shows the new configuration.</p>
+            <h3>Editing Plugin Configurations</h3>
+            <p>To edit plugin configurations in ElectricFlow,
+            do these steps:</p>
+            <ol>
+                <li>Go to <b>Administration</b> &gt; <b>Plugins</b> to open the Plugin Manager.</li>
+                <li>Find the @PLUGIN_KEY@ row.</li>
+                <li>Click <b>Configure</b> to open the Configurations page.</li>
+                <li>Find the configuration that you want to edit.</li>
+                <li>Click <b>Edit</b>.</li>
+                <li>Edit the parameters in the configuration.</li>
+                <li>Click <b>OK</b> to save the modified configuration.</li>
+            </ol>
+        </div>
+        <h1>Procedures</h1>
+        <!-- PROCEDURES BEGIN -->
+            <div id="Submitajob">
+                <a name="Submitajob" id="Submitajob" />
+                <h3>Submit a job</h3>
+                <p>You can use this operation to submit a job to run on z/OS.</p>
+                <!-- Submitajob BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">JCL app to run</td>
+                    <td>JCL code that is going to be run</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- Submitajob END -->
+            </div>
+            <div id="JobsSubmitajob">
+                <a name="JobsSubmitajob" id="JobsSubmitajob" />
+                <h3>Jobs - Submit a job</h3>
+                <p>You can use this operation to submit a job to run on z/OS.</p>
+                <!-- JobsSubmitajob BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">JCL app to run</td>
+                    <td>JCL code that is going to be run</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- JobsSubmitajob END -->
+            </div>
+            <div id="11">
+                <a name="11" id="11" />
+                <h3>11</h3>
+                <p>List the z/OS data sets on a system.</p>
+                <!-- 11 BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Dslevel</td>
+                    <td>The search parameter that identifies the cataloged data sets to be listed.</td>
+                </tr>
+                <tr>
+                    <td>Volser</td>
+                    <td>A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.</td>
+                </tr>
+                <tr>
+                    <td>Start</td>
+                    <td>An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- 11 END -->
+            </div>
+            <div id="DataSetListzOSdatasetsonasystem">
+                <a name="DataSetListzOSdatasetsonasystem" id="DataSetListzOSdatasetsonasystem" />
+                <h3>Data Set - List zOS data sets on a system</h3>
+                <p>List the z/OS data sets on a system.</p>
+                <!-- DataSetListzOSdatasetsonasystem BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Dslevel</td>
+                    <td>The search parameter that identifies the cataloged data sets to be listed.</td>
+                </tr>
+                <tr>
+                    <td>Volser</td>
+                    <td>A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.</td>
+                </tr>
+                <tr>
+                    <td>Start</td>
+                    <td>An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Attributes. If not set - dsname used.</td>
+                    <td>Extends search.</td>
+                </tr>
+                <tr>
+                    <td>Max items returned (1000 max, 0 means no limit)</td>
+                    <td>This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetListzOSdatasetsonasystem END -->
+            </div>
+<!-- PROCEDURES END -->
+    </div>
+    <!-- RELEASE NOTES BEGIN -->
+    <!-- RELEASE NOTES END -->
+</body>
+</html>

@@ -1,0 +1,157 @@
+---
+
+#perl RESTPluginWizard/build.pl --plugin-wizard-folder ./PluginWizard --plugin-name EC-zOSMF --config EC-zOSMF/config/EC-zOSMF.yaml --workspace . &&  rsync -avz --delete ./EC-zOSMF/ --exclude '.git' nick@10.200.1.150:EC-zOSMF/
+# This block refers to auto help generation
+help:
+  title: Electric Flow integration for zOSMF
+  description: |
+    This plugin allows to work with zOSMF REST API.
+  links:
+    - https://www.ibm.com/support/knowledgecenter/SSLTBW_2.1.0/com.ibm.zos.v2r1.izua700/IZUHPINFO_RESTServices.htm
+  hasConfig: true
+procedures:
+####Jobs section
+  - name: Jobs - Submit a job
+    stepName: jobs - submit a job
+    description: You can use this operation to submit a job to run on z/OS.
+    # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+    endpoint: '#{{hostUrl}}/restjobs/jobs'
+    #  #{{instance}} means that "instance" will ba taken from config
+    # #{repository} will be taken from the procedure parameters
+    method: PUT
+    # HTTP method
+    hasConfig: true
+     # a field for configuration name will be added to the form
+    attachCredentials: true
+    contentType: text/plain
+     # credentials will be attached to the procedure
+    basicAuth: true
+     # credentials will be turned into basic auth header
+    # if no credentials found, the procedure won't fail, the request will be made without credentials
+
+    # The result will be saved in this property
+    resultProperty:
+      show: true
+      # Selectbox with formats will appear
+      format:
+        - json
+        - propertySheet
+      default: /myJob/submitJob
+    parameters:
+      - property: code
+        in: body
+        type: textarea
+        label: JCL app to run
+        documentation: JCL code that is going to be run
+        required: 1
+      - property: cache-control: no-cache
+  
+####Data Set Section
+
+# List the z/OS data sets on a system Start of changeGET /zosmf/restfiles/ds?dslevel=<dataset_name_pattern>[&volser=<volser>&start=<dsname>]End of change
+  - name: Data Set - List zOS data sets on a system
+    stepName: data set - list zOS data sets on a system
+    description: List the z/OS data sets on a system.
+    # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+    endpoint: '#{{hostUrl}}/restfiles/ds'
+    #  #{{instance}} means that "instance" will ba taken from config
+    # #{repository} will be taken from the procedure parameters
+    method: GET
+    # HTTP method
+    hasConfig: true
+     # a field for configuration name will be added to the form
+    attachCredentials: true
+     # credentials will be attached to the procedure
+    basicAuth: true
+     # credentials will be turned into basic auth header
+    # if no credentials found, the procedure won't fail, the request will be made without credentials
+
+    # The result will be saved in this property
+    resultProperty:
+      show: true
+      # Selectbox with formats will appear
+      format:
+        - json
+        - propertySheet
+      default: /myJob/datasetList
+    parameters:
+      - property: dslevel
+        in: query
+        type: entry
+        label: Dslevel
+        documentation: The search parameter that identifies the cataloged data sets to be listed.
+        required: 1
+      - property: volser
+        in: query
+        type: entry
+        label: Volser
+        documentation: A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.
+        required: 0
+      - property: start
+        in: query
+        type: entry
+        label: Start
+        documentation: An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.
+        required: 0
+      - property: X-IBM-Attributes
+        label: X-IBM-Attributes. If not set - dsname used.
+        type: select
+        in: head
+        option:
+          - name: dsname
+            value: dsname
+          - name: base
+            value: base
+          - name: vol
+            value: vol
+        documentation: Extends search.
+        value: none
+      - property: X-IBM-Max-Items
+        in: header
+        type: entry
+        label: Max items returned (1000 max, 0 means no limit)
+        value: 0
+        documentation: This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.
+        required: 0
+
+
+
+
+
+# List the members of a z/OS data set Start of changeGET /zosmf/restfiles/ds/<dataset_name>/member?start=<member>&pattern=<mem-pat>End of change
+
+# Retrieve the contents of a z/OS data set or member  GET /zosmf/restfiles/ds/[-(<volser>)/]<data-set-name>[(<member-name>)]
+#----
+
+# Write data to a z/OS data set or member PUT /zosmf/restfiles/ds/[-(<volser>)/]<data-set-name>[(<member-name>)]
+#---- 
+# Start of changeCreate a sequential and partitioned data setEnd of change  Start of changePOST /zosmf/restfiles/ds/<data-set-name>End of change
+#----
+
+# Start of changeDelete a sequential and partitioned data setEnd of change  Start of changeDELETE /zosmf/restfiles/ds/<data-set-name>
+#---
+# DELETE /zosmf/restfiles/ds/-(<volume>)/<data-set-name>
+#---
+
+
+# End of change
+# Start of changeDelete a partitioned data set memberEnd of change  Start of changeDELETE /zosmf/restfiles/ds/<dataset-name>(<member-name>)End of change
+# Start of changez/OS Data set and member utilitiesEnd of change  Start of changePUT /zosmf/restfiles/ds/<to-data-set-name>End of change
+# Start of changeAccess Method Services InterfaceEnd of change  Start of changePUT /zosmf/restfiles/amsEnd of change
+# List the files and directories of a UNIX file path  GET /zosmf/restfiles/fs?path=<file-path-name>
+
+#---
+
+# Retrieve the contents of a z/OS UNIX file GET /zosmf/restfiles/fs/<file-path-name>
+# Write data to a z/OS UNIX file  PUT /zosmf/restfiles/fs/<filepath-name>
+
+#---
+# Start of changeCreate a UNIX file or directoryEnd of change Start of changePOST /zosmf/restfiles/fs/<file-path-name>End of change
+# Start of changeDelete a UNIX file or directoryEnd of change Start of changeDELETE /zosmf/restfiles/fs/<file-pathname>End of change
+# Start of changez/OS UNIX file utilitiesEnd of change  Start of changePUT /zosmf/restfiles/fs/<file-path-name>End of change
+# Start of changeList z/OS UNIX FilesystemsEnd of change  Start of changeGET /zosmf/restfiles/mfs/End of change
+# Start of changeCreate z/OS UNIX zFS FilesystemEnd of change Start of changePOST /zosmf/restfiles/mfs/zfs/<file-system-name>End of change
+# Start of changeDelete z/OS UNIX zFS FilesystemEnd of change Start of changeDELETE /zosmf/restfiles/mfs/zfs/<file-system-name>End of change
+# Start of changeMount a UNIX file systemEnd of change  Start of changePUT /zosmf/restfiles/mfs/<file-system-name>End of change
+# Start of changeUnmount a UNIX file systemEnd of change  Start of changePUT /zosmf/restfiles/mfs/<file-system-name>End of change
+

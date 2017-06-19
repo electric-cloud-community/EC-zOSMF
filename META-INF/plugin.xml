@@ -1,0 +1,14 @@
+<plugin>
+  <key>EC-zOSMF</key>
+  <label>EC-zOSMF</label>
+  <version>1.0.0</version>
+  <author>Electric Cloud</author>
+  <authorUrl>https://electric-cloud.com/support</authorUrl>
+  <category>Utility</category>
+  <commander-version min="6.0" />
+  <description>SonarQube Integration</description>
+  <configure>ec_config</configure>
+  <pluginWizardBased>true</pluginWizardBased>
+  <depends min="1.4.1">EC-PluginManager</depends>
+  <help>help.xml</help>
+</plugin>
