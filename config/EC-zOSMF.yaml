@@ -1,6 +1,7 @@
 ---
 
 #perl RESTPluginWizard/build.pl --plugin-wizard-folder ./PluginWizard --plugin-name EC-zOSMF --config EC-zOSMF/config/EC-zOSMF.yaml --workspace . &&  rsync -avz --delete ./EC-zOSMF/ --exclude '.git' nick@10.200.1.150:EC-zOSMF/
+#
 # This block refers to auto help generation
 help:
   title: Electric Flow integration for zOSMF
@@ -87,7 +88,7 @@ procedures:
         label: Volser
         documentation: A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.
         required: 0
-      - property: start
+      - property: start_num
         in: query
         type: entry
         label: Start
@@ -96,7 +97,7 @@ procedures:
       - property: X-IBM-Attributes
         label: X-IBM-Attributes. If not set - dsname used.
         type: select
-        in: head
+        in: header
         option:
           - name: dsname
             value: dsname
@@ -112,6 +113,12 @@ procedures:
         label: Max items returned (1000 max, 0 means no limit)
         value: 0
         documentation: This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.
+        required: 0
+
+      - property: totalRows
+        type: checkbox
+        label: Return totalRows
+        documentation: If checked, then "totalRows" property is returned if more data sets than the maximum requested are available.
         required: 0
 
 

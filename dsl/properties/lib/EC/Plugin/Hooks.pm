@@ -5,7 +5,7 @@ use warnings;
 use MIME::Base64 qw(encode_base64);
 
 use base qw(EC::Plugin::HooksCore);
-
+use URI;
 
 =head1 SYNOPSYS
 
@@ -71,6 +71,40 @@ Available hooks types:
 
 sub define_hooks {
     my ($self) = @_;
+    $self->define_hook('data set - list zOS data sets on a system', 'parameters', \&check_list_zos_dataset_params);
+    $self->define_hook('data set - list zOS data sets on a system', 'request', \&check_list_zos_dataset_request);
+
+}
+
+sub check_list_zos_dataset_params{
+    my ($self, $parameters) = @_;
+    #patching hardcoded param name
+    $parameters->{'start'} = $parameters->{'start_num'};
+    delete $parameters->{'start_num'};
+}
+
+sub check_list_zos_dataset_request{
+    my ($self, $request) = @_;
+    # my $uri   = URI->new($request->uri());
+    # my %query = $uri->query_form;
+    use Data::Dumper;
+    # my %result_query;
+    # foreach my $key(keys %query){
+    #     if ($key eq 'start'){
+    #         next;
+    #     }
+    #     $result_query{$key} = $query{$key};
+    # }
+    # $uri->query_form(\%result_query);
+    # $request->uri($uri);
+
+    if ($self->plugin->parameters->{'totalRows'}){
+        my $x_imb_attr_header = $request->header("X-IBM-Attributes");
+        $x_imb_attr_header .= ',total';
+        $request->header("X-IBM-Attributes", $x_imb_attr_header);
+    }
+    print(Dumper($self->plugin->parameters));
+    
 
 }
 

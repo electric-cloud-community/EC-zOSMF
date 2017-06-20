@@ -94,7 +94,7 @@ Code may look like the following:
 sub define_processors {
     my $self = shift;
 
-    $self->define_processor('jobs - submit a job', 'serialize_body', sub{ my ($self, $body) = @_; use Data::Dumper; print "fhdjfhdsjfhsj\n"; print Dumper($body); print $body->{ (keys %$body)[0] };  return $body->{ (keys %$body)[0] };} );
+    $self->define_processor('jobs - submit a job', 'serialize_body', sub{ my ($self, $body) = @_; return $body->{ (keys %$body)[0] };} );
 
 }
 

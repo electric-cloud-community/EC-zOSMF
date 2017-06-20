@@ -12,7 +12,7 @@
         <h1>@PLUGIN_KEY@</h1>
         <p>Plugin Version @PLUGIN_VERSION@</p>
         <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
-        <p>Revised on <!-- REVISION DATE BEGIN -->June 16, 2017<!-- REVISION DATE END --></p>
+        <p>Revised on <!-- REVISION DATE BEGIN -->June 20, 2017<!-- REVISION DATE END --></p>
         <p>
             <!-- DESCRIPTION BEGIN -->This plugin allows to work with zOSMF REST API.
 <!-- DESCRIPTION END -->
@@ -245,6 +245,10 @@
                 <tr>
                     <td>Max items returned (1000 max, 0 means no limit)</td>
                     <td>This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.</td>
+                </tr>
+                <tr>
+                    <td>Return totalRows</td>
+                    <td>If checked, then "totalRows" property is returned if more data sets than the maximum requested are available.</td>
                 </tr>
                  </tbody>
             </table>

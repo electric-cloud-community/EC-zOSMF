@@ -28,7 +28,7 @@
 <formElement>
   <documentation>An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.</documentation>
   <label>Start:</label>
-  <property>start</property>
+  <property>start_num</property>
   <required>0</required>
   <type>entry</type>
   <value></value>
@@ -59,6 +59,16 @@
   <property>X-IBM-Max-Items</property>
   <required>0</required>
   <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
+  <checkedValue>1</checkedValue>
+  <documentation>If checked, then &quot;totalRows&quot; property is returned if more data sets than the maximum requested are available.</documentation>
+  <label>Return totalRows:</label>
+  <property>totalRows</property>
+  <required>0</required>
+  <type>checkbox</type>
+  <uncheckedValue>0</uncheckedValue>
   <value></value>
 </formElement>
 <formElement>
