@@ -16,6 +16,7 @@ def pluginDir = getProperty("/projects/$pluginName/pluginDir").value
 // ** steps with attached credentials
 def stepsWithAttachedCredentials = [
   [procedureName: 'Jobs - Submit a job', stepName: 'jobs - submit a job'],
+  [procedureName: 'Data Set - Create a sequential and partitioned data set', stepName: 'data set - create a sequential and partitioned data set'],
   [procedureName: 'Data Set - List zOS data sets on a system', stepName: 'data set - list zOS data sets on a system']
 ]
 // ** end steps with attached credentials       

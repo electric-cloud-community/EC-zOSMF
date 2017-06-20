@@ -24,7 +24,8 @@
         <h1>Contents</h1>
         <ul>
         <!-- TOC BEGIN --><li><a href="#JobsSubmitajob">Jobs - Submit a job</a></li>
-<li><a href="#DataSetListzOSdatasetsonasystem">Data Set - List zOS data sets on a system</a></li><!-- TOC END -->
+<li><a href="#DataSetListzOSdatasetsonasystem">Data Set - List zOS data sets on a system</a></li>
+<li><a href="#DataSetCreateasequentialandpartitioneddataset">Data Set - Create a sequential and partitioned data set</a></li><!-- TOC END -->
         </ul>
         <h2>Configuration</h2>
         <div id="CreateConfiguration">
@@ -253,6 +254,83 @@
                  </tbody>
             </table>
         <!-- DataSetListzOSdatasetsonasystem END -->
+            </div>
+            <div id="DataSetCreateasequentialandpartitioneddataset">
+                <a name="DataSetCreateasequentialandpartitioneddataset" id="DataSetCreateasequentialandpartitioneddataset" />
+                <h3>Data Set - Create a sequential and partitioned data set</h3>
+                <p>You can use this operation to create sequential and partitioned data sets on a z/OS system.</p>
+                <!-- DataSetCreateasequentialandpartitioneddataset BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Data set name</td>
+                    <td>The name of a z/OS data set that you are going to create.</td>
+                </tr>
+                <tr>
+                    <td>Volser</td>
+                    <td>A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.</td>
+                </tr>
+                <tr>
+                    <td>Unit</td>
+                    <td>Device type.</td>
+                </tr>
+                <tr>
+                    <td>Dsorg</td>
+                    <td>Data set organization.</td>
+                </tr>
+                <tr>
+                    <td>Alcunit</td>
+                    <td>Unit of space allocation.</td>
+                </tr>
+                <tr>
+                    <td>Primary</td>
+                    <td>Primary space allocation.</td>
+                </tr>
+                <tr>
+                    <td>Secondary</td>
+                    <td>Secondary space allocation.</td>
+                </tr>
+                <tr>
+                    <td>Dirblk</td>
+                    <td>Number of directory blocks.</td>
+                </tr>
+                <tr>
+                    <td>Avgblk</td>
+                    <td>Average block.</td>
+                </tr>
+                <tr>
+                    <td>Recfm</td>
+                    <td>Record format.</td>
+                </tr>
+                <tr>
+                    <td>Blksize</td>
+                    <td>Block size.</td>
+                </tr>
+                <tr>
+                    <td>Lrecl</td>
+                    <td>Record length.</td>
+                </tr>
+                <tr>
+                    <td>Storeclass</td>
+                    <td>Storage class.</td>
+                </tr>
+                <tr>
+                    <td>Mgntclass</td>
+                    <td>Storage class.</td>
+                </tr>
+                <tr>
+                    <td>Dataclass</td>
+                    <td>Data class.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetCreateasequentialandpartitioneddataset END -->
             </div>
 <!-- PROCEDURES END -->
     </div>

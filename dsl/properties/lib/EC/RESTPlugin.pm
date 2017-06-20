@@ -216,7 +216,8 @@ sub generate_step_request {
     if ($content_type) {
         $request->header('Content-Type' => $content_type);
     }
-
+    
+    $self->logger->debug($request);
     return $request;
 }
 

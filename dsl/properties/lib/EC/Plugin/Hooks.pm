@@ -72,8 +72,21 @@ Available hooks types:
 sub define_hooks {
     my ($self) = @_;
     $self->define_hook('data set - list zOS data sets on a system', 'parameters', \&check_list_zos_dataset_params);
+    $self->define_hook('data set - create a sequential and partitioned data set', 'parameters', \&create_dataset_params);
     $self->define_hook('data set - list zOS data sets on a system', 'request', \&check_list_zos_dataset_request);
+    
 
+}
+
+sub create_dataset_params{
+    my ($self, $parameters) = @_;
+    my @int_params = ('primary', 'secondary', 'dirblk', 'avgblk', 'blksize', 'lrecl');
+    foreach my $param (@int_params){
+        if (exists $parameters->{$param}){
+            eval { $parameters->{$param} = int($parameters->{$param}) };
+            $self->logger->debug("Param $param is not INT?\n".$@) if $@;
+        }
+    }
 }
 
 sub check_list_zos_dataset_params{

@@ -13,6 +13,10 @@ You can use this operation to submit a job to run on z/OS.
 
 List the z/OS data sets on a system.
 
+## Data Set - Create a sequential and partitioned data set
+
+You can use this operation to create sequential and partitioned data sets on a z/OS system.
+
 
 
 # Building the plugin

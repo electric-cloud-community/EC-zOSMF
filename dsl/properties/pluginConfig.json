@@ -1,43 +1,95 @@
 {
+   "jobs - submit a job" : {
+      "hasConfig" : "true",
+      "resultProperty" : {
+         "show" : "true",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "default" : "/myJob/submitJob"
+      },
+      "fields" : [
+         "code",
+         "cache-control: no-cache"
+      ],
+      "parameters" : [
+         {
+            "in" : "body",
+            "property" : "code",
+            "type" : "textarea",
+            "label" : "JCL app to run",
+            "required" : "1",
+            "documentation" : "JCL code that is going to be run"
+         },
+         {
+            "property" : "cache-control: no-cache"
+         }
+      ],
+      "description" : "You can use this operation to submit a job to run on z/OS.",
+      "endpoint" : "#{{hostUrl}}/restjobs/jobs",
+      "stepName" : "jobs - submit a job",
+      "method" : "PUT",
+      "basicAuth" : "true",
+      "contentType" : "text/plain",
+      "name" : "Jobs - Submit a job",
+      "attachCredentials" : "true"
+   },
    "data set - list zOS data sets on a system" : {
       "stepName" : "data set - list zOS data sets on a system",
-      "name" : "Data Set - List zOS data sets on a system",
-      "hasConfig" : "true",
-      "description" : "List the z/OS data sets on a system.",
       "endpoint" : "#{{hostUrl}}/restfiles/ds",
       "basicAuth" : "true",
+      "method" : "GET",
+      "attachCredentials" : "true",
+      "name" : "Data Set - List zOS data sets on a system",
+      "fields" : [
+         "dslevel",
+         "volser",
+         "start_num",
+         "X-IBM-Attributes",
+         "X-IBM-Max-Items",
+         "totalRows"
+      ],
+      "resultProperty" : {
+         "show" : "true",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "default" : "/myJob/datasetList"
+      },
+      "hasConfig" : "true",
       "parameters" : [
          {
             "property" : "dslevel",
-            "type" : "entry",
-            "required" : "1",
             "in" : "query",
+            "required" : "1",
+            "label" : "Dslevel",
             "documentation" : "The search parameter that identifies the cataloged data sets to be listed.",
-            "label" : "Dslevel"
+            "type" : "entry"
          },
          {
-            "required" : "0",
-            "type" : "entry",
             "property" : "volser",
+            "in" : "query",
+            "required" : "0",
             "label" : "Volser",
             "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
-            "in" : "query"
+            "type" : "entry"
          },
          {
-            "type" : "entry",
-            "required" : "0",
+            "in" : "query",
             "property" : "start_num",
+            "required" : "0",
             "label" : "Start",
             "documentation" : "An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.",
-            "in" : "query"
+            "type" : "entry"
          },
          {
+            "property" : "X-IBM-Attributes",
             "in" : "header",
             "documentation" : "Extends search.",
             "label" : "X-IBM-Attributes. If not set - dsname used.",
             "value" : "none",
-            "property" : "X-IBM-Attributes",
-            "type" : "select",
             "option" : [
                {
                   "value" : "dsname",
@@ -48,81 +100,186 @@
                   "value" : "base"
                },
                {
-                  "value" : "vol",
-                  "name" : "vol"
+                  "name" : "vol",
+                  "value" : "vol"
                }
-            ]
+            ],
+            "type" : "select"
          },
          {
-            "property" : "X-IBM-Max-Items",
-            "value" : "0",
-            "type" : "entry",
-            "required" : "0",
-            "documentation" : "This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.",
             "in" : "header",
-            "label" : "Max items returned (1000 max, 0 means no limit)"
+            "property" : "X-IBM-Max-Items",
+            "type" : "entry",
+            "label" : "Max items returned (1000 max, 0 means no limit)",
+            "required" : "0",
+            "value" : "0",
+            "documentation" : "This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default."
          },
          {
-            "type" : "checkbox",
-            "required" : "0",
             "property" : "totalRows",
-            "label" : "Return totalRows",
-            "documentation" : "If checked, then \"totalRows\" property is returned if more data sets than the maximum requested are available."
+            "type" : "checkbox",
+            "documentation" : "If checked, then \"totalRows\" property is returned if more data sets than the maximum requested are available.",
+            "required" : "0",
+            "label" : "Return totalRows"
          }
       ],
-      "attachCredentials" : "true",
-      "resultProperty" : {
-         "show" : "true",
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/datasetList"
-      },
-      "method" : "GET",
-      "fields" : [
-         "dslevel",
-         "volser",
-         "start_num",
-         "X-IBM-Attributes",
-         "X-IBM-Max-Items",
-         "totalRows"
-      ]
+      "description" : "List the z/OS data sets on a system."
    },
-   "jobs - submit a job" : {
-      "fields" : [
-         "code",
-         "cache-control: no-cache"
-      ],
-      "contentType" : "text/plain",
-      "method" : "PUT",
-      "resultProperty" : {
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/submitJob",
-         "show" : "true"
-      },
+   "data set - create a sequential and partitioned data set" : {
+      "contentType" : "application/json",
+      "name" : "Data Set - Create a sequential and partitioned data set",
       "attachCredentials" : "true",
+      "method" : "POST",
+      "basicAuth" : "true",
+      "endpoint" : "#{{hostUrl}}/restfiles/ds/#{data_set_name}",
+      "stepName" : "data set - create a sequential and partitioned data set",
+      "description" : "You can use this operation to create sequential and partitioned data sets on a z/OS system.",
       "parameters" : [
          {
-            "in" : "body",
-            "documentation" : "JCL code that is going to be run",
-            "label" : "JCL app to run",
-            "property" : "code",
-            "required" : "1",
-            "type" : "textarea"
+            "property" : "data_set_name",
+            "type" : "entry",
+            "documentation" : "The name of a z/OS data set that you are going to create.",
+            "label" : "Data set name",
+            "required" : "1"
          },
          {
-            "property" : "cache-control: no-cache"
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
+            "required" : "0",
+            "label" : "Volser",
+            "type" : "entry",
+            "property" : "volser",
+            "in" : "body"
+         },
+         {
+            "documentation" : "Device type.",
+            "required" : "0",
+            "label" : "Unit",
+            "type" : "entry",
+            "property" : "unit",
+            "in" : "body"
+         },
+         {
+            "in" : "body",
+            "property" : "dsorg",
+            "label" : "Dsorg",
+            "required" : "0",
+            "documentation" : "Data set organization.",
+            "type" : "entry"
+         },
+         {
+            "property" : "alcunit",
+            "in" : "body",
+            "type" : "entry",
+            "documentation" : "Unit of space allocation.",
+            "label" : "Alcunit",
+            "required" : "0"
+         },
+         {
+            "in" : "body",
+            "property" : "primary",
+            "type" : "entry",
+            "documentation" : "Primary space allocation.",
+            "label" : "Primary",
+            "required" : "0"
+         },
+         {
+            "label" : "Secondary",
+            "required" : "0",
+            "documentation" : "Secondary space allocation.",
+            "type" : "entry",
+            "property" : "secondary",
+            "in" : "body"
+         },
+         {
+            "in" : "body",
+            "property" : "dirblk",
+            "type" : "entry",
+            "documentation" : "Number of directory blocks.",
+            "label" : "Dirblk",
+            "required" : "0"
+         },
+         {
+            "property" : "avgblk",
+            "in" : "body",
+            "type" : "entry",
+            "documentation" : "Average block.",
+            "required" : "0",
+            "label" : "Avgblk"
+         },
+         {
+            "type" : "entry",
+            "required" : "0",
+            "label" : "Recfm",
+            "documentation" : "Record format.",
+            "property" : "recfm",
+            "in" : "body"
+         },
+         {
+            "documentation" : "Block size.",
+            "required" : "0",
+            "label" : "Blksize",
+            "type" : "entry",
+            "in" : "body",
+            "property" : "blksize"
+         },
+         {
+            "type" : "entry",
+            "required" : "0",
+            "label" : "Lrecl",
+            "documentation" : "Record length.",
+            "in" : "body",
+            "property" : "lrecl"
+         },
+         {
+            "property" : "storeclass",
+            "in" : "body",
+            "required" : "0",
+            "label" : "Storeclass",
+            "documentation" : "Storage class.",
+            "type" : "entry"
+         },
+         {
+            "in" : "body",
+            "property" : "mgntclass",
+            "label" : "Mgntclass",
+            "required" : "0",
+            "documentation" : "Storage class.",
+            "type" : "entry"
+         },
+         {
+            "property" : "dataclass",
+            "in" : "body",
+            "type" : "entry",
+            "label" : "Dataclass",
+            "required" : "0",
+            "documentation" : "Data class."
          }
       ],
-      "basicAuth" : "true",
-      "description" : "You can use this operation to submit a job to run on z/OS.",
-      "endpoint" : "#{{hostUrl}}/restjobs/jobs",
-      "name" : "Jobs - Submit a job",
       "hasConfig" : "true",
-      "stepName" : "jobs - submit a job"
+      "resultProperty" : {
+         "default" : "/myJob/createDataset",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true"
+      },
+      "fields" : [
+         "data_set_name",
+         "volser",
+         "unit",
+         "dsorg",
+         "alcunit",
+         "primary",
+         "secondary",
+         "dirblk",
+         "avgblk",
+         "recfm",
+         "blksize",
+         "lrecl",
+         "storeclass",
+         "mgntclass",
+         "dataclass"
+      ]
    }
 }
