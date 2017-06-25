@@ -89,9 +89,10 @@ sub fix_create_dataset_params{
         print "Converting param $param to INT\n";
         if (exists $parameters->{$param}){
             my $initial_length = length($parameters->{$param});
-            eval { $parameters->{$param} = int($parameters->{$param}) };
+            eval { $parameters->{$param} = 0 + $parameters->{$param} };
             $self->logger->debug("Param $param is not INT?\n".$@) if $@;
-            if (length($parameters->{$param}.'') != $initial_length){
+            my $tmp_var = $parameters->{$param};
+            if (length("$tmp_var") != $initial_length){
                 $self->logger->debug("Param $param is a string or has blank symbols");
             }
         }

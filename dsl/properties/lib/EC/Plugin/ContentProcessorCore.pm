@@ -52,6 +52,9 @@ sub serialize_body {
     use Data::Dumper;
     print "Here is the data:\n";
     print Dumper($body);
+    if (exists $body->{'primary'}){
+        $body->{'primary'} += 0;
+    }
     my $json = encode_json($body);
     print "Why??\n".$json."\n";
     return $json;
