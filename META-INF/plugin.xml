@@ -6,9 +6,9 @@
   <authorUrl>https://electric-cloud.com/support</authorUrl>
   <category>Utility</category>
   <commander-version min="6.0" />
-  <description>SonarQube Integration</description>
+  <description>zOSMF Integration</description>
   <configure>ec_config</configure>
-  <pluginWizardBased>true</pluginWizardBased>
+  <pluginWizardBased>false</pluginWizardBased>
   <depends min="1.4.1">EC-PluginManager</depends>
   <help>help.xml</help>
 </plugin>

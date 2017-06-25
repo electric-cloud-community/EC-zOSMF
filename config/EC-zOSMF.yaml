@@ -130,13 +130,109 @@ procedures:
 #----
 
 # Write data to a z/OS data set or member PUT /zosmf/restfiles/ds/[-(<volser>)/]<data-set-name>[(<member-name>)]
-#---- 
+  - name: Data Set - Write data to a zOS data set or member
+    stepName: data set - write data to a zos data set or member
+    description: You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.
+    # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+    endpoint: '#{{hostUrl}}/zosmf/restfiles/ds/'
+    #[-(<volser>)/]<data-set-name>[(<member-name>)]
+    #  #{{instance}} means that "instance" will ba taken from config
+    # #{repository} will be taken from the procedure parameters
+    method: PUT
+    # HTTP method
+    hasConfig: true
+     # a field for configuration name will be added to the form
+    attachCredentials: true
+     # credentials will be attached to the procedure
+    basicAuth: true
+     # credentials will be turned into basic auth header
+    # if no credentials found, the procedure won't fail, the request will be made without credentials
+
+    # The result will be saved in this property
+    resultProperty:
+      show: true
+      # Selectbox with formats will appear
+      format:
+        - json
+        - propertySheet
+      default: /myJob/createDataset
+    parameters:
+      - property: dataset-name
+        type: entry
+        label: Data set name
+        documentation: The name of a z/OS data set that you are going to create.
+        required: 1
+      - property: volser
+        type: entry
+        label: Volser
+        documentation: A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.
+        required: 0
+      - property: member-name
+        type: entry
+        label: Member name
+        documentation: Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.
+        required: 0
+      - property: Content-Type
+        in: header
+        type: entry
+        label: Content Type
+        documentation: The data is interpreted according to the content-type as one of binary, text, record or 'diff -e' format according a combination of the "Content-Type" and the value of the X-IBM-Data-Type custom header, if present.
+        required: 0
+      - property: X-IBM-Data-Type
+        label: X-IBM-Data-Type
+        type: select
+        in: header
+        option:
+          - name: text
+            value: text
+          - name: binary
+            value: binary
+          - name: record
+            value: record
+        documentation: When set to 'text' and "Content-Type" is "application/x-ibm-diff-e", the input consists of commands in the same format as produced by the z/OS UNIX 'diff -e' command. These commands are used to add, replace and delete lines in the target data set.
+      - property: X-IBM-Migrated-Recall
+        label: X-IBM-Migrated-Recall
+        type: select
+        in: header
+        option:
+          - name: wait
+            value: wait
+          - name: nowait
+            value: nowait
+          - name: record
+            value: nowait
+        documentation: This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.
+      - property: X-IBM-Obtain-ENQ
+        label: X-IBM-Obtain-ENQ
+        type: select
+        in: header
+        option:
+          - name: None
+            value: 
+          - name: EXCL
+            value: EXCL
+          - name: SHRW
+            value: SHRW        
+        documentation: This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.
+      - property: X-IBM-Session-Ref
+        label: X-IBM-Session-Ref
+        type: entry
+        in: header
+        documentation: This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.
+      - property: X-IBM-Release-ENQ
+        label: X-IBM-Release-ENQ
+        type: entry
+        in: header
+        documentation: This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.
+
+
+
 # Start of changeCreate a sequential and partitioned data setEnd of change  Start of changePOST /zosmf/restfiles/ds/<data-set-name>End of change
   - name: Data Set - Create a sequential and partitioned data set
     stepName: data set - create a sequential and partitioned data set
     description: You can use this operation to create sequential and partitioned data sets on a z/OS system.
     # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
-    endpoint: '#{{hostUrl}}/restfiles/ds/#{data_set_name}'
+    endpoint: '#{{hostUrl}}/restfiles/ds/#{dataset-name}'
     #  #{{instance}} means that "instance" will ba taken from config
     # #{repository} will be taken from the procedure parameters
     method: POST
@@ -159,7 +255,7 @@ procedures:
         - propertySheet
       default: /myJob/createDataset
     parameters:
-      - property: data_set_name
+      - property: dataset-name
         type: entry
         label: Data set name
         documentation: The name of a z/OS data set that you are going to create.

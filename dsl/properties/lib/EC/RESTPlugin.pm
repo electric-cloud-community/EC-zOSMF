@@ -128,19 +128,20 @@ sub generate_step_request {
 
     my $endpoint = $self->config->{$step_name}->{endpoint};
 
+    my $key = qr/[\w\-.?!]+/;
     # replace placeholders
     my $config_values_replacer = sub {
         my ($value) = @_;
         return $config->{$value} || '';
     };
-    $endpoint =~ s/#\{\{(\w+)\}\}/$config_values_replacer->($1)/ge;
+    $endpoint =~ s/#\{\{($key)\}\}/$config_values_replacer->($1)/ge;
 
     my $parameters_replacer = sub {
         my ($value) = @_;
         return $parameters->{$value} || '';
     };
 
-    $endpoint =~ s/#\{(\w+)\}/$parameters_replacer->($1)/ge;
+    $endpoint =~ s/#\{($key)\}/$parameters_replacer->($1)/ge;
 
     my $uri = URI->new($endpoint);
     my %query = ();
@@ -183,7 +184,9 @@ sub generate_step_request {
     my $method = $self->config->{$step_name}->{method};
     my $request = HTTP::Request->new($method, $uri);
 
-    if ($self->config->{$step_name}->{basicAuth}) {
+    if ($self->config->{$step_name}->{basicAuth} && $self->config->{$step_name}->{basicAuth} eq 'true') {
+        $self->logger->debug('Adding basic auth');
+
         my $username = $config->{userName};
         my $password = $config->{password};
 
@@ -204,8 +207,6 @@ sub generate_step_request {
         }
     }
 
-    $self->logger->debug($request);
-
     $request->content($payload) if $payload;
     my $content_type = $self->config->{$step_name}->{contentType};
 
@@ -216,8 +217,7 @@ sub generate_step_request {
     if ($content_type) {
         $request->header('Content-Type' => $content_type);
     }
-    
-    $self->logger->debug($request);
+
     return $request;
 }
 
@@ -229,6 +229,7 @@ sub request {
     my $callback = undef;
 
     $self->hooks->content_callback_hook($step_name, $callback);
+    $self->logger->trace('Content callback', $callback);
     # my @request_parameters = $self->hooks->request_parameters_hook($step_name, $request);
 
     if ($self->{proxy}) {
@@ -271,6 +272,7 @@ Running step: $step_name
         my $request = $self->generate_step_request($step_name, $config, $parameters);
         $self->hooks->request_hook($step_name, $request); # request can be altered by the hook
         $self->logger->info("Going to run request");
+        $self->logger->trace("Request", $request);
         my $response = $self->request($step_name, $request);
         $self->hooks->response_hook($step_name, $response);
 
@@ -331,7 +333,8 @@ sub save_parsed_data {
         return;
     }
 
-    $self->logger->info("Got data", JSON->new->pretty->utf8->encode($parsed_data));
+    $self->logger->info("Got data", JSON->new->pretty->encode($parsed_data));
+
     if ($selected_format eq 'propertySheet') {
         my $flat_map = _flatten_map($parsed_data, $property_name);
 

@@ -7,6 +7,9 @@ use MIME::Base64 qw(encode_base64);
 use base qw(EC::Plugin::HooksCore);
 use URI;
 
+
+use Data::Dumper;
+
 =head1 SYNOPSYS
 
 User-defined hooks
@@ -72,21 +75,36 @@ Available hooks types:
 sub define_hooks {
     my ($self) = @_;
     $self->define_hook('data set - list zOS data sets on a system', 'parameters', \&check_list_zos_dataset_params);
-    $self->define_hook('data set - create a sequential and partitioned data set', 'parameters', \&create_dataset_params);
     $self->define_hook('data set - list zOS data sets on a system', 'request', \&check_list_zos_dataset_request);
+    $self->define_hook('data set - create a sequential and partitioned data set', 'parameters', \&fix_create_dataset_params);
+    $self->define_hook('data set - create a sequential and partitioned data set', 'request', \&check_create_dataset_request);
     
 
 }
 
-sub create_dataset_params{
+sub fix_create_dataset_params{
     my ($self, $parameters) = @_;
     my @int_params = ('primary', 'secondary', 'dirblk', 'avgblk', 'blksize', 'lrecl');
     foreach my $param (@int_params){
+        print "Converting param $param to INT\n";
         if (exists $parameters->{$param}){
+            my $initial_length = length($parameters->{$param});
             eval { $parameters->{$param} = int($parameters->{$param}) };
             $self->logger->debug("Param $param is not INT?\n".$@) if $@;
+            if (length($parameters->{$param}.'') != $initial_length){
+                $self->logger->debug("Param $param is a string or has blank symbols");
+            }
         }
     }
+}
+
+sub check_create_dataset_request{
+    my ($self, $request) = @_;
+    print(Dumper($self->plugin->parameters));
+    print ("blyad':");
+    print (Dumper($request));
+    print ('scuko');
+
 }
 
 sub check_list_zos_dataset_params{
@@ -100,7 +118,7 @@ sub check_list_zos_dataset_request{
     my ($self, $request) = @_;
     # my $uri   = URI->new($request->uri());
     # my %query = $uri->query_form;
-    use Data::Dumper;
+    
     # my %result_query;
     # foreach my $key(keys %query){
     #     if ($key eq 'start'){
@@ -116,7 +134,6 @@ sub check_list_zos_dataset_request{
         $x_imb_attr_header .= ',total';
         $request->header("X-IBM-Attributes", $x_imb_attr_header);
     }
-    print(Dumper($self->plugin->parameters));
     
 
 }

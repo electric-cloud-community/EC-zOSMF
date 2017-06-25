@@ -12,7 +12,7 @@
         <h1>@PLUGIN_KEY@</h1>
         <p>Plugin Version @PLUGIN_VERSION@</p>
         <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
-        <p>Revised on <!-- REVISION DATE BEGIN -->June 20, 2017<!-- REVISION DATE END --></p>
+        <p>Revised on <!-- REVISION DATE BEGIN -->June 25, 2017<!-- REVISION DATE END --></p>
         <p>
             <!-- DESCRIPTION BEGIN -->This plugin allows to work with zOSMF REST API.
 <!-- DESCRIPTION END -->
@@ -25,6 +25,7 @@
         <ul>
         <!-- TOC BEGIN --><li><a href="#JobsSubmitajob">Jobs - Submit a job</a></li>
 <li><a href="#DataSetListzOSdatasetsonasystem">Data Set - List zOS data sets on a system</a></li>
+<li><a href="#DataSetWritedatatoazOSdatasetormember">Data Set - Write data to a zOS data set or member</a></li>
 <li><a href="#DataSetCreateasequentialandpartitioneddataset">Data Set - Create a sequential and partitioned data set</a></li><!-- TOC END -->
         </ul>
         <h2>Configuration</h2>
@@ -331,6 +332,59 @@
                  </tbody>
             </table>
         <!-- DataSetCreateasequentialandpartitioneddataset END -->
+            </div>
+            <div id="DataSetWritedatatoazOSdatasetormember">
+                <a name="DataSetWritedatatoazOSdatasetormember" id="DataSetWritedatatoazOSdatasetormember" />
+                <h3>Data Set - Write data to a zOS data set or member</h3>
+                <p>You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.</p>
+                <!-- DataSetWritedatatoazOSdatasetormember BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Data set name</td>
+                    <td>The name of a z/OS data set that you are going to create.</td>
+                </tr>
+                <tr>
+                    <td>Volser</td>
+                    <td>A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.</td>
+                </tr>
+                <tr>
+                    <td>Member name</td>
+                    <td>Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.</td>
+                </tr>
+                <tr>
+                    <td>Content Type</td>
+                    <td>The data is interpreted according to the content-type as one of binary, text, record or 'diff -e' format according a combination of the "Content-Type" and the value of the X-IBM-Data-Type custom header, if present.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Data-Type</td>
+                    <td>When set to 'text' and "Content-Type" is "application/x-ibm-diff-e", the input consists of commands in the same format as produced by the z/OS UNIX 'diff -e' command. These commands are used to add, replace and delete lines in the target data set.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Migrated-Recall</td>
+                    <td>This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Obtain-ENQ</td>
+                    <td>This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Session-Ref</td>
+                    <td>This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Release-ENQ</td>
+                    <td>This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetWritedatatoazOSdatasetormember END -->
             </div>
 <!-- PROCEDURES END -->
     </div>
