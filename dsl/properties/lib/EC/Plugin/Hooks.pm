@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use MIME::Base64 qw(encode_base64);
 
-use base qw(EC::Plugin::HooksCore);
+use base qw(EC::Plugin::HooksCore EC::Plugin::Core);
 use URI;
 
 
@@ -74,19 +74,40 @@ Available hooks types:
 
 sub define_hooks {
     my ($self) = @_;
+    $self->define_hook('*', 'request', \&RUN_FOR_ALL_REQUESTS);
+
     $self->define_hook('data set - list zOS data sets on a system', 'parameters', \&check_list_zos_dataset_params);
     $self->define_hook('data set - list zOS data sets on a system', 'request', \&check_list_zos_dataset_request);
     $self->define_hook('data set - create a sequential and partitioned data set', 'parameters', \&fix_create_dataset_params);
     $self->define_hook('data set - create a sequential and partitioned data set', 'request', \&check_create_dataset_request);
+
+    $self->define_hook('data set - delete a sequential and partitioned data set', 'request', \&check_delete_dataset_request);
+    
+    $self->define_hook('data set - write data to a zos data set or member', 'request', \&check_write_dataset_request);
+    
     
 
 }
+
+
+
+sub RUN_FOR_ALL_REQUESTS{
+    my ($self, $request) = @_;
+    my $path = $request->uri->path;
+    my $opts = $self->get_config_values($self->plugin->{plugin_name}, $self->plugin->parameters->{'config'});
+
+    my $uri = $request->uri;
+    $uri->scheme($opts->{'protocol'}); 
+    $uri->host($opts->{'host'});
+    $uri->port($opts->{'port'});
+    $uri->path($opts->{'urlPath'}.$uri->path());
+}
+
 
 sub fix_create_dataset_params{
     my ($self, $parameters) = @_;
     my @int_params = ('primary', 'secondary', 'dirblk', 'avgblk', 'blksize', 'lrecl');
     foreach my $param (@int_params){
-        print "Converting param $param to INT\n";
         if (exists $parameters->{$param}){
             my $initial_length = length($parameters->{$param});
             eval { $parameters->{$param} = 0 + $parameters->{$param} };
@@ -101,10 +122,40 @@ sub fix_create_dataset_params{
 
 sub check_create_dataset_request{
     my ($self, $request) = @_;
-    print(Dumper($self->plugin->parameters));
-    print ("blyad':");
-    print (Dumper($request));
-    print ('scuko');
+
+
+}
+
+sub check_delete_dataset_request{
+    my ($self, $request) = @_;
+    
+    if (exists($self->plugin->parameters->{'volume'}) && $self->plugin->parameters->{'volume'}){
+        my $volume = $self->plugin->parameters->{'volume'};
+        my @splitted_path = split /\//, $request->uri->path;
+        my $new_path = join('/', @splitted_path[0,-2], '-'.$volume, $splitted_path[-1]);
+        $request->uri->path($new_path);
+    }
+
+}
+
+sub check_write_dataset_request{
+    my ($self, $request) = @_;
+    
+    #checking if we need to add -volser
+    if (exists($self->plugin->parameters->{'volser'}) && $self->plugin->parameters->{'volser'}){
+        my $volser = $self->plugin->parameters->{'volser'};
+        my @splitted_path = split /\//, $request->uri->path;
+        my $new_path = join('/', @splitted_path[0,-2], '-'.$volser, $splitted_path[-1]);
+        $request->uri->path($new_path);
+    }
+
+    #checking if we need to add member-name
+    if (exists($self->plugin->parameters->{'member-name'}) && $self->plugin->parameters->{'member-name'}){
+        my $member_name = $self->plugin->parameters->{'member-name'};
+        my $path = $request->uri->path;
+        my $new_path = $path."($member_name)";
+        $request->uri->path($new_path);
+    }
 
 }
 
@@ -118,6 +169,7 @@ sub check_list_zos_dataset_params{
 sub check_list_zos_dataset_request{
     my ($self, $request) = @_;
     # my $uri   = URI->new($request->uri());
+    #->clone
     # my %query = $uri->query_form;
     
     # my %result_query;
@@ -132,6 +184,9 @@ sub check_list_zos_dataset_request{
 
     if ($self->plugin->parameters->{'totalRows'}){
         my $x_imb_attr_header = $request->header("X-IBM-Attributes");
+        unless ($x_imb_attr_header){
+            $x_imb_attr_header = 'dsname';
+        }
         $x_imb_attr_header .= ',total';
         $request->header("X-IBM-Attributes", $x_imb_attr_header);
     }

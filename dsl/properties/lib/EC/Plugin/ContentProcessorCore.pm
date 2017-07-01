@@ -49,14 +49,10 @@ sub run_parse_response {
 
 sub serialize_body {
     my ($self, $body) = @_;
-    use Data::Dumper;
-    print "Here is the data:\n";
-    print Dumper($body);
-    if (exists $body->{'primary'}){
-        $body->{'primary'} += 0;
-    }
+
+    return unless $body;
+
     my $json = encode_json($body);
-    print "Why??\n".$json."\n";
     return $json;
 }
 

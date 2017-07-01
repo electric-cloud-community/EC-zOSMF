@@ -150,7 +150,7 @@ sub generate_step_request {
 
     for my $field ( @{$self->config->{$step_name}->{parameters}}) {
         my $name = $field->{property};
-        my $value = $parameters->{$name} || $field->{value};
+        my $value = $parameters->{$name};
         next unless $field->{in};
 
         if ($field->{in} eq 'query') {
@@ -173,15 +173,16 @@ sub generate_step_request {
     $uri->query_form(%query);
     $self->logger->debug(\%body);
 
+    my $method = $self->config->{$step_name}->{method};
     my $payload;
-    if (%body) {
+    if (%body || $method =~ /PATCH|PUT|POST/) {
         $payload = $self->content_processor->run_serialize_body($step_name, \%body);
         $self->logger->info("Payload size: " . length($payload));
     }
 
     $self->logger->debug("Endpoint: $uri");
 
-    my $method = $self->config->{$step_name}->{method};
+
     my $request = HTTP::Request->new($method, $uri);
 
     if ($self->config->{$step_name}->{basicAuth} && $self->config->{$step_name}->{basicAuth} eq 'true') {

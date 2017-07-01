@@ -125,6 +125,27 @@ sub ec {
 }
 
 
+=item B<get_plugin_dir>
+
+Returns Plugin Directory.
+
+=cut
+
+sub get_plugin_dir {
+    my $self = shift;
+
+    unless ($self->{plugin_dir}) {
+        my $commanderPluginDir = $self->ec->getProperty('/server/settings/pluginsDirectory')->findvalue('//value');
+        unless ( $commanderPluginDir && -d $commanderPluginDir ) {
+            die "Cannot find commander plugin dir, please ensure that the option server/settings/pluginsDirectory is set up correctly";
+        }
+
+        $self->{plugin_dir} = File::Spec->catfile($commanderPluginDir, $self->{plugin_name});
+    }
+
+    return $self->{plugin_dir};
+}
+
 =item B<check_executable>
 
 Returns {ok => 1, msg => ''} if file can be executed. If not, returns reason in msg field.
@@ -186,6 +207,51 @@ sub set_property {
     return 1;
 }
 
+
+=item B<move_property>
+
+Moves property to a new path
+
+    $core->move_property('/old/sheet/path/property', '/new/sheet/path/property');
+
+=cut
+
+
+sub move_property {
+    my ($self, $key_old, $key_new) = @_;
+
+    my $value = $self->ec()->getProperty($key_old)->findvalue('//value')->string_value;
+    $self->ec()->deleteProperty($key_old);
+    $self->ec()->setProperty($key_new, $value);
+
+    return 1;
+}
+
+
+=item B<move_property_sheet>
+
+Moves propertysheet to a new path
+
+    $core->move_property_sheet('/old/sheet/path', '/new/sheet/path');
+
+=cut
+
+sub move_property_sheet {
+    my ($self, $root_old, $root_new) = @_;
+    
+    my $property_sheet_id = $self->ec->getProperty($root_old)->findvalue('//propertySheetId')->string_value;
+
+    my $properties = $self->ec->getProperties({propertySheetId => $property_sheet_id});
+
+    for my $node ( $properties->findnodes('//property')) {
+        my $name = $node->findvalue('propertyName')->string_value;
+        $self->move_property(join('/', $root_old, $name), join('/', $root_new, $name));
+    }
+        
+    $self->ec()->deleteProperty($root_old);
+
+    return 1;
+}
 
 =item B<success>
 
@@ -273,28 +339,6 @@ sub bail_out {
 }
 
 
-=item B<finish_procedure>
-
-Finishing execution with success exit code.
-
-    $plugin->finish_procedure("Some minor issue, but we took care of it");
-
-=cut
-
-sub finish_procedure {
-    my ($self, @msg) = @-;
-
-    my $msg = join '', @msg;
-    $msg ||= '';
-
-    if ($msg) {
-        $self->set_summary($msg);
-        $self->logger->message($msg);
-    }
-    exit 0;
-}
-
-
 =item B<set_summary>
 
 Sets job status.
@@ -310,6 +354,29 @@ sub set_summary {
     }
 
     $self->set_property(summary => $msg);
+}
+
+sub set_pipeline_summary {
+    my ($self, $name, $message) = @_;
+
+    eval {
+        $self->ec->setProperty("/myPipelineStageRuntime/ec_summary/$name", $message);
+        1;
+    };
+}
+
+sub in_pipeline {
+    my ($self) = @_;
+
+    my $retval;
+    eval {
+        $self->ec->getProperty('/myPipelineStageRuntime/id');
+        $retval = 1;
+        1;
+    } or do {
+        $retval = 0;
+    };
+    return $retval;
 }
 
 
@@ -410,7 +477,6 @@ it will return credentials {user => 'username', password=>'coolpassword'}
 sub get_credentials {
     my ($self, $config_name, $config_rows, $cfgs_path) = @_;
 
-    print "Running it\n";
     if ($self->{_credentials} && ref $self->{_credentials} eq 'HASH' && %{$self->{_credentials}}) {
         return $self->{_credentials};
     }
@@ -642,39 +708,6 @@ sub gen_random_numbers {
     $rand =~ s/\.//s;
     return $rand;
 }
-
-=item B<set_pipeline_summary>
-
-Sets pipeline summary (only if the job step runs in a pipeline)
-
-=cut
-
-sub set_pipeline_summary {
-    my ($self, $name, $message) = @_;
-
-    unless($self->in_pipeline) {
-        return;
-    }
-    eval {
-        $self->ec->setProperty("/myPipelineStageRuntime/ec_summary/$name", $message);
-        1;
-    };
-}
-
-sub in_pipeline {
-    my ($self) = @_;
-
-    my $retval;
-    eval {
-        $self->ec->getProperty('/myPipelineStageRuntime/id');
-        $retval = 1;
-        1;
-    } or do {
-        $retval = 0;
-    };
-    return $retval;
-}
-
 
 =item B<is_win>
 
@@ -959,6 +992,64 @@ sub logger {
     return $self->{logger};
 }
 
+sub get_config_values {
+    my ($self, $plugin_project_name, $config_name) = @_;
+
+    die 'No config name' unless $config_name;
+    my $config_property_sheet = "/projects/$plugin_project_name/ec_plugin_cfgs/$config_name";
+    my $property_sheet_id = $self->ec->getProperty($config_property_sheet)->findvalue('//propertySheetId')->string_value;
+
+    my $properties = $self->ec->getProperties({propertySheetId => $property_sheet_id});
+
+    my $retval = {};
+    for my $node ( $properties->findnodes('//property')) {
+        my $value = $node->findvalue('value')->string_value;
+        my $name = $node->findvalue('propertyName')->string_value;
+        $retval->{$name} = $value;
+
+        if ($name =~ /credential/) {
+            my $credentials = $self->ec->getFullCredential($config_name);
+            my $user_name = $credentials->findvalue('//userName')->string_value;
+            my $password = $credentials->findvalue('//password')->string_value;
+            $retval->{userName} = $user_name;
+            $retval->{password} = $password;
+        }
+    }
+
+    return $retval;
+}
+
+
+=item B<get_java>
+
+Returns path to local Java
+
+    my $path_to_java = $core->get_java();
+
+=cut
+
+sub get_java {
+    my $self = shift;
+
+    my $java_exec = 'java';
+    if (is_win){
+        $java_exec = 'java.exe'
+    }
+
+    my $commander_java = File::Spec->catfile($ENV{'COMMANDER_HOME'}, 'jre', 'bin', $java_exec);
+    my $home_java = File::Spec->catfile($ENV{'JAVA_HOME'}, 'bin', $java_exec);
+
+    if (-e $commander_java){
+        return $commander_java;
+    }
+    elsif(-e $home_java){
+        return $home_java;
+    }
+    else{
+        ##possibly java is in PATH
+        return $java_exec;
+    }
+}
 
 =back
 
@@ -1090,6 +1181,12 @@ sub new {
     return bless $self,$class;
 }
 
+sub warning {
+    my ($self, @messages) = @_;
+
+    $self->log(INFO, 'WARNING: ', @messages);
+}
+
 sub info {
     my ($self, @messages) = @_;
     $self->log(INFO, @messages);
@@ -1113,11 +1210,12 @@ sub trace {
 sub log {
     my ($self, $level, @messages) = @_;
 
-    binmode STDOUT, ':encoding(UTF-8)';
-
     return if $level > $self->{level};
     my @lines = ();
     for my $message (@messages) {
+        unless(defined $message) {
+            $message = 'undef';
+        }
         if (ref $message) {
             print Dumper($message);
         }

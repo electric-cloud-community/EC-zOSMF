@@ -9,17 +9,25 @@ This plugin allows to work with zOSMF REST API.
 
 You can use this operation to submit a job to run on z/OS.
 
-## Data Set - List zOS data sets on a system
+## Data Set - List
 
 List the z/OS data sets on a system.
 
-## Data Set - Write data to a zOS data set or member
+## Data Set - Read data
+
+You can use this operation to retrieve the contents of a sequential data set, or a member of a partitioned data set (PDS or PDSE). To retrieve the contents of an uncataloged data set, include the volume serial on the request.
+
+## Data Set - Write data
 
 You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.
 
-## Data Set - Create a sequential and partitioned data set
+## Data Set - Create
 
 You can use this operation to create sequential and partitioned data sets on a z/OS system.
+
+## Data Set - Delete
+
+You can use this operation to delete sequential and partitioned data sets on a z/OS system.
 
 
 

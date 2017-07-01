@@ -1,145 +1,138 @@
 {
-   "data set - write data to a zos data set or member" : {
-      "endpoint" : "#{{hostUrl}}/zosmf/restfiles/ds/",
-      "method" : "PUT",
-      "attachCredentials" : "true",
-      "name" : "Data Set - Write data to a zOS data set or member",
+   "data set - create a sequential and partitioned data set" : {
       "resultProperty" : {
          "default" : "/myJob/createDataset",
+         "show" : "true",
          "format" : [
             "json",
             "propertySheet"
-         ],
-         "show" : "true"
+         ]
       },
-      "stepName" : "data set - write data to a zos data set or member",
-      "basicAuth" : "true",
-      "hasConfig" : "true",
-      "fields" : [
-         "dataset-name",
-         "volser",
-         "member-name",
-         "Content-Type",
-         "X-IBM-Data-Type",
-         "X-IBM-Migrated-Recall",
-         "X-IBM-Obtain-ENQ",
-         "X-IBM-Session-Ref",
-         "X-IBM-Release-ENQ"
-      ],
-      "description" : "You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.",
       "parameters" : [
          {
-            "label" : "Data set name",
+            "type" : "entry",
             "required" : "1",
-            "property" : "dataset-name",
             "documentation" : "The name of a z/OS data set that you are going to create.",
-            "type" : "entry"
+            "label" : "Data set name",
+            "property" : "dataset-name"
          },
          {
-            "type" : "entry",
             "label" : "Volser",
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
             "required" : "0",
-            "property" : "volser",
-            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter."
+            "type" : "entry",
+            "in" : "body",
+            "property" : "volser"
          },
          {
             "type" : "entry",
             "required" : "0",
-            "property" : "member-name",
-            "documentation" : "Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.",
-            "label" : "Member name"
+            "label" : "Unit",
+            "documentation" : "Device type.",
+            "property" : "unit",
+            "in" : "body"
          },
          {
-            "label" : "Content Type",
+            "type" : "entry",
+            "documentation" : "Data set organization.",
+            "label" : "Dsorg",
             "required" : "0",
-            "property" : "Content-Type",
-            "documentation" : "The data is interpreted according to the content-type as one of binary, text, record or 'diff -e' format according a combination of the \"Content-Type\" and the value of the X-IBM-Data-Type custom header, if present.",
-            "in" : "header",
-            "type" : "entry"
+            "property" : "dsorg",
+            "in" : "body"
          },
          {
-            "type" : "select",
-            "in" : "header",
-            "property" : "X-IBM-Data-Type",
-            "documentation" : "When set to 'text' and \"Content-Type\" is \"application/x-ibm-diff-e\", the input consists of commands in the same format as produced by the z/OS UNIX 'diff -e' command. These commands are used to add, replace and delete lines in the target data set.",
-            "label" : "X-IBM-Data-Type",
-            "option" : [
-               {
-                  "name" : "text",
-                  "value" : "text"
-               },
-               {
-                  "name" : "binary",
-                  "value" : "binary"
-               },
-               {
-                  "value" : "record",
-                  "name" : "record"
-               }
-            ]
-         },
-         {
-            "in" : "header",
-            "type" : "select",
-            "option" : [
-               {
-                  "name" : "wait",
-                  "value" : "wait"
-               },
-               {
-                  "value" : "nowait",
-                  "name" : "nowait"
-               },
-               {
-                  "name" : "record",
-                  "value" : "nowait"
-               }
-            ],
-            "documentation" : "This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.",
-            "property" : "X-IBM-Migrated-Recall",
-            "label" : "X-IBM-Migrated-Recall"
-         },
-         {
-            "type" : "select",
-            "in" : "header",
-            "label" : "X-IBM-Obtain-ENQ",
-            "property" : "X-IBM-Obtain-ENQ",
-            "documentation" : "This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.",
-            "option" : [
-               {
-                  "value" : null,
-                  "name" : "None"
-               },
-               {
-                  "value" : "EXCL",
-                  "name" : "EXCL"
-               },
-               {
-                  "name" : "SHRW",
-                  "value" : "SHRW"
-               }
-            ]
-         },
-         {
-            "property" : "X-IBM-Session-Ref",
-            "documentation" : "This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.",
-            "label" : "X-IBM-Session-Ref",
-            "in" : "header",
+            "in" : "body",
+            "property" : "alcunit",
+            "required" : "0",
+            "documentation" : "Unit of space allocation.",
+            "label" : "Alcunit",
             "type" : "entry"
          },
          {
             "type" : "entry",
-            "in" : "header",
-            "property" : "X-IBM-Release-ENQ",
-            "documentation" : "This header is optional; it may be specified with a value \"true\" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.",
-            "label" : "X-IBM-Release-ENQ"
+            "required" : "0",
+            "documentation" : "Primary space allocation.",
+            "label" : "Primary",
+            "property" : "primary",
+            "in" : "body"
+         },
+         {
+            "required" : "0",
+            "label" : "Secondary",
+            "documentation" : "Secondary space allocation.",
+            "type" : "entry",
+            "in" : "body",
+            "property" : "secondary"
+         },
+         {
+            "in" : "body",
+            "property" : "dirblk",
+            "label" : "Dirblk",
+            "documentation" : "Number of directory blocks.",
+            "required" : "0",
+            "type" : "entry"
+         },
+         {
+            "in" : "body",
+            "property" : "avgblk",
+            "required" : "0",
+            "documentation" : "Average block.",
+            "label" : "Avgblk",
+            "type" : "entry"
+         },
+         {
+            "documentation" : "Record format.",
+            "label" : "Recfm",
+            "required" : "0",
+            "type" : "entry",
+            "in" : "body",
+            "property" : "recfm"
+         },
+         {
+            "type" : "entry",
+            "required" : "0",
+            "documentation" : "Block size.",
+            "label" : "Blksize",
+            "property" : "blksize",
+            "in" : "body"
+         },
+         {
+            "in" : "body",
+            "property" : "lrecl",
+            "required" : "0",
+            "documentation" : "Record length.",
+            "label" : "Lrecl",
+            "type" : "entry"
+         },
+         {
+            "in" : "body",
+            "property" : "storeclass",
+            "label" : "Storeclass",
+            "documentation" : "Storage class.",
+            "required" : "0",
+            "type" : "entry"
+         },
+         {
+            "required" : "0",
+            "label" : "Mgntclass",
+            "documentation" : "Storage class.",
+            "type" : "entry",
+            "in" : "body",
+            "property" : "mgntclass"
+         },
+         {
+            "required" : "0",
+            "label" : "Dataclass",
+            "documentation" : "Data class.",
+            "type" : "entry",
+            "in" : "body",
+            "property" : "dataclass"
          }
-      ]
-   },
-   "data set - create a sequential and partitioned data set" : {
-      "stepName" : "data set - create a sequential and partitioned data set",
-      "basicAuth" : "true",
-      "hasConfig" : "true",
+      ],
+      "attachCredentials" : "true",
+      "description" : "You can use this operation to create sequential and partitioned data sets on a z/OS system.",
+      "endpoint" : "/restfiles/ds/#{dataset-name}",
+      "contentType" : "application/json",
       "fields" : [
          "dataset-name",
          "volser",
@@ -157,258 +150,280 @@
          "mgntclass",
          "dataclass"
       ],
-      "description" : "You can use this operation to create sequential and partitioned data sets on a z/OS system.",
-      "parameters" : [
-         {
-            "label" : "Data set name",
-            "property" : "dataset-name",
-            "required" : "1",
-            "documentation" : "The name of a z/OS data set that you are going to create.",
-            "type" : "entry"
-         },
-         {
-            "type" : "entry",
-            "in" : "body",
-            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
-            "required" : "0",
-            "property" : "volser",
-            "label" : "Volser"
-         },
-         {
-            "type" : "entry",
-            "in" : "body",
-            "label" : "Unit",
-            "required" : "0",
-            "documentation" : "Device type.",
-            "property" : "unit"
-         },
-         {
-            "type" : "entry",
-            "in" : "body",
-            "required" : "0",
-            "property" : "dsorg",
-            "documentation" : "Data set organization.",
-            "label" : "Dsorg"
-         },
-         {
-            "label" : "Alcunit",
-            "property" : "alcunit",
-            "required" : "0",
-            "documentation" : "Unit of space allocation.",
-            "type" : "entry",
-            "in" : "body"
-         },
-         {
-            "type" : "entry",
-            "in" : "body",
-            "required" : "0",
-            "property" : "primary",
-            "documentation" : "Primary space allocation.",
-            "label" : "Primary"
-         },
-         {
-            "type" : "entry",
-            "in" : "body",
-            "documentation" : "Secondary space allocation.",
-            "required" : "0",
-            "property" : "secondary",
-            "label" : "Secondary"
-         },
-         {
-            "type" : "entry",
-            "in" : "body",
-            "label" : "Dirblk",
-            "required" : "0",
-            "property" : "dirblk",
-            "documentation" : "Number of directory blocks."
-         },
-         {
-            "label" : "Avgblk",
-            "required" : "0",
-            "property" : "avgblk",
-            "documentation" : "Average block.",
-            "in" : "body",
-            "type" : "entry"
-         },
-         {
-            "type" : "entry",
-            "in" : "body",
-            "label" : "Recfm",
-            "documentation" : "Record format.",
-            "required" : "0",
-            "property" : "recfm"
-         },
-         {
-            "property" : "blksize",
-            "required" : "0",
-            "documentation" : "Block size.",
-            "label" : "Blksize",
-            "type" : "entry",
-            "in" : "body"
-         },
-         {
-            "in" : "body",
-            "type" : "entry",
-            "required" : "0",
-            "documentation" : "Record length.",
-            "property" : "lrecl",
-            "label" : "Lrecl"
-         },
-         {
-            "label" : "Storeclass",
-            "property" : "storeclass",
-            "required" : "0",
-            "documentation" : "Storage class.",
-            "in" : "body",
-            "type" : "entry"
-         },
-         {
-            "property" : "mgntclass",
-            "required" : "0",
-            "documentation" : "Storage class.",
-            "label" : "Mgntclass",
-            "type" : "entry",
-            "in" : "body"
-         },
-         {
-            "label" : "Dataclass",
-            "required" : "0",
-            "property" : "dataclass",
-            "documentation" : "Data class.",
-            "type" : "entry",
-            "in" : "body"
-         }
-      ],
-      "contentType" : "application/json",
-      "endpoint" : "#{{hostUrl}}/restfiles/ds/#{dataset-name}",
-      "method" : "POST",
-      "attachCredentials" : "true",
-      "name" : "Data Set - Create a sequential and partitioned data set",
+      "name" : "Data Set - Create",
+      "stepName" : "data set - create a sequential and partitioned data set",
+      "basicAuth" : "true",
+      "hasConfig" : "true",
+      "method" : "POST"
+   },
+   "data set - Retrieve the contents of a zOS data set or member" : {
       "resultProperty" : {
-         "show" : "true",
          "default" : "/myJob/createDataset",
          "format" : [
             "json",
             "propertySheet"
-         ]
-      }
-   },
-   "jobs - submit a job" : {
-      "resultProperty" : {
-         "default" : "/myJob/submitJob",
-         "format" : [
-            "json",
-            "propertySheet"
          ],
          "show" : "true"
       },
-      "name" : "Jobs - Submit a job",
-      "attachCredentials" : "true",
-      "method" : "PUT",
-      "endpoint" : "#{{hostUrl}}/restjobs/jobs",
-      "contentType" : "text/plain",
-      "parameters" : [
-         {
-            "label" : "JCL app to run",
-            "documentation" : "JCL code that is going to be run",
-            "required" : "1",
-            "property" : "code",
-            "in" : "body",
-            "type" : "textarea"
-         },
-         {
-            "property" : "cache-control: no-cache"
-         }
-      ],
-      "fields" : [
-         "code",
-         "cache-control: no-cache"
-      ],
-      "description" : "You can use this operation to submit a job to run on z/OS.",
-      "hasConfig" : "true",
-      "basicAuth" : "true",
-      "stepName" : "jobs - submit a job"
-   },
-   "data set - list zOS data sets on a system" : {
-      "endpoint" : "#{{hostUrl}}/restfiles/ds",
-      "method" : "GET",
-      "attachCredentials" : "true",
-      "name" : "Data Set - List zOS data sets on a system",
-      "resultProperty" : {
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/datasetList",
-         "show" : "true"
-      },
-      "stepName" : "data set - list zOS data sets on a system",
-      "basicAuth" : "true",
-      "hasConfig" : "true",
       "parameters" : [
          {
             "type" : "entry",
-            "in" : "query",
-            "label" : "Dslevel",
+            "label" : "Data set name",
+            "documentation" : "The name of a z/OS data set that you are going to create.",
             "required" : "1",
-            "property" : "dslevel",
-            "documentation" : "The search parameter that identifies the cataloged data sets to be listed."
+            "property" : "dataset-name"
          },
          {
-            "in" : "query",
             "type" : "entry",
+            "required" : "0",
             "label" : "Volser",
-            "required" : "0",
-            "property" : "volser",
-            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter."
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
+            "property" : "volser"
          },
          {
+            "property" : "member-name",
             "required" : "0",
-            "documentation" : "An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.",
-            "property" : "start_num",
-            "label" : "Start",
-            "in" : "query",
+            "label" : "Member name",
+            "documentation" : "Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.",
             "type" : "entry"
          },
          {
+            "type" : "entry",
+            "documentation" : "This header is optional; use it to specify the ETag token to be used to correlate this request with a previous request. If the data on the z/OS host has not changed since the ETag token was generated, z/OSMF returns a status of HTTP 304 Not Modified. For the initial request to the resource, you can omit this header.",
+            "label" : "If-None-Match",
+            "property" : "If-None-Match",
+            "in" : "header"
+         },
+         {
+            "value" : "__IS__NOT__SET__",
+            "refiner" : "convert_not_set",
+            "documentation" : "This header is optional; use it to indicate whether data conversion is to be performed on the returned data. When set to text, data conversion is performed. The data transfer process converts each record from EBCDIC to the charset specified on the \"Content-Type\" header of the request. If no charset is specified, the default is ISO8859-1. A newline (NL) character from the response charset is inserted between logical records. For data sets with fixed-length records, trailing blanks are removed. When set to binary, no data conversion is performed. The data transfer process returns each record as-is, without translation. No delimiters are added between records. The response Content-Type is \"application/octet-stream\". When set to record, no data conversion is performed. Each logical record is preceded by the 4-byte big endian record length of the record that follows. This length does not include the prefix length. So, a zero-length record is 4 bytes of zeros with nothing following. If you omit this header, the default is text; the response is converted.",
+            "label" : "X-IBM-Data-Type",
+            "in" : "header",
+            "type" : "select",
+            "option" : [
+               {
+                  "name" : "not set",
+                  "value" : "__IS__NOT__SET__"
+               },
+               {
+                  "name" : "text",
+                  "value" : "text"
+               },
+               {
+                  "value" : "binary",
+                  "name" : "binary"
+               },
+               {
+                  "value" : "record",
+                  "name" : "record"
+               }
+            ],
+            "property" : "X-IBM-Data-Type"
+         },
+         {
+            "property" : "X-IBM-Return-Etag",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "name" : "true",
+                  "value" : "true"
+               }
+            ],
             "type" : "select",
             "in" : "header",
-            "value" : "none",
-            "documentation" : "Extends search.",
-            "property" : "X-IBM-Attributes",
-            "label" : "X-IBM-Attributes. If not set - dsname used.",
+            "label" : "X-IBM-Return-Etag",
+            "documentation" : "This header is optional; set it to 'true' to force the response to include an \"Etag\" header, regardless of the size of the response data. If this header is not present or set to something other than 'true', then the default is to only send an Etag in the response for data sets smaller than a system determined length, which is at least 8MB. Start of changeIf X-IBM-Record-Range is present, then this header may not be specified with the value \"true\" and an Etag will never be returned.End of change. If this header is enabled for very large data sets, then performance is impacted since the data set must be read twice by the system.",
+            "refiner" : "convert_not_set",
+            "value" : "__IS__NOT__SET__"
+         },
+         {
+            "type" : "select",
             "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "value" : "wait",
+                  "name" : "wait"
+               },
+               {
+                  "value" : "nowait",
+                  "name" : "nowait"
+               },
+               {
+                  "name" : "record",
+                  "value" : "nowait"
+               }
+            ],
+            "property" : "X-IBM-Migrated-Recall",
+            "refiner" : "convert_not_set",
+            "value" : "__IS__NOT__SET__",
+            "label" : "X-IBM-Migrated-Recall",
+            "documentation" : "This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.",
+            "in" : "header"
+         },
+         {
+            "property" : "X-IBM-Obtain-ENQ",
+            "option" : [
+               {
+                  "name" : "not set",
+                  "value" : "__IS__NOT__SET__"
+               },
+               {
+                  "value" : null,
+                  "name" : "None"
+               },
+               {
+                  "value" : "EXCL",
+                  "name" : "EXCL"
+               },
+               {
+                  "name" : "SHRW",
+                  "value" : "SHRW"
+               }
+            ],
+            "type" : "select",
+            "in" : "header",
+            "documentation" : "This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.",
+            "label" : "X-IBM-Obtain-ENQ",
+            "refiner" : "convert_not_set",
+            "value" : "__IS__NOT__SET__"
+         },
+         {
+            "property" : "X-IBM-Session-Ref",
+            "in" : "header",
+            "type" : "entry",
+            "documentation" : "This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.",
+            "label" : "X-IBM-Session-Ref"
+         },
+         {
+            "in" : "header",
+            "property" : "X-IBM-Release-ENQ",
+            "documentation" : "This header is optional; it may be specified with a value \"true\" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.",
+            "label" : "X-IBM-Release-ENQ",
+            "type" : "entry"
+         },
+         {
+            "documentation" : "The data to write to dataset.",
+            "label" : "Data",
+            "type" : "textarea",
+            "in" : "body",
+            "property" : "stored-data"
+         }
+      ],
+      "attachCredentials" : "true",
+      "description" : "You can use this operation to retrieve the contents of a sequential data set, or a member of a partitioned data set (PDS or PDSE). To retrieve the contents of an uncataloged data set, include the volume serial on the request.",
+      "endpoint" : "/restfiles/ds/#{dataset-name}",
+      "fields" : [
+         "dataset-name",
+         "volser",
+         "member-name",
+         "If-None-Match",
+         "X-IBM-Data-Type",
+         "X-IBM-Return-Etag",
+         "X-IBM-Migrated-Recall",
+         "X-IBM-Obtain-ENQ",
+         "X-IBM-Session-Ref",
+         "X-IBM-Release-ENQ",
+         "stored-data"
+      ],
+      "stepName" : "data set - Retrieve the contents of a zOS data set or member",
+      "name" : "Data Set - Read data",
+      "basicAuth" : "true",
+      "method" : "GET",
+      "hasConfig" : "true"
+   },
+   "data set - list zOS data sets on a system" : {
+      "endpoint" : "/restfiles/ds",
+      "resultProperty" : {
+         "show" : "true",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "default" : "/myJob/datasetList"
+      },
+      "parameters" : [
+         {
+            "property" : "dslevel",
+            "in" : "query",
+            "type" : "entry",
+            "documentation" : "The search parameter that identifies the cataloged data sets to be listed.",
+            "label" : "Dslevel",
+            "required" : "1"
+         },
+         {
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
+            "label" : "Volser",
+            "required" : "0",
+            "type" : "entry",
+            "in" : "query",
+            "property" : "volser"
+         },
+         {
+            "type" : "entry",
+            "documentation" : "An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.",
+            "label" : "Start",
+            "required" : "0",
+            "property" : "start_num",
+            "in" : "query"
+         },
+         {
+            "type" : "select",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
                {
                   "name" : "dsname",
                   "value" : "dsname"
                },
                {
-                  "name" : "base",
-                  "value" : "base"
+                  "value" : "base",
+                  "name" : "base"
                },
                {
                   "name" : "vol",
                   "value" : "vol"
                }
-            ]
+            ],
+            "property" : "X-IBM-Attributes",
+            "refiner" : "convert_not_set",
+            "value" : "__IS__NOT__SET__",
+            "label" : "X-IBM-Attributes. If not set - dsname used.",
+            "documentation" : "Extends search.",
+            "in" : "header"
          },
          {
-            "value" : "0",
-            "in" : "header",
             "type" : "entry",
+            "value" : "0",
+            "label" : "Max items returned (1000 max, 0 means no limit)",
             "documentation" : "This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.",
             "required" : "0",
             "property" : "X-IBM-Max-Items",
-            "label" : "Max items returned (1000 max, 0 means no limit)"
+            "in" : "header"
          },
          {
-            "type" : "checkbox",
-            "required" : "0",
             "property" : "totalRows",
+            "label" : "Return totalRows",
             "documentation" : "If checked, then \"totalRows\" property is returned if more data sets than the maximum requested are available.",
-            "label" : "Return totalRows"
+            "required" : "0",
+            "type" : "checkbox"
          }
       ],
+      "attachCredentials" : "true",
+      "description" : "List the z/OS data sets on a system.",
+      "name" : "Data Set - List",
+      "stepName" : "data set - list zOS data sets on a system",
+      "basicAuth" : "true",
+      "method" : "GET",
+      "hasConfig" : "true",
       "fields" : [
          "dslevel",
          "volser",
@@ -416,7 +431,239 @@
          "X-IBM-Attributes",
          "X-IBM-Max-Items",
          "totalRows"
+      ]
+   },
+   "data set - delete a sequential and partitioned data set" : {
+      "fields" : [
+         "dataset-name",
+         "volume"
       ],
-      "description" : "List the z/OS data sets on a system."
+      "basicAuth" : "true",
+      "hasConfig" : "true",
+      "method" : "DELETE",
+      "name" : "Data Set - Delete",
+      "stepName" : "data set - delete a sequential and partitioned data set",
+      "parameters" : [
+         {
+            "documentation" : "The name of a z/OS data set, that you are going to delete.",
+            "label" : "Data set name",
+            "required" : "1",
+            "type" : "entry",
+            "property" : "dataset-name"
+         },
+         {
+            "property" : "volume",
+            "required" : "0",
+            "documentation" : "Volume is where the data set is resided, when the data set is uncatalogued.",
+            "label" : "Volume",
+            "type" : "entry"
+         }
+      ],
+      "attachCredentials" : "true",
+      "description" : "You can use this operation to delete sequential and partitioned data sets on a z/OS system.",
+      "resultProperty" : {
+         "default" : "/myJob/deleteDataset",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true"
+      },
+      "endpoint" : "/restfiles/ds/#{dataset-name}"
+   },
+   "jobs - submit a job" : {
+      "parameters" : [
+         {
+            "in" : "body",
+            "property" : "code",
+            "required" : "1",
+            "documentation" : "JCL code that is going to be run",
+            "label" : "JCL app to run",
+            "type" : "textarea"
+         },
+         {
+            "property" : "cache-control: no-cache"
+         }
+      ],
+      "attachCredentials" : "true",
+      "description" : "You can use this operation to submit a job to run on z/OS.",
+      "resultProperty" : {
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true",
+         "default" : "/myJob/submitJob"
+      },
+      "endpoint" : "/restjobs/jobs",
+      "contentType" : "text/plain",
+      "fields" : [
+         "code",
+         "cache-control: no-cache"
+      ],
+      "basicAuth" : "true",
+      "hasConfig" : "true",
+      "method" : "PUT",
+      "name" : "Jobs - Submit a job",
+      "stepName" : "jobs - submit a job"
+   },
+   "data set - write data to a zos data set or member" : {
+      "resultProperty" : {
+         "default" : "/myJob/createDataset",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true"
+      },
+      "parameters" : [
+         {
+            "property" : "dataset-name",
+            "documentation" : "The name of a z/OS data set that you are going to create.",
+            "label" : "Data set name",
+            "required" : "1",
+            "type" : "entry"
+         },
+         {
+            "property" : "volser",
+            "type" : "entry",
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
+            "label" : "Volser",
+            "required" : "0"
+         },
+         {
+            "type" : "entry",
+            "required" : "0",
+            "label" : "Member name",
+            "documentation" : "Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.",
+            "property" : "member-name"
+         },
+         {
+            "property" : "Content-Type",
+            "in" : "header",
+            "type" : "entry",
+            "required" : "0",
+            "label" : "Content Type",
+            "documentation" : "The data is interpreted according to the content-type as one of binary, text, record or 'diff -e' format according a combination of the \"Content-Type\" and the value of the X-IBM-Data-Type custom header, if present."
+         },
+         {
+            "type" : "select",
+            "property" : "X-IBM-Data-Type",
+            "option" : [
+               {
+                  "name" : "not set",
+                  "value" : "__IS__NOT__SET__"
+               },
+               {
+                  "name" : "text",
+                  "value" : "text"
+               },
+               {
+                  "name" : "binary",
+                  "value" : "binary"
+               },
+               {
+                  "name" : "record",
+                  "value" : "record"
+               }
+            ],
+            "value" : "__IS__NOT__SET__",
+            "refiner" : "convert_not_set",
+            "label" : "X-IBM-Data-Type",
+            "documentation" : "When set to 'text' and \"Content-Type\" is \"application/x-ibm-diff-e\", the input consists of commands in the same format as produced by the z/OS UNIX 'diff -e' command. These commands are used to add, replace and delete lines in the target data set.",
+            "in" : "header"
+         },
+         {
+            "in" : "header",
+            "value" : "__IS__NOT__SET__",
+            "refiner" : "convert_not_set",
+            "documentation" : "This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.",
+            "label" : "X-IBM-Migrated-Recall",
+            "option" : [
+               {
+                  "name" : "not set",
+                  "value" : "__IS__NOT__SET__"
+               },
+               {
+                  "value" : "wait",
+                  "name" : "wait"
+               },
+               {
+                  "value" : "nowait",
+                  "name" : "nowait"
+               },
+               {
+                  "value" : "nowait",
+                  "name" : "record"
+               }
+            ],
+            "property" : "X-IBM-Migrated-Recall",
+            "type" : "select"
+         },
+         {
+            "documentation" : "This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.",
+            "label" : "X-IBM-Obtain-ENQ",
+            "refiner" : "convert_not_set",
+            "value" : "__IS__NOT__SET__",
+            "in" : "header",
+            "type" : "select",
+            "option" : [
+               {
+                  "name" : "not set",
+                  "value" : "__IS__NOT__SET__"
+               },
+               {
+                  "value" : "EXCL",
+                  "name" : "EXCL"
+               },
+               {
+                  "name" : "SHRW",
+                  "value" : "SHRW"
+               }
+            ],
+            "property" : "X-IBM-Obtain-ENQ"
+         },
+         {
+            "documentation" : "This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.",
+            "label" : "X-IBM-Session-Ref",
+            "type" : "entry",
+            "in" : "header",
+            "property" : "X-IBM-Session-Ref"
+         },
+         {
+            "property" : "X-IBM-Release-ENQ",
+            "in" : "header",
+            "type" : "entry",
+            "documentation" : "This header is optional; it may be specified with a value \"true\" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.",
+            "label" : "X-IBM-Release-ENQ"
+         },
+         {
+            "in" : "body",
+            "property" : "stored-data",
+            "documentation" : "The data to write to dataset.",
+            "label" : "Data",
+            "type" : "textarea"
+         }
+      ],
+      "attachCredentials" : "true",
+      "description" : "You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.",
+      "endpoint" : "/restfiles/ds/#{dataset-name}",
+      "fields" : [
+         "dataset-name",
+         "volser",
+         "member-name",
+         "Content-Type",
+         "X-IBM-Data-Type",
+         "X-IBM-Migrated-Recall",
+         "X-IBM-Obtain-ENQ",
+         "X-IBM-Session-Ref",
+         "X-IBM-Release-ENQ",
+         "stored-data"
+      ],
+      "stepName" : "data set - write data to a zos data set or member",
+      "name" : "Data Set - Write data",
+      "basicAuth" : "true",
+      "method" : "PUT",
+      "hasConfig" : "true"
    }
 }

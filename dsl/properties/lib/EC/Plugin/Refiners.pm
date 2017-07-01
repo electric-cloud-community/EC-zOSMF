@@ -25,6 +25,12 @@ No refiners are created by default.
 
 =cut
 
+sub convert_not_set {
+    my ($self, $value) = @_;
+
+    return $value ne '__IS__NOT__SET__' ? $value : undef;
+}
+
 
 sub new {
     my ($class) = @_;

@@ -1,7 +1,7 @@
 ---
 
 #perl RESTPluginWizard/build.pl --plugin-wizard-folder ./PluginWizard --plugin-name EC-zOSMF --config EC-zOSMF/config/EC-zOSMF.yaml --workspace . &&  rsync -avz --delete ./EC-zOSMF/ --exclude '.git' nick@10.200.1.150:EC-zOSMF/
-#
+#&& sshpass -p "" ssh 10.200.1.150 "cd ~ && ./i_zOSMF.sh"
 # This block refers to auto help generation
 help:
   title: Electric Flow integration for zOSMF
@@ -16,7 +16,7 @@ procedures:
     stepName: jobs - submit a job
     description: You can use this operation to submit a job to run on z/OS.
     # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
-    endpoint: '#{{hostUrl}}/restjobs/jobs'
+    endpoint: '/restjobs/jobs'
     #  #{{instance}} means that "instance" will ba taken from config
     # #{repository} will be taken from the procedure parameters
     method: PUT
@@ -50,11 +50,11 @@ procedures:
 ####Data Set Section
 
 # List the z/OS data sets on a system Start of changeGET /zosmf/restfiles/ds?dslevel=<dataset_name_pattern>[&volser=<volser>&start=<dsname>]End of change
-  - name: Data Set - List zOS data sets on a system
+  - name: Data Set - List
     stepName: data set - list zOS data sets on a system
     description: List the z/OS data sets on a system.
     # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
-    endpoint: '#{{hostUrl}}/restfiles/ds'
+    endpoint: '/restfiles/ds'
     #  #{{instance}} means that "instance" will ba taken from config
     # #{repository} will be taken from the procedure parameters
     method: GET
@@ -98,7 +98,11 @@ procedures:
         label: X-IBM-Attributes. If not set - dsname used.
         type: select
         in: header
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
         option:
+          - name: not set
+            value: __IS__NOT__SET__
           - name: dsname
             value: dsname
           - name: base
@@ -127,14 +131,138 @@ procedures:
 # List the members of a z/OS data set Start of changeGET /zosmf/restfiles/ds/<dataset_name>/member?start=<member>&pattern=<mem-pat>End of change
 
 # Retrieve the contents of a z/OS data set or member  GET /zosmf/restfiles/ds/[-(<volser>)/]<data-set-name>[(<member-name>)]
+  - name: Data Set - Read data
+    stepName: data set - Retrieve the contents of a zOS data set or member
+    description: You can use this operation to retrieve the contents of a sequential data set, or a member of a partitioned data set (PDS or PDSE). To retrieve the contents of an uncataloged data set, include the volume serial on the request.
+    # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+    endpoint: '/restfiles/ds/#{dataset-name}'
+    #[-(<volser>)/]<data-set-name>[(<member-name>)]
+    #  #{{instance}} means that "instance" will ba taken from config
+    # #{repository} will be taken from the procedure parameters
+    method: GET
+    # HTTP method
+    hasConfig: true
+     # a field for configuration name will be added to the form
+    attachCredentials: true
+     # credentials will be attached to the procedure
+    basicAuth: true
+     # credentials will be turned into basic auth header
+    # if no credentials found, the procedure won't fail, the request will be made without credentials
+
+    # The result will be saved in this property
+    resultProperty:
+      show: true
+      # Selectbox with formats will appear
+      format:
+        - json
+        - propertySheet
+      default: /myJob/createDataset
+    parameters:
+      - property: dataset-name
+        type: entry
+        label: Data set name
+        documentation: The name of a z/OS data set that you are going to create.
+        required: 1
+      - property: volser
+        type: entry
+        label: Volser
+        documentation: A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.
+        required: 0
+      - property: member-name
+        type: entry
+        label: Member name
+        documentation: Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.
+        required: 0
+      - property: If-None-Match
+        label: If-None-Match
+        type: entry
+        in: header
+        documentation: This header is optional; use it to specify the ETag token to be used to correlate this request with a previous request. If the data on the z/OS host has not changed since the ETag token was generated, z/OSMF returns a status of HTTP 304 Not Modified. For the initial request to the resource, you can omit this header.
+      - property: X-IBM-Data-Type
+        label: X-IBM-Data-Type
+        type: select
+        in: header
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
+        option:
+          - name: not set
+            value: __IS__NOT__SET__
+          - name: text
+            value: text
+          - name: binary
+            value: binary
+          - name: record
+            value: record
+        documentation: This header is optional; use it to indicate whether data conversion is to be performed on the returned data. When set to text, data conversion is performed. The data transfer process converts each record from EBCDIC to the charset specified on the "Content-Type" header of the request. If no charset is specified, the default is ISO8859-1. A newline (NL) character from the response charset is inserted between logical records. For data sets with fixed-length records, trailing blanks are removed. When set to binary, no data conversion is performed. The data transfer process returns each record as-is, without translation. No delimiters are added between records. The response Content-Type is "application/octet-stream". When set to record, no data conversion is performed. Each logical record is preceded by the 4-byte big endian record length of the record that follows. This length does not include the prefix length. So, a zero-length record is 4 bytes of zeros with nothing following. If you omit this header, the default is text; the response is converted.
+      - property: X-IBM-Return-Etag
+        label: X-IBM-Return-Etag
+        type: select
+        in: header
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
+        option:
+          - name: not set
+            value: __IS__NOT__SET__
+          - name: true
+            value: true
+        documentation: This header is optional; set it to 'true' to force the response to include an "Etag" header, regardless of the size of the response data. If this header is not present or set to something other than 'true', then the default is to only send an Etag in the response for data sets smaller than a system determined length, which is at least 8MB. Start of changeIf X-IBM-Record-Range is present, then this header may not be specified with the value "true" and an Etag will never be returned.End of change. If this header is enabled for very large data sets, then performance is impacted since the data set must be read twice by the system.
+      - property: X-IBM-Migrated-Recall
+        label: X-IBM-Migrated-Recall
+        type: select
+        in: header
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
+        option:
+          - name: not set
+            value: __IS__NOT__SET__
+          - name: wait
+            value: wait
+          - name: nowait
+            value: nowait
+          - name: record
+            value: nowait
+        documentation: This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.
+      - property: X-IBM-Obtain-ENQ
+        label: X-IBM-Obtain-ENQ
+        type: select
+        in: header
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
+        option:
+          - name: not set
+            value: __IS__NOT__SET__
+          - name: None
+            value: 
+          - name: EXCL
+            value: EXCL
+          - name: SHRW
+            value: SHRW        
+        documentation: This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.
+      - property: X-IBM-Session-Ref
+        label: X-IBM-Session-Ref
+        type: entry
+        in: header
+        documentation: This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.
+      - property: X-IBM-Release-ENQ
+        label: X-IBM-Release-ENQ
+        type: entry
+        in: header
+        documentation: This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.
+      - property: stored-data
+        label: Data
+        type: textarea
+        in: body
+        documentation: The data to write to dataset.
+
+
 #----
 
 # Write data to a z/OS data set or member PUT /zosmf/restfiles/ds/[-(<volser>)/]<data-set-name>[(<member-name>)]
-  - name: Data Set - Write data to a zOS data set or member
+  - name: Data Set - Write data
     stepName: data set - write data to a zos data set or member
     description: You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.
     # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
-    endpoint: '#{{hostUrl}}/zosmf/restfiles/ds/'
+    endpoint: '/restfiles/ds/#{dataset-name}'
     #[-(<volser>)/]<data-set-name>[(<member-name>)]
     #  #{{instance}} means that "instance" will ba taken from config
     # #{repository} will be taken from the procedure parameters
@@ -182,7 +310,11 @@ procedures:
         label: X-IBM-Data-Type
         type: select
         in: header
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
         option:
+          - name: not set
+            value: __IS__NOT__SET__
           - name: text
             value: text
           - name: binary
@@ -194,7 +326,11 @@ procedures:
         label: X-IBM-Migrated-Recall
         type: select
         in: header
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
         option:
+          - name: not set
+            value: __IS__NOT__SET__
           - name: wait
             value: wait
           - name: nowait
@@ -206,9 +342,11 @@ procedures:
         label: X-IBM-Obtain-ENQ
         type: select
         in: header
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
         option:
-          - name: None
-            value: 
+          - name: not set
+            value: __IS__NOT__SET__
           - name: EXCL
             value: EXCL
           - name: SHRW
@@ -224,15 +362,20 @@ procedures:
         type: entry
         in: header
         documentation: This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.
+      - property: stored-data
+        label: Data
+        type: textarea
+        in: body
+        documentation: The data to write to dataset.
 
 
 
 # Start of changeCreate a sequential and partitioned data setEnd of change  Start of changePOST /zosmf/restfiles/ds/<data-set-name>End of change
-  - name: Data Set - Create a sequential and partitioned data set
+  - name: Data Set - Create
     stepName: data set - create a sequential and partitioned data set
     description: You can use this operation to create sequential and partitioned data sets on a z/OS system.
     # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
-    endpoint: '#{{hostUrl}}/restfiles/ds/#{dataset-name}'
+    endpoint: '/restfiles/ds/#{dataset-name}'
     #  #{{instance}} means that "instance" will ba taken from config
     # #{repository} will be taken from the procedure parameters
     method: POST
@@ -348,7 +491,45 @@ procedures:
 # Start of changeDelete a sequential and partitioned data setEnd of change  Start of changeDELETE /zosmf/restfiles/ds/<data-set-name>
 #---
 # DELETE /zosmf/restfiles/ds/-(<volume>)/<data-set-name>
-#---
+  - name: Data Set - Delete
+    stepName: data set - delete a sequential and partitioned data set
+    description: You can use this operation to delete sequential and partitioned data sets on a z/OS system.
+    # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+    endpoint: '/restfiles/ds/#{dataset-name}'
+    #[-(<volser>)/]<data-set-name>[(<member-name>)]
+    #  #{{instance}} means that "instance" will ba taken from config
+    # #{repository} will be taken from the procedure parameters
+    method: DELETE
+    # HTTP method
+    hasConfig: true
+     # a field for configuration name will be added to the form
+    attachCredentials: true
+     # credentials will be attached to the procedure
+    basicAuth: true
+     # credentials will be turned into basic auth header
+    # if no credentials found, the procedure won't fail, the request will be made without credentials
+
+    # The result will be saved in this property
+    resultProperty:
+      show: true
+      # Selectbox with formats will appear
+      format:
+        - json
+        - propertySheet
+      default: /myJob/deleteDataset
+    parameters:
+      - property: dataset-name
+        type: entry
+        label: Data set name
+        documentation: The name of a z/OS data set, that you are going to delete.
+        required: 1
+      - property: volume
+        type: entry
+        label: Volume
+        documentation:  Volume is where the data set is resided, when the data set is uncatalogued.
+        required: 0
+      
+
 
 
 # End of change

@@ -45,6 +45,17 @@ $errors .= $ec->checkAllErrors($xpath);
 
 # Give config the credential's real name
 my $configPath = "/projects/$projName/ec_plugin_cfgs/$credName";
+
+$opts->{'hostUrl'} = $opts->{'protocol'}.'://'.$opts->{'host'}.':'.$opts->{'port'}.($opts->{'urlPath'}?$opts->{'urlPath'}:'');
+
+my $protocol = $ec->getProperty($configPath . "/protocol");
+my $host     = $ec->getProperty($configPath . "/host");
+my $port     = $ec->getProperty($configPath . "/port");
+my $urlPath  = $ec->getProperty($configPath . "/urlPath");
+my $hostUrl  = $protocol.'://'.$host.':'.$port.($urlPath?$urlPath:'');
+
+$xpath = $ec->setProperty($configPath . "/hostUrl", $hostUrl);
+
 $xpath = $ec->setProperty($configPath . "/credential", $credName);
 $errors .= $ec->checkAllErrors($xpath);
 

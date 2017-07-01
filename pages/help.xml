@@ -12,7 +12,7 @@
         <h1>@PLUGIN_KEY@</h1>
         <p>Plugin Version @PLUGIN_VERSION@</p>
         <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
-        <p>Revised on <!-- REVISION DATE BEGIN -->June 25, 2017<!-- REVISION DATE END --></p>
+        <p>Revised on <!-- REVISION DATE BEGIN -->July 1, 2017<!-- REVISION DATE END --></p>
         <p>
             <!-- DESCRIPTION BEGIN -->This plugin allows to work with zOSMF REST API.
 <!-- DESCRIPTION END -->
@@ -24,9 +24,11 @@
         <h1>Contents</h1>
         <ul>
         <!-- TOC BEGIN --><li><a href="#JobsSubmitajob">Jobs - Submit a job</a></li>
-<li><a href="#DataSetListzOSdatasetsonasystem">Data Set - List zOS data sets on a system</a></li>
-<li><a href="#DataSetWritedatatoazOSdatasetormember">Data Set - Write data to a zOS data set or member</a></li>
-<li><a href="#DataSetCreateasequentialandpartitioneddataset">Data Set - Create a sequential and partitioned data set</a></li><!-- TOC END -->
+<li><a href="#DataSetList">Data Set - List</a></li>
+<li><a href="#DataSetReaddata">Data Set - Read data</a></li>
+<li><a href="#DataSetWritedata">Data Set - Write data</a></li>
+<li><a href="#DataSetCreate">Data Set - Create</a></li>
+<li><a href="#DataSetDelete">Data Set - Delete</a></li><!-- TOC END -->
         </ul>
         <h2>Configuration</h2>
         <div id="CreateConfiguration">
@@ -382,9 +384,299 @@
                     <td>X-IBM-Release-ENQ</td>
                     <td>This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.</td>
                 </tr>
+                <tr>
+                    <td>Data</td>
+                    <td>The data to write to dataset.</td>
+                </tr>
                  </tbody>
             </table>
         <!-- DataSetWritedatatoazOSdatasetormember END -->
+            </div>
+            <div id="DataSetDeleteasequentialandpartitioneddataset">
+                <a name="DataSetDeleteasequentialandpartitioneddataset" id="DataSetDeleteasequentialandpartitioneddataset" />
+                <h3>Data Set - Delete a sequential and partitioned data set</h3>
+                <p>You can use this operation to delete sequential and partitioned data sets on a z/OS system.</p>
+                <!-- DataSetDeleteasequentialandpartitioneddataset BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Data set name</td>
+                    <td>The name of a z/OS data set, that you are going to delete.</td>
+                </tr>
+                <tr>
+                    <td>Volume</td>
+                    <td>Volume is where the data set is resided, when the data set is uncatalogued.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetDeleteasequentialandpartitioneddataset END -->
+            </div>
+            <div id="DataSetList">
+                <a name="DataSetList" id="DataSetList" />
+                <h3>Data Set - List</h3>
+                <p>List the z/OS data sets on a system.</p>
+                <!-- DataSetList BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Dslevel</td>
+                    <td>The search parameter that identifies the cataloged data sets to be listed.</td>
+                </tr>
+                <tr>
+                    <td>Volser</td>
+                    <td>A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.</td>
+                </tr>
+                <tr>
+                    <td>Start</td>
+                    <td>An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Attributes. If not set - dsname used.</td>
+                    <td>Extends search.</td>
+                </tr>
+                <tr>
+                    <td>Max items returned (1000 max, 0 means no limit)</td>
+                    <td>This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.</td>
+                </tr>
+                <tr>
+                    <td>Return totalRows</td>
+                    <td>If checked, then "totalRows" property is returned if more data sets than the maximum requested are available.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetList END -->
+            </div>
+            <div id="DataSetWritedata">
+                <a name="DataSetWritedata" id="DataSetWritedata" />
+                <h3>Data Set - Write data</h3>
+                <p>You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.</p>
+                <!-- DataSetWritedata BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Data set name</td>
+                    <td>The name of a z/OS data set that you are going to create.</td>
+                </tr>
+                <tr>
+                    <td>Volser</td>
+                    <td>A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.</td>
+                </tr>
+                <tr>
+                    <td>Member name</td>
+                    <td>Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.</td>
+                </tr>
+                <tr>
+                    <td>Content Type</td>
+                    <td>The data is interpreted according to the content-type as one of binary, text, record or 'diff -e' format according a combination of the "Content-Type" and the value of the X-IBM-Data-Type custom header, if present.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Data-Type</td>
+                    <td>When set to 'text' and "Content-Type" is "application/x-ibm-diff-e", the input consists of commands in the same format as produced by the z/OS UNIX 'diff -e' command. These commands are used to add, replace and delete lines in the target data set.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Migrated-Recall</td>
+                    <td>This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Obtain-ENQ</td>
+                    <td>This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Session-Ref</td>
+                    <td>This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Release-ENQ</td>
+                    <td>This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.</td>
+                </tr>
+                <tr>
+                    <td>Data</td>
+                    <td>The data to write to dataset.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetWritedata END -->
+            </div>
+            <div id="DataSetCreate">
+                <a name="DataSetCreate" id="DataSetCreate" />
+                <h3>Data Set - Create</h3>
+                <p>You can use this operation to create sequential and partitioned data sets on a z/OS system.</p>
+                <!-- DataSetCreate BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Data set name</td>
+                    <td>The name of a z/OS data set that you are going to create.</td>
+                </tr>
+                <tr>
+                    <td>Volser</td>
+                    <td>A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.</td>
+                </tr>
+                <tr>
+                    <td>Unit</td>
+                    <td>Device type.</td>
+                </tr>
+                <tr>
+                    <td>Dsorg</td>
+                    <td>Data set organization.</td>
+                </tr>
+                <tr>
+                    <td>Alcunit</td>
+                    <td>Unit of space allocation.</td>
+                </tr>
+                <tr>
+                    <td>Primary</td>
+                    <td>Primary space allocation.</td>
+                </tr>
+                <tr>
+                    <td>Secondary</td>
+                    <td>Secondary space allocation.</td>
+                </tr>
+                <tr>
+                    <td>Dirblk</td>
+                    <td>Number of directory blocks.</td>
+                </tr>
+                <tr>
+                    <td>Avgblk</td>
+                    <td>Average block.</td>
+                </tr>
+                <tr>
+                    <td>Recfm</td>
+                    <td>Record format.</td>
+                </tr>
+                <tr>
+                    <td>Blksize</td>
+                    <td>Block size.</td>
+                </tr>
+                <tr>
+                    <td>Lrecl</td>
+                    <td>Record length.</td>
+                </tr>
+                <tr>
+                    <td>Storeclass</td>
+                    <td>Storage class.</td>
+                </tr>
+                <tr>
+                    <td>Mgntclass</td>
+                    <td>Storage class.</td>
+                </tr>
+                <tr>
+                    <td>Dataclass</td>
+                    <td>Data class.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetCreate END -->
+            </div>
+            <div id="DataSetDelete">
+                <a name="DataSetDelete" id="DataSetDelete" />
+                <h3>Data Set - Delete</h3>
+                <p>You can use this operation to delete sequential and partitioned data sets on a z/OS system.</p>
+                <!-- DataSetDelete BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Data set name</td>
+                    <td>The name of a z/OS data set, that you are going to delete.</td>
+                </tr>
+                <tr>
+                    <td>Volume</td>
+                    <td>Volume is where the data set is resided, when the data set is uncatalogued.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetDelete END -->
+            </div>
+            <div id="DataSetReaddata">
+                <a name="DataSetReaddata" id="DataSetReaddata" />
+                <h3>Data Set - Read data</h3>
+                <p>You can use this operation to retrieve the contents of a sequential data set, or a member of a partitioned data set (PDS or PDSE). To retrieve the contents of an uncataloged data set, include the volume serial on the request.</p>
+                <!-- DataSetReaddata BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="required">Data set name</td>
+                    <td>The name of a z/OS data set that you are going to create.</td>
+                </tr>
+                <tr>
+                    <td>Volser</td>
+                    <td>A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.</td>
+                </tr>
+                <tr>
+                    <td>Member name</td>
+                    <td>Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.</td>
+                </tr>
+                <tr>
+                    <td>If-None-Match</td>
+                    <td>This header is optional; use it to specify the ETag token to be used to correlate this request with a previous request. If the data on the z/OS host has not changed since the ETag token was generated, z/OSMF returns a status of HTTP 304 Not Modified. For the initial request to the resource, you can omit this header.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Data-Type</td>
+                    <td>This header is optional; use it to indicate whether data conversion is to be performed on the returned data. When set to text, data conversion is performed. The data transfer process converts each record from EBCDIC to the charset specified on the "Content-Type" header of the request. If no charset is specified, the default is ISO8859-1. A newline (NL) character from the response charset is inserted between logical records. For data sets with fixed-length records, trailing blanks are removed. When set to binary, no data conversion is performed. The data transfer process returns each record as-is, without translation. No delimiters are added between records. The response Content-Type is "application/octet-stream". When set to record, no data conversion is performed. Each logical record is preceded by the 4-byte big endian record length of the record that follows. This length does not include the prefix length. So, a zero-length record is 4 bytes of zeros with nothing following. If you omit this header, the default is text; the response is converted.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Return-Etag</td>
+                    <td>This header is optional; set it to 'true' to force the response to include an "Etag" header, regardless of the size of the response data. If this header is not present or set to something other than 'true', then the default is to only send an Etag in the response for data sets smaller than a system determined length, which is at least 8MB. Start of changeIf X-IBM-Record-Range is present, then this header may not be specified with the value "true" and an Etag will never be returned.End of change. If this header is enabled for very large data sets, then performance is impacted since the data set must be read twice by the system.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Migrated-Recall</td>
+                    <td>This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Obtain-ENQ</td>
+                    <td>This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Session-Ref</td>
+                    <td>This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.</td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Release-ENQ</td>
+                    <td>This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.</td>
+                </tr>
+                <tr>
+                    <td>Data</td>
+                    <td>The data to write to dataset.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- DataSetReaddata END -->
             </div>
 <!-- PROCEDURES END -->
     </div>
