@@ -41,10 +41,6 @@ foreach my $node ($nodeset->get_nodelist) {
     $opts->{$parm} = "$val";
 }
 
-#adding hostUrl property to simplify futher processing in the code
-#don't want to use URI for one string :)
-$opts->{'hostUrl'} = $opts->{'protocol'}.'://'.$opts->{'host'}.':'.$opts->{'port'}.($opts->{'urlPath'}?$opts->{'urlPath'}:'');
-
 if (!defined $opts->{config} || "$opts->{config}" eq "") {
     print "config parameter must exist and be non-blank\n";
     exit ERROR;

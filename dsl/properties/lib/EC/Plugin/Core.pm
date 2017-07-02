@@ -1241,7 +1241,7 @@ sub trace {
 
 sub log {
     my ($self, $level, @messages) = @_;
-    
+
     binmode STDOUT, ':encoding(UTF-8)';
 
     return if $level > $self->{level};
