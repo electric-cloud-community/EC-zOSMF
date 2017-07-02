@@ -29,6 +29,10 @@ You can use this operation to create sequential and partitioned data sets on a z
 
 You can use this operation to delete sequential and partitioned data sets on a z/OS system.
 
+## Jobs - Spool files list
+
+You can use this operation to list the spool files for a batch job on z/OS.
+
 
 
 # Building the plugin

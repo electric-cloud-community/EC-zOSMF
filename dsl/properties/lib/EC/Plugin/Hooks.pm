@@ -82,10 +82,12 @@ sub define_hooks {
     $self->define_hook('data set - create a sequential and partitioned data set', 'request', \&check_create_dataset_request);
 
     $self->define_hook('data set - delete a sequential and partitioned data set', 'request', \&check_delete_dataset_request);
-    
     $self->define_hook('data set - write data to a zos data set or member', 'request', \&check_volser_member_in_request);
     $self->define_hook('data set - retrieve the contents of a zOS data set or member', 'request', \&check_volser_member_in_request);
     
+
+    $self->define_hook('jobs - submit a job', 'request', \&check_submit_job_request);
+    $self->define_hook('jobs - spool files list', 'request', \&get_spool_files_request);
 
 }
 
@@ -95,6 +97,9 @@ sub RUN_FOR_ALL_REQUESTS{
     my ($self, $request) = @_;
     my $path = $request->uri->path;
     my $opts = $self->get_config_values($self->plugin->{plugin_name}, $self->plugin->parameters->{'config'});
+    if (exists($self->plugin->parameters->{'Content-Type'}) && $self->plugin->parameters->{'Content-Type'}){
+         $request->header("Content-Type", $self->plugin->parameters->{'Content-Type'});
+    }
 
     my $uri = $request->uri;
     $uri->scheme($opts->{'protocol'}); 
@@ -111,15 +116,52 @@ sub check_create_dataset_request{
 
 }
 
-sub check_delete_dataset_request{
+sub get_spool_files_request{
     my ($self, $request) = @_;
-    
-    if (exists($self->plugin->parameters->{'volume'}) && $self->plugin->parameters->{'volume'}){
-        my $volume = $self->plugin->parameters->{'volume'};
-        my @splitted_path = split /\//, $request->uri->path;
-        my $new_path = join('/', @splitted_path[0,-2], '-'.$volume, $splitted_path[-1]);
+
+    #checking by which way we get spool files
+    if (exists($self->plugin->parameters->{'correlator'}) && $self->plugin->parameters->{'correlator'}){
+        my $correlator = $self->plugin->parameters->{'correlator'};
+        my $path = $request->uri->path;
+        my $new_path = $path."/$correlator/files";
         $request->uri->path($new_path);
     }
+    else{
+        my ($jobname, $jobid) = ($self->plugin->parameters->{'jobname'}, $self->plugin->parameters->{'jobid'});
+        my $path = $request->uri->path;
+        my $new_path = $path."/$jobname/$jobid/files";
+        $request->uri->path($new_path);
+    }
+}
+
+sub check_submit_job_request{
+    my ($self, $request) = @_;
+
+    #checking if we need to send to secondary JESB
+    if (exists($self->plugin->parameters->{'JESB'}) && $self->plugin->parameters->{'JESB'}){
+        my $jesb = $self->plugin->parameters->{'JESB'};
+        my $path = $request->uri->path;
+        my $new_path = $path."/-$jesb";
+        $request->uri->path($new_path);
+    }
+    
+    #checking the way to pass job
+    if (exists($self->plugin->parameters->{'Content-Type'}) && $self->plugin->parameters->{'Content-Type'} eq 'application/json'){
+        my $file = $self->plugin->parameters->{'file'};
+        unless($file){
+            $self->plugin->bail_out("File param is not set, please check procedure params");
+        }
+        $request->content("{\"file\" : \"$file\"}");
+    }
+    else{
+        my $code = $self->plugin->parameters->{'code'};
+        $request->content($code);
+    }
+}
+
+
+sub check_delete_dataset_request{
+    my ($self, $request) = @_;
 
 }
 
@@ -135,9 +177,7 @@ sub check_volser_member_in_request{
     }
 
     #checking if we need to add member-name
-    print($self->plugin->parameters->{'member-name'});
     if (exists($self->plugin->parameters->{'member-name'}) && $self->plugin->parameters->{'member-name'}){
-        print "changing path";
         my $member_name = $self->plugin->parameters->{'member-name'};
         my $path = $request->uri->path;
         my $new_path = $path."($member_name)";

@@ -10,19 +10,161 @@
   <type>entry</type>
 </formElement>
 <formElement>
-  <documentation>JCL code that is going to be run.</documentation>
-  <label>JCL app to run:</label>
-  <property>code</property>
-  <required>1</required>
-  <type>textarea</type>
+  <documentation>Represents an optionally-specified secondary JES subsystem. If you omit this value, the request is processed by the primary JES subsystem.</documentation>
+  <label>JESB:</label>
+  <property>JESB</property>
+  <required>0</required>
+  <type>entry</type>
   <value></value>
 </formElement>
 <formElement>
-  <documentation></documentation>
-  <label>Cache-control: no-cache:</label>
-  <property>cache-control: no-cache</property>
+  <documentation>Set to text/plain when the optional header X-IBM-Intrdr-Mode is set to TEXT or is omitted, and the job JCL is included in the request. Set to application/octet-stream when optional header X-IBM-Intrdr-Mode is set to RECORD or BINARY, and the JCL for the job to be submitted is included in the HTTP request. Set to application/json when the job to be submitted resides in a data set or UNIX file, which is identified in a JSON document (included as input with this request).</documentation>
+  <label>Content-Type:</label>
+  <option>
+    <name>not set</name>
+    <value>__IS__NOT__SET__</value>
+  </option>
+  <option>
+    <name>text/plain</name>
+    <value>text/plain</value>
+  </option>
+  <option>
+    <name>application/octet-stream</name>
+    <value>application/octet-stream</value>
+  </option>
+  <option>
+    <name>application/json</name>
+    <value>application/json</value>
+  </option>
+  <property>Content-Type</property>
   <required>0</required>
-  <type></type>
+  <type>select</type>
+  <value>__IS__NOT__SET__</value>
+</formElement>
+<formElement>
+  <documentation>A single character that specifies the internal reader class; the default is A. This value defines the default message class (MSGCLASS) for the job.</documentation>
+  <label>X-IBM-Intrdr-Class:</label>
+  <property>X-IBM-Intrdr-Class</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
+  <documentation>A single character that specifies the internal reader record format - F or V. When submitting a job from a data set, you can omit this header. Otherwise, this value must match the record format of the data set. When not submitting a job from a data set, if you omit this header or specify a value other than F or V, the default of F is used.</documentation>
+  <label>X-IBM-Intrdr-Recfm:</label>
+  <option>
+    <name>not set</name>
+    <value>__IS__NOT__SET__</value>
+  </option>
+  <option>
+    <name>F</name>
+    <value>F</value>
+  </option>
+  <option>
+    <name>V</name>
+    <value>V</value>
+  </option>
+  <property>X-IBM-Intrdr-Recfm</property>
+  <required>0</required>
+  <type>select</type>
+  <value>__IS__NOT__SET__</value>
+</formElement>
+<formElement>
+  <documentation>An integer value specifying the internal reader logical record length (LRECL). When submitting a job from a data set, you can omit this header. Otherwise, this value must match the LRECL of the data set. When not submitting a job from a data set, if you omit this header or specify a non-integer value, the default of 80 is used.</documentation>
+  <label>X-IBM-Intrdr-Lrecl:</label>
+  <property>X-IBM-Intrdr-Lrecl</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
+  <documentation>A keyword that specifies the format of the input job: TEXT, RECORD, or BINARY.
+When submitting a job from a data set, you can omit this header. Otherwise, this value must be set to RECORD.
+When not submitting a job from a data set, observe the following rules:
+- If you omit this header, the TEXT keyword is used by default.
+- If you specify the BINARY keyword, the X-IBM-Intrdr-Recfm header must be omitted or set to F (the default).
+- If you specify the RECORD keyword or BINARY keyword, you must set Content-Type to application/octet-stream.</documentation>
+  <label>X-IBM-Intrdr-Mode:</label>
+  <option>
+    <name>not set</name>
+    <value>__IS__NOT__SET__</value>
+  </option>
+  <option>
+    <name>TEXT</name>
+    <value>TEXT</value>
+  </option>
+  <option>
+    <name>RECORD</name>
+    <value>RECORD</value>
+  </option>
+  <option>
+    <name>BINARY</name>
+    <value>BINARY</value>
+  </option>
+  <property>X-IBM-Intrdr-Mode</property>
+  <required>0</required>
+  <type>select</type>
+  <value>__IS__NOT__SET__</value>
+</formElement>
+<formElement>
+  <documentation>Specifies the user portion of the job correlator. In z/OS, a job correlator can be used to associate each job with a unique 64-character value, which provides you with a means to query a job in the system and track it through execution.
+A job correlator consists of a 31-byte system-defined portion and a colon character (:), followed by a 32-byte user portion. The system-defined portion contains the following values:
+8-byte job ID
+8-byte MAS name for the system on which the job resides
+8-byte sequence value
+7-bytes of reserved space.
+Following the system value is the colon character (:) separator and the second string: an optional 32-character user-defined value (the user portion). This value is 1 - 32 characters in length, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 31) can be any combination of uppercase alphabetic, numeric (0-9), or special. Blank characters are not supported.
+
+If specified, the user portion is combined with the system portion, producing the full job correlator that will be returned in the job-correlator property of the JSON job document. If the user portion is not specified, the returned job correlator is the 32-byte system value, ending with the colon (:).
+
+If this header is specified when JES3 is the primary job entry subsystem, an error will result and no job is submitted.</documentation>
+  <label>X-IBM-User-Correlator:</label>
+  <property>X-IBM-User-Correlator</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
+  <documentation>Specifies the name and value for a JCL symbol. The symbol name is included in the header, at the name position. The characters following 'X-IBM-JCL-Symbol-' up to the colon separator (:) form the symbol name. The data following the colon specifies the value for the symbol.
+A symbol name is 1 - 8 characters, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 7) can be any combination of uppercase alphabetic, numeric (0-9), or special.
+
+A symbol value is limited to 255 characters. Multiple symbol names and values can be specified, up to a limit of 128.
+
+Example: X-IBM-JCL-Symbol-MBR: ABC specifies symbol name MBR with value ABC. Specifying this custom header and submitting a job that uses //MYDD DSN=MY.DATASET(&amp;MBR.),DISP=SHR in the JCL will cause ABC to be substituted as the member name.
+
+If this header is specified when JES3 is the primary job entry subsystem, an error will result and no job will be submitted.</documentation>
+  <label>X-IBM-JCL-Symbol-name:</label>
+  <property>X-IBM-JCL-Symbol-name</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
+  <documentation>Specifies a destination URL for receiving an HTTP POST when the job is no longer eligible for execution (that is, when the job reaches the output queue or purge queue). The notification is in the form of a JSON document (Content-Type: application/json), which contains job status information.</documentation>
+  <label>X-IBM-Notification-URL:</label>
+  <property>X-IBM-Notification-URL</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
+  <documentation>File to be run from z/OS, application/json mode. Examples: 
+- Partitioned data set (fully qualified)    : //'MYJOBS.TEST.CNTL(TESTJOBX)'
+- Partitioned data set (non-fully qualified): //TEST.CNTL(TESTJOBX)
+- Sequential data set                       : //'MYJOBS.TEST.JOB1'
+- UNIX file                                 : /u/myjobs/job1.</documentation>
+  <label>File:</label>
+  <property>file</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
+  <documentation>Code that is going to be run from request in text/plain or application/octet-stream modes.</documentation>
+  <label>Code:</label>
+  <property>code</property>
+  <required>0</required>
+  <type>textarea</type>
   <value></value>
 </formElement>
 <formElement>
