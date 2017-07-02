@@ -96,7 +96,7 @@ sub define_processors {
 
     $self->define_processor('jobs - submit a job', 'serialize_body', sub{ my ($self, $body) = @_; return $body->{ (keys %$body)[0] };} );
     $self->define_processor('data set - write data to a zos data set or member', 'serialize_body', sub{ my ($self, $body) = @_; return $body->{'stored-data'};} );
-
+    $self->define_processor('data set - retrieve the contents of a zOS data set or member', 'parse_response', sub{my ($self, $response) = @_; my $data = $response->content; print($data); $data =~ s/'/\\'/ig; my $res = {}; $res->{'data'} = $data; return $res;});
 }
 
 1;

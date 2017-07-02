@@ -146,20 +146,12 @@
   <value></value>
 </formElement>
 <formElement>
-  <documentation>The data to write to dataset.</documentation>
-  <label>Data:</label>
-  <property>stored-data</property>
-  <required>0</required>
-  <type>textarea</type>
-  <value></value>
-</formElement>
-<formElement>
   <documentation>Results will be saved into this property/property sheet.</documentation>
   <label>Property sheet name for results:</label>
   <property>resultPropertySheet</property>
   <required>1</required>
   <type>entry</type>
-  <value>/myJob/createDataset</value>
+  <value>/myJob/readDataset</value>
 </formElement>
 <formElement>
   <documentation>Format to save request results.</documentation>

@@ -25,10 +25,27 @@ No refiners are created by default.
 
 =cut
 
+
 sub convert_not_set {
     my ($self, $value) = @_;
 
     return $value ne '__IS__NOT__SET__' ? $value : undef;
+}
+
+sub remove_blank_header {
+    my ($self, $value) = @_;
+
+    return undef unless $value;
+}
+
+
+sub convert_to_int {
+    my ($self, $value) = @_;
+    if ($value){
+        eval { $value = 0 + $value };
+        $self->plugin->logger->debug("Value is not INT?\n".$@) if $@;
+    }
+    return $value;
 }
 
 

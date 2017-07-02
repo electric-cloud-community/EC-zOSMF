@@ -78,19 +78,19 @@ sub define_hooks {
 
     $self->define_hook('data set - list zOS data sets on a system', 'parameters', \&check_list_zos_dataset_params);
     $self->define_hook('data set - list zOS data sets on a system', 'request', \&check_list_zos_dataset_request);
-    $self->define_hook('data set - create a sequential and partitioned data set', 'parameters', \&fix_create_dataset_params);
+    #$self->define_hook('data set - create a sequential and partitioned data set', 'parameters', \&fix_create_dataset_params);
     $self->define_hook('data set - create a sequential and partitioned data set', 'request', \&check_create_dataset_request);
 
     $self->define_hook('data set - delete a sequential and partitioned data set', 'request', \&check_delete_dataset_request);
     
-    $self->define_hook('data set - write data to a zos data set or member', 'request', \&check_write_dataset_request);
-    
+    $self->define_hook('data set - write data to a zos data set or member', 'request', \&check_volser_member_in_request);
+    $self->define_hook('data set - retrieve the contents of a zOS data set or member', 'request', \&check_volser_member_in_request);
     
 
 }
 
 
-
+#defines protocol, host, port and additional URLPath for all requests
 sub RUN_FOR_ALL_REQUESTS{
     my ($self, $request) = @_;
     my $path = $request->uri->path;
@@ -104,21 +104,6 @@ sub RUN_FOR_ALL_REQUESTS{
 }
 
 
-sub fix_create_dataset_params{
-    my ($self, $parameters) = @_;
-    my @int_params = ('primary', 'secondary', 'dirblk', 'avgblk', 'blksize', 'lrecl');
-    foreach my $param (@int_params){
-        if (exists $parameters->{$param}){
-            my $initial_length = length($parameters->{$param});
-            eval { $parameters->{$param} = 0 + $parameters->{$param} };
-            $self->logger->debug("Param $param is not INT?\n".$@) if $@;
-            my $tmp_var = $parameters->{$param};
-            if (length("$tmp_var") != $initial_length){
-                $self->logger->debug("Param $param is a string or has blank symbols");
-            }
-        }
-    }
-}
 
 sub check_create_dataset_request{
     my ($self, $request) = @_;
@@ -138,7 +123,7 @@ sub check_delete_dataset_request{
 
 }
 
-sub check_write_dataset_request{
+sub check_volser_member_in_request{
     my ($self, $request) = @_;
     
     #checking if we need to add -volser
@@ -150,7 +135,9 @@ sub check_write_dataset_request{
     }
 
     #checking if we need to add member-name
+    print($self->plugin->parameters->{'member-name'});
     if (exists($self->plugin->parameters->{'member-name'}) && $self->plugin->parameters->{'member-name'}){
+        print "changing path";
         my $member_name = $self->plugin->parameters->{'member-name'};
         my $path = $request->uri->path;
         my $new_path = $path."($member_name)";

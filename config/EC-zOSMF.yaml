@@ -110,12 +110,12 @@ procedures:
           - name: vol
             value: vol
         documentation: Extends search.
-        value: none
       - property: X-IBM-Max-Items
         in: header
         type: entry
         label: Max items returned (1000 max, 0 means no limit)
         value: 0
+        refiner: remove_blank_header
         documentation: This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.
         required: 0
       - property: totalRows
@@ -132,7 +132,7 @@ procedures:
 
 # Retrieve the contents of a z/OS data set or member  GET /zosmf/restfiles/ds/[-(<volser>)/]<data-set-name>[(<member-name>)]
   - name: Data Set - Read data
-    stepName: data set - Retrieve the contents of a zOS data set or member
+    stepName: data set - retrieve the contents of a zOS data set or member
     description: You can use this operation to retrieve the contents of a sequential data set, or a member of a partitioned data set (PDS or PDSE). To retrieve the contents of an uncataloged data set, include the volume serial on the request.
     # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
     endpoint: '/restfiles/ds/#{dataset-name}'
@@ -156,7 +156,7 @@ procedures:
       format:
         - json
         - propertySheet
-      default: /myJob/createDataset
+      default: /myJob/readDataset
     parameters:
       - property: dataset-name
         type: entry
@@ -177,6 +177,7 @@ procedures:
         label: If-None-Match
         type: entry
         in: header
+        refiner: remove_blank_header
         documentation: This header is optional; use it to specify the ETag token to be used to correlate this request with a previous request. If the data on the z/OS host has not changed since the ETag token was generated, z/OSMF returns a status of HTTP 304 Not Modified. For the initial request to the resource, you can omit this header.
       - property: X-IBM-Data-Type
         label: X-IBM-Data-Type
@@ -242,17 +243,14 @@ procedures:
         label: X-IBM-Session-Ref
         type: entry
         in: header
+        refiner: remove_blank_header
         documentation: This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.
       - property: X-IBM-Release-ENQ
         label: X-IBM-Release-ENQ
         type: entry
         in: header
+        refiner: remove_blank_header
         documentation: This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.
-      - property: stored-data
-        label: Data
-        type: textarea
-        in: body
-        documentation: The data to write to dataset.
 
 
 #----
@@ -304,6 +302,7 @@ procedures:
         in: header
         type: entry
         label: Content Type
+        refiner: remove_blank_header
         documentation: The data is interpreted according to the content-type as one of binary, text, record or 'diff -e' format according a combination of the "Content-Type" and the value of the X-IBM-Data-Type custom header, if present.
         required: 0
       - property: X-IBM-Data-Type
@@ -356,11 +355,13 @@ procedures:
         label: X-IBM-Session-Ref
         type: entry
         in: header
+        refiner: remove_blank_header
         documentation: This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.
       - property: X-IBM-Release-ENQ
         label: X-IBM-Release-ENQ
         type: entry
         in: header
+        refiner: remove_blank_header
         documentation: This header is optional; it may be specified with a value "true" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.
       - property: stored-data
         label: Data
@@ -431,24 +432,36 @@ procedures:
         in: body
         type: entry
         label: Primary
+        refiner: convert_to_int
+        validators:
+          - is_int
         documentation: Primary space allocation.
         required: 0
       - property: secondary
         in: body
         type: entry
         label: Secondary
+        refiner: convert_to_int
+        validators:
+          - is_int
         documentation: Secondary space allocation.
         required: 0
       - property: dirblk
         in: body
         type: entry
         label: Dirblk
+        refiner: convert_to_int
+        validators:
+          - is_int
         documentation: Number of directory blocks.
         required: 0
       - property: avgblk
         in: body
         type: entry
         label: Avgblk
+        refiner: convert_to_int
+        validators:
+          - is_int
         documentation: Average block.
         required: 0
       - property: recfm
@@ -461,12 +474,18 @@ procedures:
         in: body
         type: entry
         label: Blksize
+        refiner: convert_to_int
+        validators:
+          - is_int
         documentation: Block size.
         required: 0
       - property: lrecl
         in: body
         type: entry
         label: Lrecl
+        refiner: convert_to_int
+        validators:
+          - is_int
         documentation: Record length.
         required: 0
       - property: storeclass

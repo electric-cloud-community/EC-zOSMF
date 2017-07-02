@@ -338,6 +338,27 @@ sub bail_out {
     exit 1;
 }
 
+=item B<finish_procedure>
+ 
+Finishing execution with success exit code.
+ 
+    $plugin->finish_procedure("Some minor issue, but we took care of it");
+ 
+=cut
+
+sub finish_procedure {
+    my ($self, @msg) = @-;
+
+    my $msg = join '', @msg;
+    $msg ||= '';
+
+    if ($msg) {
+        $self->set_summary($msg);
+        $self->logger->message($msg);
+    }
+    exit 0;
+}
+
 
 =item B<set_summary>
 
@@ -354,29 +375,6 @@ sub set_summary {
     }
 
     $self->set_property(summary => $msg);
-}
-
-sub set_pipeline_summary {
-    my ($self, $name, $message) = @_;
-
-    eval {
-        $self->ec->setProperty("/myPipelineStageRuntime/ec_summary/$name", $message);
-        1;
-    };
-}
-
-sub in_pipeline {
-    my ($self) = @_;
-
-    my $retval;
-    eval {
-        $self->ec->getProperty('/myPipelineStageRuntime/id');
-        $retval = 1;
-        1;
-    } or do {
-        $retval = 0;
-    };
-    return $retval;
 }
 
 
@@ -708,6 +706,40 @@ sub gen_random_numbers {
     $rand =~ s/\.//s;
     return $rand;
 }
+
+=item B<set_pipeline_summary>
+ 
+Sets pipeline summary (only if the job step runs in a pipeline)
+ 
+=cut
+
+sub set_pipeline_summary {
+    my ($self, $name, $message) = @_;
+
+    unless($self->in_pipeline) {
+        return;
+    }
+ 
+    eval {
+        $self->ec->setProperty("/myPipelineStageRuntime/ec_summary/$name", $message);
+        1;
+    };
+}
+ 
+sub in_pipeline {
+    my ($self) = @_;
+
+    my $retval;
+    eval {
+        $self->ec->getProperty('/myPipelineStageRuntime/id');
+        $retval = 1;
+        1;
+    } or do {
+        $retval = 0;
+    };
+    return $retval;
+}
+
 
 =item B<is_win>
 
@@ -1209,6 +1241,8 @@ sub trace {
 
 sub log {
     my ($self, $level, @messages) = @_;
+    
+    binmode STDOUT, ':encoding(UTF-8)';
 
     return if $level > $self->{level};
     my @lines = ();

@@ -34,4 +34,18 @@ No validators defined by default.
 
 =cut
 
+#checks if value is integer only if it is set
+sub is_int {
+    my ($self, $value) = @_;
+
+    if ($value){
+        my $initial_length = length($value);
+        eval { $value = 0 + $value };
+        return "Value is not Integer" if $@;
+        my $tmp_var = $value;
+        return "Value is a string or has blank symbols" if (length("$tmp_var") != $initial_length);
+    }
+    return;
+}
+
 1;
