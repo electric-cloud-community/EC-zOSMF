@@ -6,6 +6,7 @@ use MIME::Base64 qw(encode_base64);
 
 use base qw(EC::Plugin::HooksCore EC::Plugin::Core);
 use URI;
+use URI::Escape;
 
 
 use Data::Dumper;
@@ -89,6 +90,8 @@ sub define_hooks {
     $self->define_hook('jobs - submit a job', 'request', \&check_submit_job_request);
     $self->define_hook('jobs - spool files list', 'request', \&get_spool_files_request);
 
+    $self->define_hook('jobs - get spool file content', 'request', \&get_spool_content_request);
+
 }
 
 
@@ -121,18 +124,39 @@ sub get_spool_files_request{
 
     #checking by which way we get spool files
     if (exists($self->plugin->parameters->{'correlator'}) && $self->plugin->parameters->{'correlator'}){
-        my $correlator = $self->plugin->parameters->{'correlator'};
+        my $correlator = uri_escape($self->plugin->parameters->{'correlator'});
+        print "Correlator: $correlator\n";
         my $path = $request->uri->path;
-        my $new_path = $path."/$correlator/files";
+        my $new_path = $path."$correlator/files";
         $request->uri->path($new_path);
     }
     else{
         my ($jobname, $jobid) = ($self->plugin->parameters->{'jobname'}, $self->plugin->parameters->{'jobid'});
         my $path = $request->uri->path;
-        my $new_path = $path."/$jobname/$jobid/files";
+        my $new_path = $path."$jobname/$jobid/files";
         $request->uri->path($new_path);
     }
 }
+
+sub get_spool_content_request{
+    my ($self, $request) = @_;
+
+    $self->get_spool_files_request($request);
+
+    if (exists($self->plugin->parameters->{'file'}) && $self->plugin->parameters->{'file'}){
+        my $file_num = $self->plugin->parameters->{'file'};
+        print "FileNum: $file_num\n";
+        my $path = $request->uri->path;
+        my $new_path = $path."/$file_num/records";
+        $request->uri->path($new_path);
+    }
+    else{
+        $self->bail_out("File is not passed");
+    }
+ 
+}
+
+
 
 sub check_submit_job_request{
     my ($self, $request) = @_;

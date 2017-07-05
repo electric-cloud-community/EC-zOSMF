@@ -33,6 +33,10 @@ You can use this operation to delete sequential and partitioned data sets on a z
 
 You can use this operation to list the spool files for a batch job on z/OS.
 
+## Jobs - Get spool file content
+
+You can use this operation to list the spool files for a batch job on z/OS.
+
 
 
 # Building the plugin

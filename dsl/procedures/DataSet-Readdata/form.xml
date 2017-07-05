@@ -66,7 +66,7 @@
   <value>__IS__NOT__SET__</value>
 </formElement>
 <formElement>
-  <documentation>This header is optional; set it to 'true' to force the response to include an &quot;Etag&quot; header, regardless of the size of the response data. If this header is not present or set to something other than 'true', then the default is to only send an Etag in the response for data sets smaller than a system determined length, which is at least 8MB. Start of changeIf X-IBM-Record-Range is present, then this header may not be specified with the value &quot;true&quot; and an Etag will never be returned.End of change. If this header is enabled for very large data sets, then performance is impacted since the data set must be read twice by the system.</documentation>
+  <documentation>This header is optional; set it to 'true' to force the response to include an &quot;Etag&quot; header, regardless of the size of the response data. If this header is not present or set to something other than 'true', then the default is to only send an Etag in the response for data sets smaller than a system determined length, which is at least 8MB. If X-IBM-Record-Range is present, then this header may not be specified with the value &quot;true&quot; and an Etag will never be returned.End of change. If this header is enabled for very large data sets, then performance is impacted since the data set must be read twice by the system.</documentation>
   <label>X-IBM-Return-Etag:</label>
   <option>
     <name>not set</name>
@@ -104,6 +104,26 @@
   <required>0</required>
   <type>select</type>
   <value>__IS__NOT__SET__</value>
+</formElement>
+<formElement>
+  <documentation></documentation>
+  <htmlDocumentation>&lt;pre&gt;Use this header to retrieve a range of records from a data set. You can specify this range using either of the following formats:
+SSS-EEE
+Where SSS identifies the start record and EEE identifies the end record to be retrieved. Both values are relative offsets (0-based).
+When EEE is set to 0, records through the end of the data set are retrieved.
+When SSS is omitted (i.e. -EEE), the final EEE records of the data set are retrieved.
+SSS,NNN
+Where SSS identifies the start record and NNN identifies the number of records to be retrieved.
+NNN must be greater than zero.
+Usage notes:
+If X-IBM-Record-Range is specified, then an ETag header will not be returned and the If-None-Match request header is ignored.
+If X-IBM-Record-Range header is present on the request, then header X-IBM-Return-Etag=true may not be specified.
+If no records are found in the range specified, an exception is returned.&lt;/pre&gt;.</htmlDocumentation>
+  <label>X-IBM-Record-Range:</label>
+  <property>X-IBM-Record-Range</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
 </formElement>
 <formElement>
   <documentation>This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.</documentation>
