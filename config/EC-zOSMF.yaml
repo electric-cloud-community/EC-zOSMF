@@ -859,3 +859,141 @@ procedures:
         documentation: Pushes to retrieve the JCL for the specified job.
         required: 0
 
+  - name: Jobs - List
+    stepName: jobs - list jobs
+    description: You can use this operation to list the jobs for an owner, prefix, or job ID.
+    # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+    endpoint: '/restjobs/jobs/'
+    #[-(<volser>)/]<data-set-name>[(<member-name>)]
+    #  #{{instance}} means that "instance" will ba taken from config
+    # #{repository} will be taken from the procedure parameters
+    method: GET
+    # HTTP method
+    hasConfig: true
+     # a field for configuration name will be added to the form
+    attachCredentials: true
+     # credentials will be attached to the procedure
+    basicAuth: true
+     # credentials will be turned into basic auth header
+    # if no credentials found, the procedure won't fail, the request will be made without credentials
+
+    # The result will be saved in this property
+    resultProperty:
+      show: true
+      # Selectbox with formats will appear
+      format:
+        - json
+        - propertySheet
+      default: /myJob/getJobList
+    parameters:
+      - property: _owner
+        type: entry
+        in: query
+        refiner: remove_blank_header
+        label: Owner
+        documentation: User ID of the job owner whose jobs are being queried; the default is the z/OS user ID. Folded to uppercase; cannot exceed eight characters.
+        required: 0
+      - property: prefix
+        type: entry
+        in: query
+        refiner: remove_blank_header
+        label: Prefix
+        documentation: Job name prefix; defaults is *. Folded to uppercase; cannot exceed eight characters.
+        required: 0
+      - property: jobid
+        type: entry
+        in: query
+        refiner: remove_blank_header
+        label: Jobid
+        documentation: JobidJob ID. Folded to uppercase; cannot exceed eight characters. This query parameter is mutually exclusive with user-correlator.
+        required: 0
+      - property: max-jobs
+        type: entry
+        in: query
+        refiners: 
+          - convert_to_int
+          - remove_blank_header
+        validator: is_int
+        label: Max-jobs
+        documentation: Maximum number of jobs returned. The value must be between 1 and 1000, inclusive. If this parameter is not specified, or is specified incorrectly, the default value of 1000 is used.
+        required: 0
+      - property: user-correlator
+        type: entry
+        label: User-correlator 
+        in: query   
+        refiner: remove_blank_header
+        htmlDocumentation: |-  
+          <pre style="white-space:pre-wrap; word-wrap:break-word;">The user portion of the job correlator. This value is 1 - 32 characters in length, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 31) can be any combination of uppercase alphabetic, numeric (0-9), or special. Blank characters are not supported.
+          This query parameter is mutually exclusive with jobid.
+
+          This value is processed by the JES2 subsystem only; the JES3 subsystem does not process the correlator and, instead, indicates zero job matches. For a system with JES3 as the primary subsystem, and one or more JES2 secondary subsystems, the primary JES3 subsystem does not process the correlator, however, the JES2 secondary subsystems can process the correlator.</pre>
+        required: 0
+
+  - name: Jobs - Cancel and Purge
+    stepName: jobs - cancel and purge
+    description: You can use this operation to cancel a job and purge its output.
+    # https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+    endpoint: '/restjobs/jobs/'
+    #[-(<volser>)/]<data-set-name>[(<member-name>)]
+    #  #{{instance}} means that "instance" will ba taken from config
+    # #{repository} will be taken from the procedure parameters
+    method: DELETE
+    # HTTP method
+    hasConfig: true
+     # a field for configuration name will be added to the form
+    attachCredentials: true
+     # credentials will be attached to the procedure
+    basicAuth: true
+     # credentials will be turned into basic auth header
+    # if no credentials found, the procedure won't fail, the request will be made without credentials
+
+    # The result will be saved in this property
+    resultProperty:
+      show: true
+      # Selectbox with formats will appear
+      format:
+        - json
+        - propertySheet
+      default: /myJob/deleteJob
+    parameters:
+      - property: jobname
+        type: entry
+        label: Jobname
+        documentation: Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
+        required: 0
+      - property: jobid
+        type: entry
+        label: Jobid
+        documentation:  Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
+        required: 0
+      - property: correlator
+        type: entry
+        label: Correlator
+        htmlDocumentation: |-  
+          <pre>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
+          To use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). 
+          The correlator can be one that you have obtained from the "job-correlator" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the "url" property of a JSON job document.</pre>
+        required: 0
+      - property: X-IBM-Job-Modify-Version
+        type: select
+        label: X-IBM-Job-Modify-Version
+        in: query
+        value: __IS__NOT__SET__
+        refiner: convert_not_set
+        option:
+          - name: not set
+            value: __IS__NOT__SET__
+          - name: 1.0 - process asynchronously
+            value: 1.0
+          - name: 2.0 - process synchronously
+            value: 2.0        
+        htmlDocumentation: |-  
+          <pre style="white-space:pre-wrap; word-wrap:break-word;">Use this header to specify whether the request is to be processed asynchronously or synchronously, as follows:
+          1.0
+          Specifies that the request is to be processed asynchronously. In response, the caller receives an HTTP status code of 202 Accepted, with no indication of the success or failure of the request. To verify that the initial request was performed, the caller can issue the service described in Obtain the status of a job.
+          2.0
+          Specifies that the request is to be processed synchronously. In response, the caller receives an HTTP status code, which indicates the results of the request. For a successful request, the caller also receives the JSON job feedback document, which includes details about the job that was cancelled.
+          If this header is omitted, the request is processed asynchronously by default.
+
+          Synchronous processing is supported for JES2 only. On systems running JES3, the z/OS jobs REST interface services must run asynchronously.</pre>
+        required: 0

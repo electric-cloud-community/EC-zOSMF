@@ -92,6 +92,9 @@ sub define_hooks {
 
     $self->define_hook('jobs - get spool file content', 'request', \&get_spool_content_request);
 
+    $self->define_hook('jobs - list jobs', 'parameters', \&list_jobs_params);
+
+    $self->define_hook('jobs - cancel and purge', 'request', \&get_jobs_request);
 }
 
 
@@ -134,6 +137,25 @@ sub get_spool_files_request{
         my ($jobname, $jobid) = ($self->plugin->parameters->{'jobname'}, $self->plugin->parameters->{'jobid'});
         my $path = $request->uri->path;
         my $new_path = $path."$jobname/$jobid/files";
+        $request->uri->path($new_path);
+    }
+}
+
+sub get_jobs_request{
+    my ($self, $request) = @_;
+
+    #checking by which way we get spool files
+    if (exists($self->plugin->parameters->{'correlator'}) && $self->plugin->parameters->{'correlator'}){
+        my $correlator = uri_escape($self->plugin->parameters->{'correlator'});
+        print "Correlator: $correlator\n";
+        my $path = $request->uri->path;
+        my $new_path = $path."$correlator";
+        $request->uri->path($new_path);
+    }
+    else{
+        my ($jobname, $jobid) = ($self->plugin->parameters->{'jobname'}, $self->plugin->parameters->{'jobid'});
+        my $path = $request->uri->path;
+        my $new_path = $path."$jobname/$jobid";
         $request->uri->path($new_path);
     }
 }
@@ -215,6 +237,13 @@ sub check_list_zos_dataset_params{
     #patching hardcoded param name
     $parameters->{'start'} = $parameters->{'start_num'};
     delete $parameters->{'start_num'};
+}
+
+sub list_jobs_params{
+    my ($self, $parameters) = @_;
+    #patching hardcoded param name
+    $parameters->{'owner'} = $parameters->{'_owner'};
+    delete $parameters->{'_owner'};
 }
 
 sub check_list_zos_dataset_request{

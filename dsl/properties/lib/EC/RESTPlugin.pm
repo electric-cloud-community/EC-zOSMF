@@ -367,16 +367,7 @@ sub save_parsed_data {
 
     if ($selected_format eq 'propertySheet') {
 
-        foreach my $key(FORBIDDEN_FIELD_NAME_PROPERTY_SHEET){
-            if (exists $parsed_data->{$key}){
-                $self->logger->info("\"$key\" is the system property name", "Prefix FORBIDDEN_FIELD_NAME_PREFIX was added to prevent failure.");
-                my $new_key = FORBIDDEN_FIELD_NAME_PREFIX . $key;
-                $parsed_data->{$new_key} = $parsed_data->{$key};
-                delete $parsed_data->{$key};
-            }
-        }
-
-        my $flat_map = _flatten_map($parsed_data, $property_name);
+        my $flat_map = $self->_self_flatten_map($parsed_data, $property_name, 'check_errors!');
 
         for my $key (sort keys %$flat_map) {
             $self->ec->setProperty($key, $flat_map->{$key});
@@ -390,6 +381,20 @@ sub save_parsed_data {
     }
     else {
         $self->bail_out("Cannot process format $selected_format: not implemented");
+    }
+}
+
+sub fix_propertysheet_forbidden_key{
+    my ($self, $ref_var, $key) = @_;
+
+    $self->logger->info("\"$key\" is the system property name", "Prefix FORBIDDEN_FIELD_NAME_PREFIX was added to prevent failure.");
+    my $new_key = FORBIDDEN_FIELD_NAME_PREFIX . $key;
+    if(ref($ref_var) eq 'HASH'){
+        $ref_var->{$new_key} = $ref_var->{$key};
+        delete $ref_var->{$key};
+    }
+    elsif(ref($ref_var) eq 'SCALAR'){
+        $$ref_var = $new_key;
     }
 }
 
@@ -531,7 +536,6 @@ sub get_config_values {
     return $retval;
 }
 
-
 sub _flatten_map {
     my ($map, $prefix) = @_;
 
@@ -554,6 +558,57 @@ sub _flatten_map {
             %retval = (%retval, %{_flatten_map($value, "$prefix/$key")});
         }
         else {
+            $retval{"$prefix/$key"} = $value;
+        }
+    }
+    return \%retval;
+}
+
+
+sub _self_flatten_map {
+    my ($self, $map, $prefix, $check) = @_;
+
+    if (defined $check and $check){
+        $check = 1;
+    }
+    else{
+        $check = 0;
+    }
+    $prefix ||= '';
+    my %retval = ();
+
+    for my $key (keys %$map) {
+
+        my $value = $map->{$key};
+        if (ref $value eq 'ARRAY') {
+            my $counter = 1;
+            my %copy = map { my $key = ref $_ ? $counter ++ : $_; $key => $_ } @$value;
+            $value = \%copy;
+        }
+        if (ref $value ne 'HASH') {
+            $value ||= '';
+            $value = "$value";
+        }
+        if (ref $value) {
+            if ($check){
+                foreach my $bad_key(FORBIDDEN_FIELD_NAME_PROPERTY_SHEET){
+                    if (exists $value->{$bad_key}){
+                        $self->fix_propertysheet_forbidden_key($value, $bad_key);              
+                    }
+                }
+            }
+
+            %retval = (%retval, %{$self->_self_flatten_map($value, "$prefix/$key", $check)});
+        }
+        else {
+            if ($check){
+                foreach my $bad_key(FORBIDDEN_FIELD_NAME_PROPERTY_SHEET){
+                    if ($key eq $bad_key){
+                        $self->fix_propertysheet_forbidden_key(\$key, $bad_key);              
+                    }
+                }
+            }
+
             $retval{"$prefix/$key"} = $value;
         }
     }

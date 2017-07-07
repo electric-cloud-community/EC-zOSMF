@@ -96,6 +96,7 @@ sub define_processors {
 
     $self->define_processor('jobs - submit a job', 'serialize_body', sub{ my ($self, $body) = @_; return $body->{ (keys %$body)[0] };} );
     $self->define_processor('jobs - spool files list', 'parse_response', \&spool_files_list_response);
+    $self->define_processor('jobs - list jobs', 'parse_response', sub{my ($self, $response) = @_; $self->convert_arr_to_hash_by_key($response, 'jobid');});
 
 
     $self->define_processor('data set - write data to a zos data set or member', 'serialize_body', sub{ my ($self, $body) = @_; return $body->{'stored-data'};} );
@@ -119,6 +120,20 @@ sub spool_files_list_response {
         }
     }
     $res->{'files'} = join(',',@files);
+    return $res;
+}
+
+sub convert_arr_to_hash_by_key{
+    my ($self, $response, $index_key) = @_;
+
+    my $res = {};
+
+    my $data = decode_json($response->content);
+    #$self->plugin->logger->info("zOSMF response:", JSON->new->pretty->utf8->encode($data));
+    foreach my $item (@{ $data }){
+        my $id = $item->{"$index_key"};
+        $res->{"$id"} = $item;
+    }
     return $res;
 }
 

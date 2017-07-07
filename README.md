@@ -37,6 +37,14 @@ You can use this operation to list the spool files for a batch job on z/OS.
 
 You can use this operation to list the spool files for a batch job on z/OS.
 
+## Jobs - List
+
+You can use this operation to list the jobs for an owner, prefix, or job ID.
+
+## Jobs - Cancel and Purge
+
+You can use this operation to cancel a job and purge its output.
+
 
 
 # Building the plugin

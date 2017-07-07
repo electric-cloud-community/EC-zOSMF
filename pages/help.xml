@@ -12,7 +12,7 @@
         <h1>@PLUGIN_KEY@</h1>
         <p>Plugin Version @PLUGIN_VERSION@</p>
         <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
-        <p>Revised on <!-- REVISION DATE BEGIN -->July 5, 2017<!-- REVISION DATE END --></p>
+        <p>Revised on <!-- REVISION DATE BEGIN -->July 7, 2017<!-- REVISION DATE END --></p>
         <p>
             <!-- DESCRIPTION BEGIN -->This plugin allows to work with zOSMF REST API.
 <!-- DESCRIPTION END -->
@@ -30,7 +30,9 @@
 <li><a href="#DataSetCreate">Data Set - Create</a></li>
 <li><a href="#DataSetDelete">Data Set - Delete</a></li>
 <li><a href="#JobsSpoolfileslist">Jobs - Spool files list</a></li>
-<li><a href="#JobsGetspoolfilecontent">Jobs - Get spool file content</a></li><!-- TOC END -->
+<li><a href="#JobsGetspoolfilecontent">Jobs - Get spool file content</a></li>
+<li><a href="#JobsList">Jobs - List</a></li>
+<li><a href="#JobsCancelandPurge">Jobs - Cancel and Purge</a></li><!-- TOC END -->
         </ul>
         <h2>Configuration</h2>
         <div id="CreateConfiguration">
@@ -810,6 +812,76 @@ To use a job correlator on this request, specify the full job correlator for the
                  </tbody>
             </table>
         <!-- JobsGetspoolfilecontent END -->
+            </div>
+            <div id="JobsList">
+                <a name="JobsList" id="JobsList" />
+                <h3>Jobs - List</h3>
+                <p>You can use this operation to list the jobs for an owner, prefix, or job ID.</p>
+                <!-- JobsList BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Owner</td>
+                    <td>User ID of the job owner whose jobs are being queried; the default is the z/OS user ID. Folded to uppercase; cannot exceed eight characters.</td>
+                </tr>
+                <tr>
+                    <td>Prefix</td>
+                    <td>Job name prefix; defaults is *. Folded to uppercase; cannot exceed eight characters.</td>
+                </tr>
+                <tr>
+                    <td>Jobid</td>
+                    <td>JobidJob ID. Folded to uppercase; cannot exceed eight characters. This query parameter is mutually exclusive with user-correlator.</td>
+                </tr>
+                <tr>
+                    <td>Max-jobs</td>
+                    <td>Maximum number of jobs returned. The value must be between 1 and 1000, inclusive. If this parameter is not specified, or is specified incorrectly, the default value of 1000 is used.</td>
+                </tr>
+                <tr>
+                    <td>User-correlator</td>
+                    <td></td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- JobsList END -->
+            </div>
+            <div id="JobsCancelandPurge">
+                <a name="JobsCancelandPurge" id="JobsCancelandPurge" />
+                <h3>Jobs - Cancel and Purge</h3>
+                <p>You can use this operation to cancel a job and purge its output.</p>
+                <!-- JobsCancelandPurge BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Jobname</td>
+                    <td>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.</td>
+                </tr>
+                <tr>
+                    <td>Jobid</td>
+                    <td>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.</td>
+                </tr>
+                <tr>
+                    <td>Correlator</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>X-IBM-Job-Modify-Version</td>
+                    <td></td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- JobsCancelandPurge END -->
             </div>
 <!-- PROCEDURES END -->
     </div>
