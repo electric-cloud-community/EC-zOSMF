@@ -2,27 +2,19 @@ package EC::Plugin::BatchHooks;
 
 use strict;
 use warnings;
-use MIME::Base64 qw(encode_base64);
 
 use base qw(EC::Plugin::BatchHooksCore);
 
 
 =head1 SYNOPSYS
 
-User-defined hooks
+User-defined Batch Hooks
 
-Available hooks types:
+Available batch hooks types:
 
     before
-    parameters
-    request
-    response
-    parsed
+    iterator
     after
-
-    ua - will be called when User Agent is created
-
-    Accepts step name, hook name, hook code, options
 
     sub define_hooks {
         my ($self) = @_;
@@ -30,6 +22,13 @@ Available hooks types:
         $self->define_hook('my step', 'before', sub { ( my ($self) = @_; print "I'm before step my step" }, {run_before_shared => 1});
     }
 
+
+    "before" and "after" are normal hooks that are run before and after all operations.
+    
+    "iterator" is a special way to manipulate amount of requests that are needed to be done.
+    If iterator is not defined via "define_batch_hooks" function, then only one request will be done defined by config file and normal hooks(Hooks.pm / define_hooks sub) assigned for this step.
+    Initial step parameters are avaiblable via $self->{main_parameters}.
+    Iterator index is always available via $self->{'iter_num'}.
 
     step name - the name of the step. If value "*" is specified, the hook will be "shared" - it will be executed for every step
     hook name - the name of the hook, see Available hook types
@@ -43,36 +42,28 @@ Available hooks types:
 =head1 SAMPLE
 
 
-    sub define_hooks {
+    sub define_batch_hooks {
         my ($self) = @_;
 
         # step name is 'deploy artifact'
         # hook name is 'request'
         # This hook accepts HTTP::Request object
-        $self->define_hook('deploy artifact', 'request', \&deploy_artifact);
+        $self->define_hook('my step name', 'iterator', \&process_files_list);
     }
 
-    sub deploy_artifact {
-        my ($self, $request) = @_;
+    sub process_files_list{
+        my ($self, $parameters) = @_;
+        my $iter = $self->{'iter_num'};
+        my @file_ids = split /,/, $self->{main_parameters}->{files};
+        $parameters->{file} = $file_ids[int($iter)];
+        if ($#file_ids <= $iter){
+            return undef;
+        }
+        else{
+            return 1;
+        }
+    }
 
-        # $self is a EC::Plugin::Hooks object. It has method ->plugin, which returns the EC::RESTPlugin object
-        my $artifact_path = $self->plugin->parameters($self->plugin->current_step_name)->{filesystemArtifact};
-
-        open my $fh, $artifact_path or die $!;
-        binmode $fh;
-        my $buffer;
-        $self->plugin->logger->info("Writing artifact $artifact_path to the server");
-
-        $request->content(sub {
-            my $bytes_read = read($fh, $buffer, 1024);
-            if ($bytes_read) {
-                return $buffer;
-            }
-            else {
-                return undef;
-            }
-        });
-    
 
 
 =cut
@@ -82,7 +73,7 @@ Available hooks types:
 sub define_batch_hooks {
     my ($self) = @_;
 
-    $self->define_batch_hook('jobs - get spool file content', 'parameters', \&get_spool_files_params);
+    $self->define_batch_hook('jobs - get spool file content', 'iterator', \&get_spool_files_params);
 }
 
 

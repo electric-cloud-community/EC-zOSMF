@@ -1,0 +1,97 @@
+stepName: jobs - get spool file content
+description: You can use this operation to list the spool files for a batch job on z/OS.
+# https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+endpoint: '/restjobs/jobs/'
+#[-(<volser>)/]<data-set-name>[(<member-name>)]
+#  #{{instance}} means that "instance" will ba taken from config
+# #{repository} will be taken from the procedure parameters
+method: GET
+# HTTP method
+hasConfig: true
+ # a field for configuration name will be added to the form
+attachCredentials: true
+ # credentials will be attached to the procedure
+basicAuth: true
+ # credentials will be turned into basic auth header
+# if no credentials found, the procedure won't fail, the request will be made without credentials
+
+# The result will be saved in this property
+resultProperty:
+  show: true
+  # Selectbox with formats will appear
+  format:
+    - json
+    - propertySheet
+  default: /myJob/getSpoolFiles
+parameters:
+  - property: jobname
+    type: entry
+    label: Jobname
+    documentation: Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
+    required: 0
+  - property: jobid
+    type: entry
+    label: Jobid
+    documentation:  Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
+    required: 0
+  - property: correlator
+    type: entry
+    label: Correlator
+    documentation: |-  
+      Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
+      To use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). The correlator can be one that you have obtained from the "job-correlator" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the "url" property of a JSON job document.
+    required: 0
+  - property: X-IBM-Record-Range
+    type: entry
+    label: X-IBM-Record-Range
+    in: header
+    refiners: remove_blank_header
+    htmlDocumentation: |-  
+      <pre>Use this header to retrieve a range of records from a spool file. You can specify this range using either of the following formats:
+      SSS-EEE
+      where SSS identifies the start record and EEE identifies the end record to be retrieved. Both values are relative offsets (0-based). When EEE is set to 0, records through the end of the spool file are retrieved.
+      SSS,NNN
+      where SSS identifies the start record and NNN identifies the number of records to be retrieved.</pre>
+    required: 0
+  
+  - property: mode
+    type: select
+    label: Mode 
+    in: query
+    value: __IS__NOT__SET__
+    refiner: convert_not_set
+    option:
+      - name: not set
+        value: __IS__NOT__SET__
+      - name: text
+        value: text
+      - name: binary
+        value: binary
+      - name: record
+        value: record         
+    htmlDocumentation: |-  
+      <pre style="white-space:pre-wrap; word-wrap:break-word;">text
+      The z/OS jobs REST interface translates records from the server codepage to the client codepage and returns the records with Content-Type: plain/text. Trailing spaces are removed and newline characters are used as record separators. This value is the default if you omit the mode parameter.
+      binary
+      The z/OS jobs REST interface performs no translation and returns the records with Content-Type: application/octet-stream.
+      record
+      The z/OS jobs REST interface performs no translation and returns the records with Content-Type: application/octet-stream. The z/OS jobs REST interface prefixes each record with a 4-byte (big endian) length.</pre>
+    required: 0
+  
+  - property: JESB
+    type: entry
+    label: JESB
+    documentation: Represents an optionally-specified secondary JES subsystem. A request to a secondary JES subsystem must include the job name and job id, rather than a job correlator.
+    required: 0
+
+  - property: files
+    type: entry
+    label: Files NNNs
+    documentation: Comma separated files list to retrieve
+    required: 0
+
+  - property: include_jcl
+    type: checkbox
+    label: Retrieve job's JCL
+    documentation: Pushes to retrieve the JCL for the specified job.
+    required: 0

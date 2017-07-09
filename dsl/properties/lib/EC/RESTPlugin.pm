@@ -315,12 +315,14 @@ Running step: $step_name
         my $parameters = $self->parameters($step_name);
         $self->logger->debug('Parameters', $parameters);
 
-        my $next = $self->batch_hooks->parameters_batch_hook($step_name, $parameters);
+        $self->batch_hooks->before_batch_hook($step_name);
 
-        while(my $item = $next->()){
-            print "$item\n";
+        my $next = $self->batch_hooks->iterator($step_name, $parameters);
+        while($next->()){
             $self->run_one_step($step_name);
         }
+
+        $self->batch_hooks->after_batch_hook($step_name);
 
         1;
     } or do {

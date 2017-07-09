@@ -1,0 +1,132 @@
+stepName: data set - create a sequential and partitioned data set
+description: You can use this operation to create sequential and partitioned data sets on a z/OS system.
+# https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+endpoint: '/restfiles/ds/#{dataset-name}'
+#  #{{instance}} means that "instance" will ba taken from config
+# #{repository} will be taken from the procedure parameters
+method: POST
+contentType: application/json
+# HTTP method
+hasConfig: true
+ # a field for configuration name will be added to the form
+attachCredentials: true
+ # credentials will be attached to the procedure
+basicAuth: true
+ # credentials will be turned into basic auth header
+# if no credentials found, the procedure won't fail, the request will be made without credentials
+
+# The result will be saved in this property
+resultProperty:
+  show: true
+  # Selectbox with formats will appear
+  format:
+    - json
+    - propertySheet
+  default: /myJob/createDataset
+parameters:
+  - property: dataset-name
+    type: entry
+    label: Data set name
+    documentation: The name of a z/OS data set that you are going to create.
+    required: 1
+  - property: volser
+    in: body
+    type: entry
+    label: Volser
+    documentation: A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.
+    required: 0
+  - property: unit
+    in: body
+    type: entry
+    label: Unit
+    documentation: Device type.
+    required: 0
+  - property: dsorg
+    in: body
+    type: entry
+    label: Dsorg
+    documentation: Data set organization.
+    required: 0
+  - property: alcunit
+    in: body
+    type: entry
+    label: Alcunit
+    documentation: Unit of space allocation.
+    required: 0
+  - property: primary
+    in: body
+    type: entry
+    label: Primary
+    refiner: convert_to_int
+    validators:
+      - is_int
+    documentation: Primary space allocation.
+    required: 0
+  - property: secondary
+    in: body
+    type: entry
+    label: Secondary
+    refiner: convert_to_int
+    validators:
+      - is_int
+    documentation: Secondary space allocation.
+    required: 0
+  - property: dirblk
+    in: body
+    type: entry
+    label: Dirblk
+    refiner: convert_to_int
+    validators:
+      - is_int
+    documentation: Number of directory blocks.
+    required: 0
+  - property: avgblk
+    in: body
+    type: entry
+    label: Avgblk
+    refiner: convert_to_int
+    validators:
+      - is_int
+    documentation: Average block.
+    required: 0
+  - property: recfm
+    in: body
+    type: entry
+    label: Recfm
+    documentation: Record format.
+    required: 0
+  - property: blksize
+    in: body
+    type: entry
+    label: Blksize
+    refiner: convert_to_int
+    validator: is_int
+    documentation: Block size.
+    required: 0
+  - property: lrecl
+    in: body
+    type: entry
+    label: Lrecl
+    refiner: convert_to_int
+    validators:
+      - is_int
+    documentation: Record length.
+    required: 0
+  - property: storeclass
+    in: body
+    type: entry
+    label: Storeclass
+    documentation: Storage class.
+    required: 0
+  - property: mgntclass
+    in: body
+    type: entry
+    label: Mgntclass
+    documentation: Storage class.
+    required: 0
+  - property: dataclass
+    in: body
+    type: entry
+    label: Dataclass
+    documentation: Data class.
+    required: 0

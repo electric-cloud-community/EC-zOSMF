@@ -6,7 +6,7 @@ use warnings;
 use constant {
     AFTER_HOOK => 'after',
     BEFORE_HOOK => 'before',
-    PARAMETERS_HOOK => 'parameters',
+    PARAMETERS_HOOK => 'iterator',
 };
 
 sub new {
@@ -38,9 +38,9 @@ sub after_batch_hook {
     $self->_run($step_name, AFTER_HOOK);
 }
 
-sub parameters_batch_hook {
+sub iterator {
     my ($self, $step_name, $parameters) = @_;
-    $self->_run($step_name, PARAMETERS_HOOK, $parameters);
+    $self->_run_iterator($step_name, PARAMETERS_HOOK, $parameters);
 }
 
 
@@ -49,13 +49,41 @@ sub _get_batch_hook {
     return $self->{batch_hooks_storage}->{$step_name}->{$hook_name}->{hook};
 }
 
+
 sub _get_batch_hook_options {
     my ($self, $step_name, $hook_name) = @_;
 
     return $self->{batch_hooks_storage}->{$step_name}->{$hook_name}->{options} || {};
 }
 
+
 sub _run {
+    my $self = shift;
+    my $step_name = shift;
+    my $hook_name = shift;
+
+    my $shared_hook = $self->{batch_hooks_storage}->{'*'}->{$hook_name}->{hook};
+    my $own_hook = $self->_get_batch_hook($step_name, $hook_name);
+
+    my $own_hook_options = $self->_get_batch_hook_options($step_name, $hook_name);
+
+    my @hooks = ();
+    if ($own_hook_options->{batch_hooks_storage}) {
+        push @hooks, $own_hook, $shared_hook;
+    }
+    else {
+        push @hooks, $shared_hook, $own_hook;
+    }
+
+    for my $hook (@hooks) {
+        if ($hook) {
+            $hook->($self, @_);
+        }
+    }
+}
+
+
+sub _run_iterator {
     my $self = shift;
     my $step_name = shift;
     my $hook_name = shift;

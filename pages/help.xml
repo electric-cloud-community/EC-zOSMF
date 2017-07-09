@@ -12,7 +12,7 @@
         <h1>@PLUGIN_KEY@</h1>
         <p>Plugin Version @PLUGIN_VERSION@</p>
         <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
-        <p>Revised on <!-- REVISION DATE BEGIN -->July 7, 2017<!-- REVISION DATE END --></p>
+        <p>Revised on <!-- REVISION DATE BEGIN -->July 9, 2017<!-- REVISION DATE END --></p>
         <p>
             <!-- DESCRIPTION BEGIN -->This plugin allows to work with zOSMF REST API.
 <!-- DESCRIPTION END -->
@@ -23,14 +23,14 @@
 <!-- LINKS END -->
         <h1>Contents</h1>
         <ul>
-        <!-- TOC BEGIN --><li><a href="#JobsSubmitajob">Jobs - Submit a job</a></li>
-<li><a href="#DataSetList">Data Set - List</a></li>
+        <!-- TOC BEGIN --><li><a href="#DataSetList">Data Set - List</a></li>
 <li><a href="#DataSetReaddata">Data Set - Read data</a></li>
 <li><a href="#DataSetWritedata">Data Set - Write data</a></li>
 <li><a href="#DataSetCreate">Data Set - Create</a></li>
 <li><a href="#DataSetDelete">Data Set - Delete</a></li>
 <li><a href="#JobsSpoolfileslist">Jobs - Spool files list</a></li>
 <li><a href="#JobsGetspoolfilecontent">Jobs - Get spool file content</a></li>
+<li><a href="#JobsSubmitajob">Jobs - Submit a job</a></li>
 <li><a href="#JobsList">Jobs - List</a></li>
 <li><a href="#JobsCancelandPurge">Jobs - Cancel and Purge</a></li><!-- TOC END -->
         </ul>

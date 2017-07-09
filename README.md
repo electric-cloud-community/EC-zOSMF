@@ -5,10 +5,6 @@ This plugin allows to work with zOSMF REST API.
 
 # Procedures
 
-## Jobs - Submit a job
-
-You can use this operation to submit a job to run on z/OS.
-
 ## Data Set - List
 
 List the z/OS data sets on a system.
@@ -36,6 +32,10 @@ You can use this operation to list the spool files for a batch job on z/OS.
 ## Jobs - Get spool file content
 
 You can use this operation to list the spool files for a batch job on z/OS.
+
+## Jobs - Submit a job
+
+You can use this operation to submit a job to run on z/OS.
 
 ## Jobs - List
 

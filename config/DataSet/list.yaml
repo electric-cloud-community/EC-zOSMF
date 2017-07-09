@@ -1,0 +1,72 @@
+stepName: data set - list zOS data sets on a system
+description: List the z/OS data sets on a system.
+# https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
+endpoint: '/restfiles/ds'
+#  #{{instance}} means that "instance" will ba taken from config
+# #{repository} will be taken from the procedure parameters
+method: GET
+# HTTP method
+hasConfig: true
+ # a field for configuration name will be added to the form
+attachCredentials: true
+ # credentials will be attached to the procedure
+basicAuth: true
+ # credentials will be turned into basic auth header
+# if no credentials found, the procedure won't fail, the request will be made without credentials
+
+# The result will be saved in this property
+resultProperty:
+  show: true
+  # Selectbox with formats will appear
+  format:
+    - json
+    - propertySheet
+  default: /myJob/datasetList
+parameters:
+  - property: dslevel
+    in: query
+    type: entry
+    label: Dslevel
+    documentation: The search parameter that identifies the cataloged data sets to be listed.
+    required: 1
+  - property: volser
+    in: query
+    type: entry
+    label: Volser
+    documentation: A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.
+    required: 0
+  - property: start_num
+    in: query
+    type: entry
+    label: Start
+    documentation: An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.
+    required: 0
+  - property: X-IBM-Attributes
+    label: X-IBM-Attributes. If not set - dsname used.
+    type: select
+    in: header
+    value: __IS__NOT__SET__
+    refiner: convert_not_set
+    option:
+      - name: not set
+        value: __IS__NOT__SET__
+      - name: dsname
+        value: dsname
+      - name: base
+        value: base
+      - name: vol
+        value: vol
+    documentation: Extends search.
+  - property: X-IBM-Max-Items
+    in: header
+    type: entry
+    label: Max items returned (1000 max, 0 means no limit)
+    value: 0
+    refiner: remove_blank_header
+    documentation: This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.
+    required: 0
+  - property: totalRows
+    type: checkbox
+    label: Return totalRows
+    documentation: If checked, then "totalRows" property is returned if more data sets than the maximum requested are available.
+    required: 0
