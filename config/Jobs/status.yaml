@@ -1,0 +1,31 @@
+stepName: jobs - obtain status
+description: You can use this operation to obtain the status of a batch job on z/OS
+endpoint: '/restjobs/jobs/'
+method: GET
+hasConfig: true
+attachCredentials: true
+basicAuth: true
+resultProperty:
+  show: true
+  format:
+    - json
+    - propertySheet
+  default: /myJob/jobStatus
+parameters:
+  - property: jobname
+    type: entry
+    label: Jobname
+    documentation: Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job.
+    required: 0
+  - property: jobid
+    type: entry
+    label: Jobid
+    documentation:  Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job.
+    required: 0
+  - property: correlator
+    type: entry
+    label: Correlator
+    documentation: |-  
+      Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job.
+      To use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). The correlator can be one that you have obtained from the "job-correlator" property in a returned JSON job document.
+    required: 0

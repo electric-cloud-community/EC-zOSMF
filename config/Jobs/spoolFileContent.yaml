@@ -1,24 +1,12 @@
 stepName: jobs - get spool file content
 description: You can use this operation to list the spool files for a batch job on z/OS.
-# https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
 endpoint: '/restjobs/jobs/'
-#[-(<volser>)/]<data-set-name>[(<member-name>)]
-#  #{{instance}} means that "instance" will ba taken from config
-# #{repository} will be taken from the procedure parameters
 method: GET
-# HTTP method
 hasConfig: true
- # a field for configuration name will be added to the form
 attachCredentials: true
- # credentials will be attached to the procedure
 basicAuth: true
- # credentials will be turned into basic auth header
-# if no credentials found, the procedure won't fail, the request will be made without credentials
-
-# The result will be saved in this property
 resultProperty:
   show: true
-  # Selectbox with formats will appear
   format:
     - json
     - propertySheet
@@ -39,7 +27,7 @@ parameters:
     label: Correlator
     documentation: |-  
       Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
-      To use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). The correlator can be one that you have obtained from the "job-correlator" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the "url" property of a JSON job document.
+      To use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). The correlator can be one that you have obtained from the "job-correlator" property in a returned JSON job document.
     required: 0
   - property: X-IBM-Record-Range
     type: entry

@@ -1,0 +1,13 @@
+stepName: jobs - zosmf info
+description: You can use this operation to retrieve information about z/OSMF on a particular z/OS system.
+endpoint: '/info'
+method: GET
+hasConfig: true
+attachCredentials: true
+basicAuth: true
+resultProperty:
+  show: true
+  format:
+    - json
+    - propertySheet
+  default: /myJob/systemInfo

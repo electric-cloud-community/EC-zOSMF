@@ -94,6 +94,7 @@ Code may look like the following:
 sub define_processors {
     my $self = shift;
 
+    $self->define_processor('jobs - zosmf info', 'parse_response', sub{ my ($self, $response) = @_; return decode_json($response->content);});
     $self->define_processor('jobs - submit a job', 'serialize_body', sub{ my ($self, $body) = @_; return $body->{ (keys %$body)[0] };} );
     $self->define_processor('jobs - spool files list', 'parse_response', \&spool_files_list_response);
     $self->define_processor('jobs - list jobs', 'parse_response', sub{my ($self, $response) = @_; $self->convert_arr_to_hash_by_key($response, 'jobid');});

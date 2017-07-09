@@ -1,24 +1,12 @@
 stepName: data set - retrieve the contents of a zOS data set or member
 description: You can use this operation to retrieve the contents of a sequential data set, or a member of a partitioned data set (PDS or PDSE). To retrieve the contents of an uncataloged data set, include the volume serial on the request.
-# https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
 endpoint: '/restfiles/ds/#{dataset-name}'
-#[-(<volser>)/]<data-set-name>[(<member-name>)]
-#  #{{instance}} means that "instance" will ba taken from config
-# #{repository} will be taken from the procedure parameters
 method: GET
-# HTTP method
 hasConfig: true
- # a field for configuration name will be added to the form
 attachCredentials: true
- # credentials will be attached to the procedure
 basicAuth: true
- # credentials will be turned into basic auth header
-# if no credentials found, the procedure won't fail, the request will be made without credentials
-
-# The result will be saved in this property
 resultProperty:
   show: true
-  # Selectbox with formats will appear
   format:
     - json
     - propertySheet

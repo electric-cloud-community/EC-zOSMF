@@ -11,59 +11,24 @@ help:
     - https://www.ibm.com/support/knowledgecenter/SSLTBW_2.1.0/com.ibm.zos.v2r1.izua700/IZUHPINFO_RESTServices.htm
   hasConfig: true
 procedures:
-# List the z/OS data sets on a system Start of changeGET /zosmf/restfiles/ds?dslevel=<dataset_name_pattern>[&volser=<volser>&start=<dsname>]End of change
+  - name: System - Info
+    $ref: ./Other/info.yaml
+
   - name: Data Set - List
     $ref: ./DataSet/list.yaml
 
-
-
-
-
-# List the members of a z/OS data set Start of changeGET /zosmf/restfiles/ds/<dataset_name>/member?start=<member>&pattern=<mem-pat>End of change
-
-# Retrieve the contents of a z/OS data set or member  GET /zosmf/restfiles/ds/[-(<volser>)/]<data-set-name>[(<member-name>)]
   - name: Data Set - Read data
     $ref: ./DataSet/readData.yaml
 
-#----
-
-# Write data to a z/OS data set or member PUT /zosmf/restfiles/ds/[-(<volser>)/]<data-set-name>[(<member-name>)]
   - name: Data Set - Write data
     $ref: ./DataSet/writeData.yaml
 
-# Start of changeCreate a sequential and partitioned data setEnd of change  Start of changePOST /zosmf/restfiles/ds/<data-set-name>End of change
   - name: Data Set - Create
     $ref: ./DataSet/create.yaml
 
-# Start of changeDelete a sequential and partitioned data setEnd of change  Start of changeDELETE /zosmf/restfiles/ds/<data-set-name>
-#---
-# DELETE /zosmf/restfiles/ds/-(<volume>)/<data-set-name>
   - name: Data Set - Delete
     $ref: ./DataSet/delete.yaml
-      
-
-
-
-# End of change
-# Start of changeDelete a partitioned data set memberEnd of change  Start of changeDELETE /zosmf/restfiles/ds/<dataset-name>(<member-name>)End of change
-# Start of changez/OS Data set and member utilitiesEnd of change  Start of changePUT /zosmf/restfiles/ds/<to-data-set-name>End of change
-# Start of changeAccess Method Services InterfaceEnd of change  Start of changePUT /zosmf/restfiles/amsEnd of change
-# List the files and directories of a UNIX file path  GET /zosmf/restfiles/fs?path=<file-path-name>
-
-#---
-
-# Retrieve the contents of a z/OS UNIX file GET /zosmf/restfiles/fs/<file-path-name>
-# Write data to a z/OS UNIX file  PUT /zosmf/restfiles/fs/<filepath-name>
-
-#---
-# Start of changeCreate a UNIX file or directoryEnd of change Start of changePOST /zosmf/restfiles/fs/<file-path-name>End of change
-# Start of changeDelete a UNIX file or directoryEnd of change Start of changeDELETE /zosmf/restfiles/fs/<file-pathname>End of change
-# Start of changez/OS UNIX file utilitiesEnd of change  Start of changePUT /zosmf/restfiles/fs/<file-path-name>End of change
-# Start of changeList z/OS UNIX FilesystemsEnd of change  Start of changeGET /zosmf/restfiles/mfs/End of change
-# Start of changeCreate z/OS UNIX zFS FilesystemEnd of change Start of changePOST /zosmf/restfiles/mfs/zfs/<file-system-name>End of change
-# Start of changeDelete z/OS UNIX zFS FilesystemEnd of change Start of changeDELETE /zosmf/restfiles/mfs/zfs/<file-system-name>End of change
-# Start of changeMount a UNIX file systemEnd of change  Start of changePUT /zosmf/restfiles/mfs/<file-system-name>End of change
-# Start of changeUnmount a UNIX file systemEnd of change  Start of changePUT /zosmf/restfiles/mfs/<file-system-name>End of change
+  
   - name: Jobs - Spool files list
     $ref: ./Jobs/spoolFilesList.yaml
 
@@ -78,4 +43,7 @@ procedures:
 
   - name: Jobs - Cancel and Purge
     $ref: ./Jobs/delete.yaml
+
+  - name: Jobs - Obtain status
+    $ref: ./Jobs/status.yaml
 

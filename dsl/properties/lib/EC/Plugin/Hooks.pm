@@ -95,6 +95,7 @@ sub define_hooks {
     $self->define_hook('jobs - list jobs', 'parameters', \&list_jobs_params);
 
     $self->define_hook('jobs - cancel and purge', 'request', \&get_jobs_request);
+    $self->define_hook('jobs - obtain status', 'request', \&get_jobs_request);
 }
 
 
@@ -147,7 +148,6 @@ sub get_jobs_request{
     #checking by which way we get spool files
     if (exists($self->plugin->parameters->{'correlator'}) && $self->plugin->parameters->{'correlator'}){
         my $correlator = uri_escape($self->plugin->parameters->{'correlator'});
-        print "Correlator: $correlator\n";
         my $path = $request->uri->path;
         my $new_path = $path."$correlator";
         $request->uri->path($new_path);

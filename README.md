@@ -5,6 +5,10 @@ This plugin allows to work with zOSMF REST API.
 
 # Procedures
 
+## System - Info
+
+You can use this operation to retrieve information about z/OSMF on a particular z/OS system.
+
 ## Data Set - List
 
 List the z/OS data sets on a system.
@@ -44,6 +48,10 @@ You can use this operation to list the jobs for an owner, prefix, or job ID.
 ## Jobs - Cancel and Purge
 
 You can use this operation to cancel a job and purge its output.
+
+## Jobs - Obtain status
+
+You can use this operation to obtain the status of a batch job on z/OS
 
 
 

@@ -1,24 +1,13 @@
 stepName: jobs - submit a job
 description: You can use this operation to submit a job to run on z/OS.
-# https://{instance}/DefaultCollection/_apis/wit/workitems?api-version={version}&ids={string}[&fields={string}&asOf={DateTime}&$expand={enum{relations}&ErrorPolicy={string}]
 endpoint: '/restjobs/jobs'
-#  #{{instance}} means that "instance" will ba taken from config
-# #{repository} will be taken from the procedure parameters
 method: PUT
-# HTTP method
 hasConfig: true
- # a field for configuration name will be added to the form
 attachCredentials: true
 contentType: text/plain
- # credentials will be attached to the procedure
 basicAuth: true
- # credentials will be turned into basic auth header
-# if no credentials found, the procedure won't fail, the request will be made without credentials
-
-# The result will be saved in this property
 resultProperty:
   show: true
-  # Selectbox with formats will appear
   format:
     - json
     - propertySheet
