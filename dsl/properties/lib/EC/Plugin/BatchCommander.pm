@@ -1,22 +1,22 @@
-package EC::Plugin::BatchHooks;
+package EC::Plugin::BatchCommander;
 
 use strict;
 use warnings;
 
-use base qw(EC::Plugin::BatchHooksCore);
+use base qw(EC::Plugin::BatchCommanderCore);
 
 
 =head1 SYNOPSYS
 
-User-defined Batch Hooks
+User-defined Batch functionality
 
-Available batch hooks types:
+Available batch-level functionality types:
 
     before
     iterator
     after
 
-    sub define_hooks {
+    sub define_batch_hooks {
         my ($self) = @_;
 
         $self->define_hook('my step', 'before', sub { ( my ($self) = @_; print "I'm before step my step" }, {run_before_shared => 1});
@@ -42,13 +42,10 @@ Available batch hooks types:
 =head1 SAMPLE
 
 
-    sub define_batch_hooks {
+    sub define_iterators {
         my ($self) = @_;
 
-        # step name is 'deploy artifact'
-        # hook name is 'request'
-        # This hook accepts HTTP::Request object
-        $self->define_hook('my step name', 'iterator', \&process_files_list);
+        $self->define_hook('my step name', \&process_files_list);
     }
 
     sub process_files_list{
@@ -72,8 +69,13 @@ Available batch hooks types:
 
 sub define_batch_hooks {
     my ($self) = @_;
+}
 
-    $self->define_batch_hook('jobs - get spool file content', 'iterator', \&get_spool_files_params);
+sub define_iterators {
+    my ($self) = @_;
+
+    $self->define_iterator('jobs - get spool file content', \&get_spool_files_params);
+    $self->define_iterator('jobs - obtain status', \&wait_for_job_status);
 }
 
 
@@ -86,6 +88,26 @@ sub get_spool_files_params{
         return undef;
     }
     else{
+        return 1;
+    }
+}
+
+sub wait_for_job_status{
+    my ($self, $parameters) = @_;
+    my $iter = $self->{'iter_num'};
+
+    if ($self->{main_parameters}->{timeout} && 10*$iter > $self->{main_parameters}->{timeout}){
+        $self->plugin->bail_out("Timeout: Job was not able to get into requested status in given time.");
+    }
+
+    return undef unless defined($self->plugin->{last_run_data}) && $self->plugin->{last_run_data}->{status};
+
+    if ($self->plugin->{last_run_data}->{status} eq $self->{main_parameters}->{jobstatus}){
+        return undef;
+    }
+    else{
+        $self->plugin->logger->info("Current Job Status is \"".$self->plugin->{last_run_data}->{status}."\". Will wait for the required \"".$self->{main_parameters}->{jobstatus}."\" job status for next 10 seconds.");
+        sleep 10;
         return 1;
     }
 }

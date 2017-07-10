@@ -35,6 +35,34 @@ To use a job correlator on this request, specify the full job correlator for the
   <value></value>
 </formElement>
 <formElement>
+  <documentation>This param tells to procedure to wait until the status of the job is changed in set param. Checks are being done every 10 seconds. Timing out(if parameter is set) will push this procedure to fail.</documentation>
+  <label>Wait for the Job Status:</label>
+  <option>
+    <name>not set</name>
+    <value>__IS__NOT__SET__</value>
+  </option>
+  <option>
+    <name>ACTIVE</name>
+    <value>ACTIVE</value>
+  </option>
+  <option>
+    <name>OUTPUT</name>
+    <value>OUTPUT</value>
+  </option>
+  <property>jobstatus</property>
+  <required>0</required>
+  <type>select</type>
+  <value>__IS__NOT__SET__</value>
+</formElement>
+<formElement>
+  <documentation>Timeout in seconds. If procedure works or awaits more then Timeout, then it will fail.</documentation>
+  <label>Timeout:</label>
+  <property>timeout</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
   <documentation>Results will be saved into this property/property sheet.</documentation>
   <label>Property sheet name for results:</label>
   <property>resultPropertySheet</property>

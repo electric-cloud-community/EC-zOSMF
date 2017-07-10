@@ -5,7 +5,7 @@ use warnings;
 
 use base qw(EC::Plugin::Core);
 use EC::Plugin::Hooks;
-use EC::Plugin::BatchHooks;
+use EC::Plugin::BatchCommander;
 use EC::Plugin::Validators;
 use EC::Plugin::ContentProcessor;
 use EC::Plugin::Refiners;
@@ -37,6 +37,7 @@ sub after_init_hook {
 
     $self->{plugin_name} = '@PLUGIN_NAME@';
     $self->{plugin_key} = '@PLUGIN_KEY@';
+    $self->{last_run_data} = undef;
     my $debug_level = 0;
     my $proxy;
 
@@ -78,12 +79,12 @@ sub hooks {
     return $self->{hooks};
 }
 
-sub batch_hooks {
+sub batch_commander {
     my ($self) = @_;
-    unless($self->{batch_hooks}) {
-        $self->{batch_hooks} = EC::Plugin::BatchHooks->new($self);
+    unless($self->{batch_commander}) {
+        $self->{batch_commander} = EC::Plugin::BatchCommander->new($self);
     }
-    return $self->{batch_hooks};
+    return $self->{batch_commander};
 }
 
 
@@ -293,6 +294,8 @@ sub run_one_step{
     $self->save_parsed_data($step_name, $parsed);
 
     $self->hooks->after_hook($step_name);
+
+    $self->{last_run_data} = $parsed;
 }
 
 
@@ -309,20 +312,21 @@ Running step: $step_name
         $self->current_step_name($step_name);
         die 'No step name' unless $step_name;
         $self->logger->debug("Running step named $step_name");
-        $self->batch_hooks->define_batch_hooks;
+        $self->batch_commander->define_batch_hooks;
+        $self->batch_commander->define_iterators;
         $self->hooks->define_hooks;
         $self->content_processor->define_processors;
         my $parameters = $self->parameters($step_name);
         $self->logger->debug('Parameters', $parameters);
 
-        $self->batch_hooks->before_batch_hook($step_name);
+        $self->batch_commander->before_batch_hook($step_name);
 
-        my $next = $self->batch_hooks->iterator($step_name, $parameters);
+        my $next = $self->batch_commander->iterator($step_name, $parameters);
         while($next->()){
             $self->run_one_step($step_name);
         }
 
-        $self->batch_hooks->after_batch_hook($step_name);
+        $self->batch_commander->after_batch_hook($step_name);
 
         1;
     } or do {
