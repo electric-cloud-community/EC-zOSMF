@@ -10,6 +10,7 @@ resultProperty:
   format:
     - json
     - propertySheet
+    - file
   default: /myJob/readDataset
 parameters:
   - property: dataset-name

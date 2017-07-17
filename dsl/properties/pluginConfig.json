@@ -1,84 +1,7 @@
 {
-   "jobs - list jobs" : {
-      "fields" : [
-         "_owner",
-         "prefix",
-         "jobid",
-         "max-jobs",
-         "user-correlator"
-      ],
-      "hasConfig" : "true",
-      "parameters" : [
-         {
-            "property" : "_owner",
-            "required" : "0",
-            "in" : "query",
-            "refiner" : "remove_blank_header",
-            "label" : "Owner",
-            "type" : "entry",
-            "documentation" : "User ID of the job owner whose jobs are being queried; the default is the z/OS user ID. Folded to uppercase; cannot exceed eight characters."
-         },
-         {
-            "refiner" : "remove_blank_header",
-            "label" : "Prefix",
-            "type" : "entry",
-            "documentation" : "Job name prefix; defaults is *. Folded to uppercase; cannot exceed eight characters.",
-            "property" : "prefix",
-            "required" : "0",
-            "in" : "query"
-         },
-         {
-            "documentation" : "JobidJob ID. Folded to uppercase; cannot exceed eight characters. This query parameter is mutually exclusive with user-correlator.",
-            "label" : "Jobid",
-            "type" : "entry",
-            "refiner" : "remove_blank_header",
-            "required" : "0",
-            "in" : "query",
-            "property" : "jobid"
-         },
-         {
-            "documentation" : "Maximum number of jobs returned. The value must be between 1 and 1000, inclusive. If this parameter is not specified, or is specified incorrectly, the default value of 1000 is used.",
-            "validator" : "is_int",
-            "type" : "entry",
-            "required" : "0",
-            "label" : "Max-jobs",
-            "in" : "query",
-            "property" : "max-jobs",
-            "refiners" : [
-               "convert_to_int",
-               "remove_blank_header"
-            ]
-         },
-         {
-            "label" : "User-correlator",
-            "type" : "entry",
-            "refiner" : "remove_blank_header",
-            "htmlDocumentation" : "<pre style=\"white-space:pre-wrap; word-wrap:break-word;\">The user portion of the job correlator. This value is 1 - 32 characters in length, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 31) can be any combination of uppercase alphabetic, numeric (0-9), or special. Blank characters are not supported.\nThis query parameter is mutually exclusive with jobid.\n\nThis value is processed by the JES2 subsystem only; the JES3 subsystem does not process the correlator and, instead, indicates zero job matches. For a system with JES3 as the primary subsystem, and one or more JES2 secondary subsystems, the primary JES3 subsystem does not process the correlator, however, the JES2 secondary subsystems can process the correlator.</pre>",
-            "required" : "0",
-            "in" : "query",
-            "property" : "user-correlator"
-         }
-      ],
-      "description" : "You can use this operation to list the jobs for an owner, prefix, or job ID.",
-      "method" : "GET",
-      "name" : "Jobs - List",
+   "jobs - spool files list" : {
       "attachCredentials" : "true",
-      "basicAuth" : "true",
-      "resultProperty" : {
-         "default" : "/myJob/getJobList",
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "show" : "true"
-      },
-      "endpoint" : "/restjobs/jobs/",
-      "stepName" : "jobs - list jobs"
-   },
-   "data set - list zOS data sets on a system" : {
-      "method" : "GET",
-      "name" : "Data Set - List",
-      "attachCredentials" : "true",
+      "name" : "Jobs - Spool files list",
       "basicAuth" : "true",
       "resultProperty" : {
          "show" : "true",
@@ -86,479 +9,360 @@
             "json",
             "propertySheet"
          ],
-         "default" : "/myJob/datasetList"
+         "default" : "/myJob/getSpoolFiles"
       },
-      "endpoint" : "/restfiles/ds",
-      "stepName" : "data set - list zOS data sets on a system",
-      "fields" : [
-         "dslevel",
-         "volser",
-         "start_num",
-         "X-IBM-Attributes",
-         "X-IBM-Max-Items",
-         "totalRows"
-      ],
-      "hasConfig" : "true",
+      "description" : "You can use this operation to list the spool files for a batch job on z/OS.",
       "parameters" : [
          {
-            "property" : "dslevel",
-            "required" : "1",
-            "in" : "query",
-            "label" : "Dslevel",
-            "type" : "entry",
-            "documentation" : "The search parameter that identifies the cataloged data sets to be listed."
-         },
-         {
-            "property" : "volser",
+            "label" : "Jobname",
+            "property" : "jobname",
             "required" : "0",
-            "in" : "query",
-            "label" : "Volser",
+            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
+            "type" : "entry"
+         },
+         {
+            "property" : "jobid",
+            "label" : "Jobid",
             "type" : "entry",
-            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter."
-         },
-         {
-            "type" : "entry",
-            "label" : "Start",
-            "documentation" : "An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.",
-            "property" : "start_num",
-            "required" : "0",
-            "in" : "query"
-         },
-         {
-            "documentation" : "Extends search.",
-            "value" : "__IS__NOT__SET__",
-            "type" : "select",
-            "in" : "header",
-            "property" : "X-IBM-Attributes",
-            "label" : "X-IBM-Attributes. If not set - dsname used.",
-            "refiner" : "convert_not_set",
-            "option" : [
-               {
-                  "value" : "__IS__NOT__SET__",
-                  "name" : "not set"
-               },
-               {
-                  "name" : "dsname",
-                  "value" : "dsname"
-               },
-               {
-                  "name" : "base",
-                  "value" : "base"
-               },
-               {
-                  "value" : "vol",
-                  "name" : "vol"
-               }
-            ]
-         },
-         {
-            "value" : "0",
-            "documentation" : "This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.",
-            "type" : "entry",
-            "required" : "0",
-            "label" : "Max items returned (1000 max, 0 means no limit)",
-            "refiner" : "remove_blank_header",
-            "in" : "header",
-            "property" : "X-IBM-Max-Items"
-         },
-         {
-            "type" : "checkbox",
-            "label" : "Return totalRows",
-            "documentation" : "If checked, then \"totalRows\" property is returned if more data sets than the maximum requested are available.",
-            "property" : "totalRows",
+            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
             "required" : "0"
+         },
+         {
+            "type" : "entry",
+            "htmlDocumentation" : "<pre>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.\nTo use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). \nThe correlator can be one that you have obtained from the \"job-correlator\" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the \"url\" property of a JSON job document.</pre>",
+            "required" : "0",
+            "property" : "correlator",
+            "label" : "Correlator"
          }
       ],
-      "description" : "List the z/OS data sets on a system."
+      "endpoint" : "/restjobs/jobs/",
+      "stepName" : "jobs - spool files list",
+      "method" : "GET",
+      "hasConfig" : "true",
+      "fields" : [
+         "jobname",
+         "jobid",
+         "correlator"
+      ]
    },
-   "jobs - submit a job" : {
-      "hasConfig" : "true",
-      "fields" : [
-         "JESB",
-         "Content-Type",
-         "X-IBM-Intrdr-Class",
-         "X-IBM-Intrdr-Recfm",
-         "X-IBM-Intrdr-Lrecl",
-         "X-IBM-Intrdr-Mode",
-         "X-IBM-User-Correlator",
-         "X-IBM-JCL-Symbol-name",
-         "X-IBM-Notification-URL",
-         "file",
-         "code"
-      ],
-      "parameters" : [
-         {
-            "property" : "JESB",
-            "required" : "0",
-            "type" : "entry",
-            "label" : "JESB",
-            "documentation" : "Represents an optionally-specified secondary JES subsystem. If you omit this value, the request is processed by the primary JES subsystem."
-         },
-         {
-            "in" : "header",
-            "property" : "Content-Type",
-            "refiner" : "convert_not_set",
-            "option" : [
-               {
-                  "value" : "__IS__NOT__SET__",
-                  "name" : "not set"
-               },
-               {
-                  "name" : "text/plain",
-                  "value" : "text/plain"
-               },
-               {
-                  "name" : "application/octet-stream",
-                  "value" : "application/octet-stream"
-               },
-               {
-                  "value" : "application/json",
-                  "name" : "application/json"
-               }
-            ],
-            "label" : "Content-Type",
-            "required" : "0",
-            "documentation" : "Set to text/plain when the optional header X-IBM-Intrdr-Mode is set to TEXT or is omitted, and the job JCL is included in the request. Set to application/octet-stream when optional header X-IBM-Intrdr-Mode is set to RECORD or BINARY, and the JCL for the job to be submitted is included in the HTTP request. Set to application/json when the job to be submitted resides in a data set or UNIX file, which is identified in a JSON document (included as input with this request).",
-            "value" : "__IS__NOT__SET__",
-            "type" : "select"
-         },
-         {
-            "required" : "0",
-            "in" : "header",
-            "property" : "X-IBM-Intrdr-Class",
-            "documentation" : "A single character that specifies the internal reader class; the default is A. This value defines the default message class (MSGCLASS) for the job.",
-            "label" : "X-IBM-Intrdr-Class",
-            "type" : "entry",
-            "refiner" : "remove_blank_header"
-         },
-         {
-            "required" : "0",
-            "value" : "__IS__NOT__SET__",
-            "documentation" : "A single character that specifies the internal reader record format - F or V. When submitting a job from a data set, you can omit this header. Otherwise, this value must match the record format of the data set. When not submitting a job from a data set, if you omit this header or specify a value other than F or V, the default of F is used.",
-            "type" : "select",
-            "in" : "header",
-            "property" : "X-IBM-Intrdr-Recfm",
-            "refiner" : "convert_not_set",
-            "option" : [
-               {
-                  "name" : "not set",
-                  "value" : "__IS__NOT__SET__"
-               },
-               {
-                  "value" : "F",
-                  "name" : "F"
-               },
-               {
-                  "value" : "V",
-                  "name" : "V"
-               }
-            ],
-            "label" : "X-IBM-Intrdr-Recfm"
-         },
-         {
-            "label" : "X-IBM-Intrdr-Lrecl",
-            "refiners" : [
-               "convert_to_int",
-               "remove_blank_header"
-            ],
-            "in" : "header",
-            "property" : "X-IBM-Intrdr-Lrecl",
-            "documentation" : "An integer value specifying the internal reader logical record length (LRECL). When submitting a job from a data set, you can omit this header. Otherwise, this value must match the LRECL of the data set. When not submitting a job from a data set, if you omit this header or specify a non-integer value, the default of 80 is used.",
-            "validator" : "is_int",
-            "type" : "entry",
-            "required" : "0"
-         },
-         {
-            "label" : "X-IBM-Intrdr-Mode",
-            "option" : [
-               {
-                  "value" : "__IS__NOT__SET__",
-                  "name" : "not set"
-               },
-               {
-                  "name" : "TEXT",
-                  "value" : "TEXT"
-               },
-               {
-                  "value" : "RECORD",
-                  "name" : "RECORD"
-               },
-               {
-                  "name" : "BINARY",
-                  "value" : "BINARY"
-               }
-            ],
-            "refiner" : "convert_not_set",
-            "property" : "X-IBM-Intrdr-Mode",
-            "in" : "header",
-            "type" : "select",
-            "value" : "__IS__NOT__SET__",
-            "htmlDocumentation" : "<pre>A keyword that specifies the format of the input job: TEXT, RECORD, or BINARY.\nWhen submitting a job from a data set, you can omit this header. Otherwise, this value must be set to RECORD.\nWhen not submitting a job from a data set, observe the following rules:\n- If you omit this header, the TEXT keyword is used by default.\n- If you specify the BINARY keyword, the X-IBM-Intrdr-Recfm header must be omitted or set to F (the default).\n- If you specify the RECORD keyword or BINARY keyword, you must set Content-Type to application/octet-stream.</pre>",
-            "required" : "0"
-         },
-         {
-            "htmlDdocumentation" : "<pre>Specifies the user portion of the job correlator. In z/OS, a job correlator can be used to associate each job with a unique 64-character value, which provides you with a means to query a job in the system and track it through execution.\nA job correlator consists of a 31-byte system-defined portion and a colon character (:), followed by a 32-byte user portion. The system-defined portion contains the following values:\n8-byte job ID\n8-byte MAS name for the system on which the job resides\n8-byte sequence value\n7-bytes of reserved space.\nFollowing the system value is the colon character (:) separator and the second string: an optional 32-character user-defined value (the user portion). This value is 1 - 32 characters in length, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 31) can be any combination of uppercase alphabetic, numeric (0-9), or special. Blank characters are not supported.\n\nIf specified, the user portion is combined with the system portion, producing the full job correlator that will be returned in the job-correlator property of the JSON job document. If the user portion is not specified, the returned job correlator is the 32-byte system value, ending with the colon (:).\n\nIf this header is specified when JES3 is the primary job entry subsystem, an error will result and no job is submitted.</pre>",
-            "property" : "X-IBM-User-Correlator",
-            "required" : "0",
-            "in" : "header",
-            "label" : "X-IBM-User-Correlator",
-            "type" : "entry",
-            "refiner" : "remove_blank_header"
-         },
-         {
-            "type" : "entry",
-            "label" : "X-IBM-JCL-Symbol-name",
-            "refiner" : "remove_blank_header",
-            "htmlDocumentation" : "<pre>Specifies the name and value for a JCL symbol. The symbol name is included in the header, at the name position. The characters following 'X-IBM-JCL-Symbol-' up to the colon separator (:) form the symbol name. The data following the colon specifies the value for the symbol.\nA symbol name is 1 - 8 characters, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 7) can be any combination of uppercase alphabetic, numeric (0-9), or special.\n\nA symbol value is limited to 255 characters. Multiple symbol names and values can be specified, up to a limit of 128.\n\nExample: X-IBM-JCL-Symbol-MBR: ABC specifies symbol name MBR with value ABC. Specifying this custom header and submitting a job that uses //MYDD DSN=MY.DATASET(&MBR.),DISP=SHR in the JCL will cause ABC to be substituted as the member name.\n\nIf this header is specified when JES3 is the primary job entry subsystem, an error will result and no job will be submitted.</pre>",
-            "property" : "X-IBM-JCL-Symbol-name",
-            "in" : "header",
-            "required" : "0"
-         },
-         {
-            "documentation" : "Specifies a destination URL for receiving an HTTP POST when the job is no longer eligible for execution (that is, when the job reaches the output queue or purge queue). The notification is in the form of a JSON document (Content-Type: application/json), which contains job status information.",
-            "label" : "X-IBM-Notification-URL",
-            "type" : "entry",
-            "refiner" : "remove_blank_header",
-            "in" : "header",
-            "required" : "0",
-            "property" : "X-IBM-Notification-URL"
-         },
-         {
-            "htmlDocumentation" : "<pre>File to be run from z/OS, application/json mode. Examples: \n- Partitioned data set (fully qualified)    : //'MYJOBS.TEST.CNTL(TESTJOBX)'\n- Partitioned data set (non-fully qualified): //TEST.CNTL(TESTJOBX)\n- Sequential data set                       : //'MYJOBS.TEST.JOB1'\n- UNIX file                                 : /u/myjobs/job1</pre>",
-            "label" : "file",
-            "type" : "entry",
-            "required" : "0",
-            "property" : "file"
-         },
-         {
-            "property" : "code",
-            "required" : "0",
-            "type" : "textarea",
-            "label" : "Code",
-            "documentation" : "Code that is going to be run from request in text/plain or application/octet-stream modes."
-         }
-      ],
-      "description" : "You can use this operation to submit a job to run on z/OS.",
-      "contentType" : "text/plain",
-      "method" : "PUT",
-      "attachCredentials" : "true",
-      "name" : "Jobs - Submit a job",
-      "endpoint" : "/restjobs/jobs",
-      "stepName" : "jobs - submit a job",
+   "console - issue command" : {
       "basicAuth" : "true",
+      "attachCredentials" : "true",
+      "name" : "Console - Issue Command",
       "resultProperty" : {
-         "default" : "/myJob/submitJob",
+         "default" : "/myJob/consoleIssueCommand",
          "format" : [
             "json",
             "propertySheet"
          ],
          "show" : "true"
-      }
-   },
-   "data set - retrieve the contents of a zOS data set or member" : {
-      "fields" : [
-         "dataset-name",
-         "volser",
-         "member-name",
-         "If-None-Match",
-         "X-IBM-Data-Type",
-         "X-IBM-Return-Etag",
-         "X-IBM-Migrated-Recall",
-         "X-IBM-Record-Range",
-         "X-IBM-Obtain-ENQ",
-         "X-IBM-Session-Ref",
-         "X-IBM-Release-ENQ"
-      ],
+      },
+      "contentType" : "application/json",
+      "endpoint" : "/restconsoles/consoles/defcn",
+      "description" : "Use this operation to issue a command by using a system console.",
       "parameters" : [
          {
-            "documentation" : "The name of a z/OS data set that you are going to create.",
-            "label" : "Data set name",
-            "type" : "entry",
-            "required" : "1",
-            "property" : "dataset-name"
-         },
-         {
-            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
-            "label" : "Volser",
+            "documentation" : "It is the name of the EMCS console that is used to issue the command. The name must be 2 - 8 characters long, and cannot be defcn, which is reserved.",
             "type" : "entry",
             "required" : "0",
-            "property" : "volser"
-         },
-         {
-            "property" : "member-name",
-            "required" : "0",
-            "type" : "entry",
-            "label" : "Member name",
-            "documentation" : "Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request."
-         },
-         {
-            "in" : "header",
-            "property" : "If-None-Match",
-            "refiner" : "remove_blank_header",
-            "documentation" : "This header is optional; use it to specify the ETag token to be used to correlate this request with a previous request. If the data on the z/OS host has not changed since the ETag token was generated, z/OSMF returns a status of HTTP 304 Not Modified. For the initial request to the resource, you can omit this header.",
-            "type" : "entry",
-            "label" : "If-None-Match"
-         },
-         {
-            "documentation" : "This header is optional; use it to indicate whether data conversion is to be performed on the returned data. When set to text, data conversion is performed. The data transfer process converts each record from EBCDIC to the charset specified on the \"Content-Type\" header of the request. If no charset is specified, the default is ISO8859-1. A newline (NL) character from the response charset is inserted between logical records. For data sets with fixed-length records, trailing blanks are removed. When set to binary, no data conversion is performed. The data transfer process returns each record as-is, without translation. No delimiters are added between records. The response Content-Type is \"application/octet-stream\". When set to record, no data conversion is performed. Each logical record is preceded by the 4-byte big endian record length of the record that follows. This length does not include the prefix length. So, a zero-length record is 4 bytes of zeros with nothing following. If you omit this header, the default is text; the response is converted.",
-            "value" : "__IS__NOT__SET__",
-            "type" : "select",
-            "in" : "header",
-            "property" : "X-IBM-Data-Type",
-            "label" : "X-IBM-Data-Type",
-            "refiner" : "convert_not_set",
-            "option" : [
-               {
-                  "name" : "not set",
-                  "value" : "__IS__NOT__SET__"
-               },
-               {
-                  "name" : "text",
-                  "value" : "text"
-               },
-               {
-                  "name" : "binary",
-                  "value" : "binary"
-               },
-               {
-                  "value" : "record",
-                  "name" : "record"
-               }
-            ]
-         },
-         {
-            "value" : "__IS__NOT__SET__",
-            "documentation" : "This header is optional; set it to 'true' to force the response to include an \"Etag\" header, regardless of the size of the response data. If this header is not present or set to something other than 'true', then the default is to only send an Etag in the response for data sets smaller than a system determined length, which is at least 8MB. If X-IBM-Record-Range is present, then this header may not be specified with the value \"true\" and an Etag will never be returned.End of change. If this header is enabled for very large data sets, then performance is impacted since the data set must be read twice by the system.",
-            "type" : "select",
-            "in" : "header",
-            "property" : "X-IBM-Return-Etag",
-            "refiner" : "convert_not_set",
-            "option" : [
-               {
-                  "name" : "not set",
-                  "value" : "__IS__NOT__SET__"
-               },
-               {
-                  "value" : "true",
-                  "name" : "true"
-               }
-            ],
-            "label" : "X-IBM-Return-Etag"
-         },
-         {
-            "value" : "__IS__NOT__SET__",
-            "documentation" : "This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.",
-            "type" : "select",
-            "refiner" : "convert_not_set",
-            "option" : [
-               {
-                  "value" : "__IS__NOT__SET__",
-                  "name" : "not set"
-               },
-               {
-                  "name" : "wait",
-                  "value" : "wait"
-               },
-               {
-                  "name" : "nowait",
-                  "value" : "nowait"
-               },
-               {
-                  "value" : "nowait",
-                  "name" : "record"
-               }
-            ],
-            "label" : "X-IBM-Migrated-Recall",
-            "in" : "header",
-            "property" : "X-IBM-Migrated-Recall"
-         },
-         {
-            "htmlDocumentation" : "<pre>Use this header to retrieve a range of records from a data set. You can specify this range using either of the following formats:\nSSS-EEE\nWhere SSS identifies the start record and EEE identifies the end record to be retrieved. Both values are relative offsets (0-based).\nWhen EEE is set to 0, records through the end of the data set are retrieved.\nWhen SSS is omitted (i.e. -EEE), the final EEE records of the data set are retrieved.\nSSS,NNN\nWhere SSS identifies the start record and NNN identifies the number of records to be retrieved.\nNNN must be greater than zero.\nUsage notes:\nIf X-IBM-Record-Range is specified, then an ETag header will not be returned and the If-None-Match request header is ignored.\nIf X-IBM-Record-Range header is present on the request, then header X-IBM-Return-Etag=true may not be specified.\nIf no records are found in the range specified, an exception is returned.</pre>",
-            "label" : "X-IBM-Record-Range",
-            "type" : "entry",
-            "required" : "0",
-            "in" : "header",
-            "property" : "X-IBM-Record-Range",
+            "property" : "consolename",
+            "label" : "Consolename",
             "refiners" : "remove_blank_header"
          },
          {
+            "property" : "defcn",
+            "label" : "defcn",
+            "documentation" : "Indicates that the name of the console that is used to issue the command is generated by the REST Console API, by adding CN to the logon user ID. For example, if the logon user ID is CJOEY, the console name is CJOEYCN. If the user ID is longer than 6 characters, the user ID is truncated. For example, if the user ID is ZOSMFAD, then the console name is ZOSMFACN.",
+            "type" : "checkbox",
+            "required" : "0"
+         },
+         {
+            "documentation" : "Specifies the command to issue.",
+            "type" : "entry",
+            "required" : "1",
+            "property" : "cmd",
+            "label" : "Command",
+            "in" : "body"
+         },
+         {
+            "label" : "Sol-key",
+            "in" : "body",
+            "refiners" : "remove_blank_header",
+            "property" : "sol-key",
+            "required" : "0",
+            "documentation" : "Specifies a keyword that you want to detect in solicited messages, that is, the command response. Case is not significant.",
+            "type" : "entry"
+         },
+         {
+            "label" : "Detect-time",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "in" : "body",
+            "property" : "detect-time",
+            "required" : "0",
+            "documentation" : "Indicates how long the console attempts to detect the value of unsol-key in the unsolicited messages. The unit is seconds. For example, if the value of detect-time is 10, the console checks the unsolicited messages for 10 seconds. The default is 30 seconds.",
+            "type" : "entry"
+         },
+         {
+            "documentation" : "Indicates the method of issuing the command:\nY\nAsynchronously\nN\nSynchronously. This is the default.",
             "type" : "select",
-            "value" : "__IS__NOT__SET__",
-            "documentation" : "This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.",
-            "label" : "X-IBM-Obtain-ENQ",
+            "label" : "Async",
             "option" : [
                {
                   "name" : "not set",
                   "value" : "__IS__NOT__SET__"
                },
                {
-                  "value" : null,
-                  "name" : "None"
+                  "value" : "Y",
+                  "name" : "Y"
                },
                {
-                  "value" : "EXCL",
-                  "name" : "EXCL"
-               },
-               {
-                  "value" : "SHRW",
-                  "name" : "SHRW"
+                  "name" : "N",
+                  "value" : "N"
                }
             ],
+            "in" : "body",
+            "value" : "__IS__NOT__SET__",
+            "property" : "async",
+            "required" : "0",
+            "refiner" : "convert_not_set"
+         },
+         {
+            "type" : "entry",
+            "documentation" : "Name of the system in the same sysplex that the command is routed to. The default is the local system.",
+            "required" : "0",
+            "property" : "system",
+            "refiners" : "remove_blank_header",
+            "in" : "body",
+            "label" : "System"
+         },
+         {
+            "type" : "select",
+            "in" : "body",
+            "value" : "__IS__NOT__SET__",
+            "label" : "Unsol-detect-sync",
+            "option" : [
+               {
+                  "name" : "not set",
+                  "value" : "__IS__NOT__SET__"
+               },
+               {
+                  "value" : "Y",
+                  "name" : "Y"
+               },
+               {
+                  "value" : "N",
+                  "name" : "N"
+               }
+            ],
+            "property" : "unsol-detect-sync",
+            "required" : "0",
             "refiner" : "convert_not_set",
-            "property" : "X-IBM-Obtain-ENQ",
-            "in" : "header"
+            "htmlDocumentation" : "<pre style=\"white-space:pre-wrap; word-wrap:break-word;\">Indicates how to detect the keyword that is specified with the unsol-key field from unsolicited messages:\nY\nSynchronously detect the keyword from unsolicited messages. The request is not returned until the unsol-detect-timeout value has elapsed or the detection result is complete.\nN\nAsynchronously detect the keyword from unsolicited messages. The request is returned immediately with the detection-url. The client application must invoke the value of detection-url to poll the result of the detection asynchronously. This is the default is the field is not specified.</pre>"
          },
          {
-            "refiner" : "remove_blank_header",
-            "documentation" : "This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.",
-            "label" : "X-IBM-Session-Ref",
+            "required" : "0",
             "type" : "entry",
-            "in" : "header",
-            "property" : "X-IBM-Session-Ref"
-         },
-         {
-            "in" : "header",
-            "property" : "X-IBM-Release-ENQ",
-            "documentation" : "This header is optional; it may be specified with a value \"true\" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.",
-            "type" : "entry",
-            "label" : "X-IBM-Release-ENQ",
-            "refiner" : "remove_blank_header"
+            "documentation" : "Indicates how long, in seconds, the request is blocked when the value for unsol-detect-sync is Y and the detection result has not been completed. The default value, 20 seconds, is used when this field is not specified and the value for unsol-detect-sync is Y.",
+            "in" : "body",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "label" : "Unsol-detect-timeout",
+            "property" : "unsol-detect-timeout"
          }
       ],
       "hasConfig" : "true",
-      "description" : "You can use this operation to retrieve the contents of a sequential data set, or a member of a partitioned data set (PDS or PDSE). To retrieve the contents of an uncataloged data set, include the volume serial on the request.",
-      "method" : "GET",
-      "attachCredentials" : "true",
-      "name" : "Data Set - Read data",
-      "basicAuth" : "true",
-      "resultProperty" : {
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "show" : "true",
-         "default" : "/myJob/readDataset"
-      },
-      "endpoint" : "/restfiles/ds/#{dataset-name}",
-      "stepName" : "data set - retrieve the contents of a zOS data set or member"
+      "fields" : [
+         "consolename",
+         "defcn",
+         "cmd",
+         "sol-key",
+         "detect-time",
+         "async",
+         "system",
+         "unsol-detect-sync",
+         "unsol-detect-timeout"
+      ],
+      "stepName" : "console - issue command",
+      "method" : "PUT"
    },
    "data set - create a sequential and partitioned data set" : {
-      "resultProperty" : {
-         "show" : "true",
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/createDataset"
-      },
-      "basicAuth" : "true",
-      "stepName" : "data set - create a sequential and partitioned data set",
       "endpoint" : "/restfiles/ds/#{dataset-name}",
-      "name" : "Data Set - Create",
-      "attachCredentials" : "true",
-      "method" : "POST",
       "contentType" : "application/json",
       "description" : "You can use this operation to create sequential and partitioned data sets on a z/OS system.",
+      "parameters" : [
+         {
+            "type" : "entry",
+            "documentation" : "The name of a z/OS data set that you are going to create.",
+            "required" : "1",
+            "property" : "dataset-name",
+            "label" : "Data set name"
+         },
+         {
+            "required" : "0",
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
+            "in" : "body",
+            "label" : "Volser",
+            "property" : "volser"
+         },
+         {
+            "type" : "entry",
+            "refiner" : "remove_blank_header",
+            "documentation" : "Device type.",
+            "required" : "0",
+            "property" : "unit",
+            "in" : "body",
+            "label" : "Unit"
+         },
+         {
+            "required" : "0",
+            "documentation" : "Data set organization.",
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "label" : "Dsorg",
+            "in" : "body",
+            "property" : "dsorg"
+         },
+         {
+            "required" : "0",
+            "documentation" : "Unit of space allocation.",
+            "type" : "entry",
+            "refiner" : "remove_blank_header",
+            "label" : "Alcunit",
+            "in" : "body",
+            "property" : "alcunit"
+         },
+         {
+            "in" : "body",
+            "validators" : [
+               "is_int"
+            ],
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "label" : "Primary",
+            "property" : "primary",
+            "type" : "entry",
+            "documentation" : "Primary space allocation.",
+            "required" : "0"
+         },
+         {
+            "label" : "Secondary",
+            "validators" : [
+               "is_int"
+            ],
+            "in" : "body",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "property" : "secondary",
+            "documentation" : "Secondary space allocation.",
+            "type" : "entry",
+            "required" : "0"
+         },
+         {
+            "required" : "0",
+            "property" : "dirblk",
+            "in" : "body",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "validators" : [
+               "is_int"
+            ],
+            "label" : "Dirblk",
+            "type" : "entry",
+            "documentation" : "Number of directory blocks."
+         },
+         {
+            "required" : "0",
+            "documentation" : "Average block.",
+            "type" : "entry",
+            "property" : "avgblk",
+            "label" : "Avgblk",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "in" : "body",
+            "validators" : [
+               "is_int"
+            ]
+         },
+         {
+            "property" : "recfm",
+            "refiners" : "remove_blank_header",
+            "in" : "body",
+            "label" : "Recfm",
+            "type" : "entry",
+            "documentation" : "Record format.",
+            "required" : "0"
+         },
+         {
+            "type" : "entry",
+            "documentation" : "Block size.",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "in" : "body",
+            "label" : "Blksize",
+            "property" : "blksize",
+            "required" : "0",
+            "validator" : "is_int"
+         },
+         {
+            "label" : "Lrecl",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "validators" : [
+               "is_int"
+            ],
+            "in" : "body",
+            "property" : "lrecl",
+            "documentation" : "Record length.",
+            "type" : "entry",
+            "required" : "0"
+         },
+         {
+            "in" : "body",
+            "label" : "Storeclass",
+            "property" : "storeclass",
+            "required" : "0",
+            "type" : "entry",
+            "refiner" : "remove_blank_header",
+            "documentation" : "Storage class."
+         },
+         {
+            "property" : "mgntclass",
+            "label" : "Mgntclass",
+            "in" : "body",
+            "documentation" : "Storage class.",
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "required" : "0"
+         },
+         {
+            "label" : "Dataclass",
+            "in" : "body",
+            "property" : "dataclass",
+            "required" : "0",
+            "documentation" : "Data class.",
+            "type" : "entry",
+            "refiner" : "remove_blank_header"
+         }
+      ],
       "fields" : [
          "dataset-name",
          "volser",
@@ -577,457 +381,140 @@
          "dataclass"
       ],
       "hasConfig" : "true",
-      "parameters" : [
-         {
-            "required" : "1",
-            "property" : "dataset-name",
-            "documentation" : "The name of a z/OS data set that you are going to create.",
-            "type" : "entry",
-            "label" : "Data set name"
-         },
-         {
-            "label" : "Volser",
-            "type" : "entry",
-            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
-            "property" : "volser",
-            "required" : "0",
-            "in" : "body"
-         },
-         {
-            "property" : "unit",
-            "required" : "0",
-            "in" : "body",
-            "label" : "Unit",
-            "type" : "entry",
-            "documentation" : "Device type."
-         },
-         {
-            "in" : "body",
-            "required" : "0",
-            "property" : "dsorg",
-            "documentation" : "Data set organization.",
-            "label" : "Dsorg",
-            "type" : "entry"
-         },
-         {
-            "required" : "0",
-            "in" : "body",
-            "property" : "alcunit",
-            "documentation" : "Unit of space allocation.",
-            "label" : "Alcunit",
-            "type" : "entry"
-         },
-         {
-            "required" : "0",
-            "documentation" : "Primary space allocation.",
-            "type" : "entry",
-            "in" : "body",
-            "property" : "primary",
-            "validators" : [
-               "is_int"
-            ],
-            "refiner" : "convert_to_int",
-            "label" : "Primary"
-         },
-         {
-            "type" : "entry",
-            "documentation" : "Secondary space allocation.",
-            "required" : "0",
-            "label" : "Secondary",
-            "refiner" : "convert_to_int",
-            "validators" : [
-               "is_int"
-            ],
-            "property" : "secondary",
-            "in" : "body"
-         },
-         {
-            "validators" : [
-               "is_int"
-            ],
-            "property" : "dirblk",
-            "in" : "body",
-            "label" : "Dirblk",
-            "refiner" : "convert_to_int",
-            "required" : "0",
-            "type" : "entry",
-            "documentation" : "Number of directory blocks."
-         },
-         {
-            "documentation" : "Average block.",
-            "type" : "entry",
-            "required" : "0",
-            "refiner" : "convert_to_int",
-            "label" : "Avgblk",
-            "in" : "body",
-            "property" : "avgblk",
-            "validators" : [
-               "is_int"
-            ]
-         },
-         {
-            "documentation" : "Record format.",
-            "label" : "Recfm",
-            "type" : "entry",
-            "required" : "0",
-            "in" : "body",
-            "property" : "recfm"
-         },
-         {
-            "required" : "0",
-            "documentation" : "Block size.",
-            "type" : "entry",
-            "validator" : "is_int",
-            "in" : "body",
-            "property" : "blksize",
-            "refiner" : "convert_to_int",
-            "label" : "Blksize"
-         },
-         {
-            "validators" : [
-               "is_int"
-            ],
-            "in" : "body",
-            "property" : "lrecl",
-            "label" : "Lrecl",
-            "refiner" : "convert_to_int",
-            "required" : "0",
-            "documentation" : "Record length.",
-            "type" : "entry"
-         },
-         {
-            "property" : "storeclass",
-            "in" : "body",
-            "required" : "0",
-            "type" : "entry",
-            "label" : "Storeclass",
-            "documentation" : "Storage class."
-         },
-         {
-            "property" : "mgntclass",
-            "in" : "body",
-            "required" : "0",
-            "label" : "Mgntclass",
-            "type" : "entry",
-            "documentation" : "Storage class."
-         },
-         {
-            "documentation" : "Data class.",
-            "label" : "Dataclass",
-            "type" : "entry",
-            "in" : "body",
-            "required" : "0",
-            "property" : "dataclass"
-         }
-      ]
-   },
-   "jobs - obtain status" : {
-      "name" : "Jobs - Obtain status",
+      "method" : "POST",
+      "stepName" : "data set - create a sequential and partitioned data set",
+      "basicAuth" : "true",
       "attachCredentials" : "true",
-      "method" : "GET",
+      "name" : "Data Set - Create",
       "resultProperty" : {
-         "show" : "true",
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/jobStatus"
-      },
-      "basicAuth" : "true",
-      "stepName" : "jobs - obtain status",
-      "endpoint" : "/restjobs/jobs/",
-      "fields" : [
-         "jobname",
-         "jobid",
-         "correlator",
-         "jobstatus",
-         "timeout"
-      ],
-      "parameters" : [
-         {
-            "property" : "jobname",
-            "required" : "0",
-            "label" : "Jobname",
-            "type" : "entry",
-            "documentation" : "Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job."
-         },
-         {
-            "type" : "entry",
-            "label" : "Jobid",
-            "documentation" : "Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job.",
-            "property" : "jobid",
-            "required" : "0"
-         },
-         {
-            "property" : "correlator",
-            "required" : "0",
-            "type" : "entry",
-            "label" : "Correlator",
-            "documentation" : "Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job.\nTo use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). The correlator can be one that you have obtained from the \"job-correlator\" property in a returned JSON job document."
-         },
-         {
-            "in" : "query",
-            "property" : "jobstatus",
-            "refiner" : "convert_not_set",
-            "option" : [
-               {
-                  "name" : "not set",
-                  "value" : "__IS__NOT__SET__"
-               },
-               {
-                  "name" : "ACTIVE",
-                  "value" : "ACTIVE"
-               },
-               {
-                  "value" : "OUTPUT",
-                  "name" : "OUTPUT"
-               }
-            ],
-            "label" : "Wait for the Job Status",
-            "required" : "0",
-            "documentation" : "This param tells to procedure to wait until the status of the job is changed in set param. Checks are being done every 10 seconds. Timing out(if parameter is set) will push this procedure to fail.",
-            "value" : "__IS__NOT__SET__",
-            "type" : "select"
-         },
-         {
-            "property" : "timeout",
-            "required" : "0",
-            "refiner" : "convert_to_int",
-            "type" : "entry",
-            "label" : "Timeout",
-            "documentation" : "Timeout in seconds. If procedure works or awaits more then Timeout, then it will fail."
-         }
-      ],
-      "hasConfig" : "true",
-      "description" : "You can use this operation to obtain the status of a batch job on z/OS"
-   },
-   "data set - delete a sequential and partitioned data set" : {
-      "description" : "You can use this operation to delete sequential and partitioned data sets on a z/OS system.",
-      "hasConfig" : "true",
-      "fields" : [
-         "dataset-name",
-         "volume"
-      ],
-      "parameters" : [
-         {
-            "property" : "dataset-name",
-            "required" : "1",
-            "type" : "entry",
-            "label" : "Data set name",
-            "documentation" : "The name of a z/OS data set, that you are going to delete."
-         },
-         {
-            "documentation" : "Volume is where the data set is resided, when the data set is uncatalogued.",
-            "label" : "Volume",
-            "type" : "entry",
-            "required" : "0",
-            "property" : "volume"
-         }
-      ],
-      "stepName" : "data set - delete a sequential and partitioned data set",
-      "endpoint" : "/restfiles/ds/#{dataset-name}",
-      "resultProperty" : {
-         "show" : "true",
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/deleteDataset"
-      },
-      "basicAuth" : "true",
-      "name" : "Data Set - Delete",
-      "attachCredentials" : "true",
-      "method" : "DELETE"
-   },
-   "jobs - zosmf info" : {
-      "description" : "You can use this operation to retrieve information about z/OSMF on a particular z/OS system.",
-      "hasConfig" : "true",
-      "fields" : [],
-      "parameters" : [],
-      "endpoint" : "/info",
-      "stepName" : "jobs - zosmf info",
-      "basicAuth" : "true",
-      "resultProperty" : {
-         "default" : "/myJob/systemInfo",
+         "default" : "/myJob/createDataset",
          "format" : [
             "json",
             "propertySheet"
          ],
          "show" : "true"
-      },
-      "method" : "GET",
-      "name" : "System - Info",
-      "attachCredentials" : "true"
+      }
    },
-   "jobs - cancel and purge" : {
-      "endpoint" : "/restjobs/jobs/",
-      "stepName" : "jobs - cancel and purge",
+   "jobs - list jobs" : {
       "basicAuth" : "true",
-      "resultProperty" : {
-         "show" : "true",
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/deleteJob"
-      },
-      "method" : "DELETE",
-      "name" : "Jobs - Cancel and Purge",
       "attachCredentials" : "true",
-      "description" : "You can use this operation to cancel a job and purge its output.",
-      "hasConfig" : "true",
-      "fields" : [
-         "jobname",
-         "jobid",
-         "correlator",
-         "X-IBM-Job-Modify-Version"
-      ],
-      "parameters" : [
-         {
-            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
-            "type" : "entry",
-            "label" : "Jobname",
-            "required" : "0",
-            "property" : "jobname"
-         },
-         {
-            "type" : "entry",
-            "label" : "Jobid",
-            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
-            "property" : "jobid",
-            "required" : "0"
-         },
-         {
-            "property" : "correlator",
-            "required" : "0",
-            "htmlDocumentation" : "<pre>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.\nTo use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). \nThe correlator can be one that you have obtained from the \"job-correlator\" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the \"url\" property of a JSON job document.</pre>",
-            "label" : "Correlator",
-            "type" : "entry"
-         },
-         {
-            "label" : "X-IBM-Job-Modify-Version",
-            "option" : [
-               {
-                  "value" : "__IS__NOT__SET__",
-                  "name" : "not set"
-               },
-               {
-                  "value" : "1.0",
-                  "name" : "1.0 - process asynchronously"
-               },
-               {
-                  "name" : "2.0 - process synchronously",
-                  "value" : "2.0"
-               }
-            ],
-            "refiner" : "convert_not_set",
-            "property" : "X-IBM-Job-Modify-Version",
-            "in" : "header",
-            "type" : "select",
-            "value" : "__IS__NOT__SET__",
-            "htmlDocumentation" : "<pre style=\"white-space:pre-wrap; word-wrap:break-word;\">Use this header to specify whether the request is to be processed asynchronously or synchronously, as follows:\n1.0\nSpecifies that the request is to be processed asynchronously. In response, the caller receives an HTTP status code of 202 Accepted, with no indication of the success or failure of the request. To verify that the initial request was performed, the caller can issue the service described in Obtain the status of a job.\n2.0\nSpecifies that the request is to be processed synchronously. In response, the caller receives an HTTP status code, which indicates the results of the request. For a successful request, the caller also receives the JSON job feedback document, which includes details about the job that was cancelled.\nIf this header is omitted, the request is processed asynchronously by default.\n\nSynchronous processing is supported for JES2 only. On systems running JES3, the z/OS jobs REST interface services must run asynchronously.</pre>",
-            "required" : "0"
-         }
-      ]
-   },
-   "jobs - spool files list" : {
-      "hasConfig" : "true",
-      "fields" : [
-         "jobname",
-         "jobid",
-         "correlator"
-      ],
-      "parameters" : [
-         {
-            "property" : "jobname",
-            "required" : "0",
-            "label" : "Jobname",
-            "type" : "entry",
-            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job."
-         },
-         {
-            "property" : "jobid",
-            "required" : "0",
-            "type" : "entry",
-            "label" : "Jobid",
-            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job."
-         },
-         {
-            "required" : "0",
-            "property" : "correlator",
-            "label" : "Correlator",
-            "type" : "entry",
-            "htmlDocumentation" : "<pre>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.\nTo use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). \nThe correlator can be one that you have obtained from the \"job-correlator\" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the \"url\" property of a JSON job document.</pre>"
-         }
-      ],
-      "description" : "You can use this operation to list the spool files for a batch job on z/OS.",
-      "method" : "GET",
-      "attachCredentials" : "true",
-      "name" : "Jobs - Spool files list",
-      "endpoint" : "/restjobs/jobs/",
-      "stepName" : "jobs - spool files list",
-      "basicAuth" : "true",
+      "name" : "Jobs - List",
       "resultProperty" : {
-         "default" : "/myJob/getSpoolFiles",
+         "default" : "/myJob/getJobList",
          "show" : "true",
          "format" : [
             "json",
             "propertySheet"
          ]
-      }
-   },
-   "jobs - get spool file content" : {
-      "fields" : [
-         "jobname",
-         "jobid",
-         "correlator",
-         "X-IBM-Record-Range",
-         "mode",
-         "JESB",
-         "files",
-         "include_jcl"
-      ],
-      "hasConfig" : "true",
+      },
+      "endpoint" : "/restjobs/jobs/",
+      "description" : "You can use this operation to list the jobs for an owner, prefix, or job ID.",
       "parameters" : [
          {
-            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
+            "documentation" : "User ID of the job owner whose jobs are being queried; the default is the z/OS user ID. Folded to uppercase; cannot exceed eight characters.",
             "type" : "entry",
-            "label" : "Jobname",
+            "refiner" : "remove_blank_header",
             "required" : "0",
-            "property" : "jobname"
+            "property" : "_owner",
+            "label" : "Owner",
+            "in" : "query"
          },
          {
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "documentation" : "Job name prefix; defaults is *. Folded to uppercase; cannot exceed eight characters.",
             "required" : "0",
+            "property" : "prefix",
+            "in" : "query",
+            "label" : "Prefix"
+         },
+         {
             "property" : "jobid",
-            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
+            "in" : "query",
             "label" : "Jobid",
+            "type" : "entry",
+            "refiner" : "remove_blank_header",
+            "documentation" : "JobidJob ID. Folded to uppercase; cannot exceed eight characters. This query parameter is mutually exclusive with user-correlator.",
+            "required" : "0"
+         },
+         {
+            "validator" : "is_int",
+            "required" : "0",
+            "label" : "Max-jobs",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "in" : "query",
+            "property" : "max-jobs",
+            "documentation" : "Maximum number of jobs returned. The value must be between 1 and 1000, inclusive. If this parameter is not specified, or is specified incorrectly, the default value of 1000 is used.",
             "type" : "entry"
          },
          {
-            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.\nTo use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). The correlator can be one that you have obtained from the \"job-correlator\" property in a returned JSON job document.",
-            "type" : "entry",
-            "label" : "Correlator",
-            "required" : "0",
-            "property" : "correlator"
-         },
-         {
-            "property" : "X-IBM-Record-Range",
-            "required" : "0",
-            "in" : "header",
-            "refiners" : "remove_blank_header",
-            "htmlDocumentation" : "<pre>Use this header to retrieve a range of records from a spool file. You can specify this range using either of the following formats:\nSSS-EEE\nwhere SSS identifies the start record and EEE identifies the end record to be retrieved. Both values are relative offsets (0-based). When EEE is set to 0, records through the end of the spool file are retrieved.\nSSS,NNN\nwhere SSS identifies the start record and NNN identifies the number of records to be retrieved.</pre>",
-            "type" : "entry",
-            "label" : "X-IBM-Record-Range"
-         },
-         {
+            "label" : "User-correlator",
             "in" : "query",
-            "property" : "mode",
-            "label" : "Mode",
+            "property" : "user-correlator",
+            "required" : "0",
+            "htmlDocumentation" : "<pre style=\"white-space:pre-wrap; word-wrap:break-word;\">The user portion of the job correlator. This value is 1 - 32 characters in length, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 31) can be any combination of uppercase alphabetic, numeric (0-9), or special. Blank characters are not supported.\nThis query parameter is mutually exclusive with jobid.\n\nThis value is processed by the JES2 subsystem only; the JES3 subsystem does not process the correlator and, instead, indicates zero job matches. For a system with JES3 as the primary subsystem, and one or more JES2 secondary subsystems, the primary JES3 subsystem does not process the correlator, however, the JES2 secondary subsystems can process the correlator.</pre>",
+            "refiner" : "remove_blank_header",
+            "type" : "entry"
+         }
+      ],
+      "hasConfig" : "true",
+      "fields" : [
+         "_owner",
+         "prefix",
+         "jobid",
+         "max-jobs",
+         "user-correlator"
+      ],
+      "stepName" : "jobs - list jobs",
+      "method" : "GET"
+   },
+   "jobs - get spool file content" : {
+      "endpoint" : "/restjobs/jobs/",
+      "parameters" : [
+         {
+            "required" : "0",
+            "type" : "entry",
+            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
+            "label" : "Jobname",
+            "property" : "jobname"
+         },
+         {
+            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
+            "type" : "entry",
+            "required" : "0",
+            "property" : "jobid",
+            "label" : "Jobid"
+         },
+         {
+            "property" : "correlator",
+            "label" : "Correlator",
+            "type" : "entry",
+            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.\nTo use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). The correlator can be one that you have obtained from the \"job-correlator\" property in a returned JSON job document.",
+            "required" : "0"
+         },
+         {
+            "type" : "entry",
+            "htmlDocumentation" : "<pre>Use this header to retrieve a range of records from a spool file. You can specify this range using either of the following formats:\nSSS-EEE\nwhere SSS identifies the start record and EEE identifies the end record to be retrieved. Both values are relative offsets (0-based). When EEE is set to 0, records through the end of the spool file are retrieved.\nSSS,NNN\nwhere SSS identifies the start record and NNN identifies the number of records to be retrieved.</pre>",
+            "required" : "0",
+            "property" : "X-IBM-Record-Range",
+            "label" : "X-IBM-Record-Range",
+            "in" : "header",
+            "refiners" : "remove_blank_header"
+         },
+         {
+            "required" : "0",
+            "htmlDocumentation" : "<pre style=\"white-space:pre-wrap; word-wrap:break-word;\">text\nThe z/OS jobs REST interface translates records from the server codepage to the client codepage and returns the records with Content-Type: plain/text. Trailing spaces are removed and newline characters are used as record separators. This value is the default if you omit the mode parameter.\nbinary\nThe z/OS jobs REST interface performs no translation and returns the records with Content-Type: application/octet-stream.\nrecord\nThe z/OS jobs REST interface performs no translation and returns the records with Content-Type: application/octet-stream. The z/OS jobs REST interface prefixes each record with a 4-byte (big endian) length.</pre>",
             "refiner" : "convert_not_set",
+            "type" : "select",
+            "value" : "__IS__NOT__SET__",
+            "in" : "query",
             "option" : [
                {
-                  "name" : "not set",
-                  "value" : "__IS__NOT__SET__"
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
                },
                {
                   "value" : "text",
@@ -1042,172 +529,595 @@
                   "name" : "record"
                }
             ],
-            "required" : "0",
-            "value" : "__IS__NOT__SET__",
-            "type" : "select",
-            "htmlDocumentation" : "<pre style=\"white-space:pre-wrap; word-wrap:break-word;\">text\nThe z/OS jobs REST interface translates records from the server codepage to the client codepage and returns the records with Content-Type: plain/text. Trailing spaces are removed and newline characters are used as record separators. This value is the default if you omit the mode parameter.\nbinary\nThe z/OS jobs REST interface performs no translation and returns the records with Content-Type: application/octet-stream.\nrecord\nThe z/OS jobs REST interface performs no translation and returns the records with Content-Type: application/octet-stream. The z/OS jobs REST interface prefixes each record with a 4-byte (big endian) length.</pre>"
+            "label" : "Mode",
+            "property" : "mode"
          },
          {
             "property" : "JESB",
-            "required" : "0",
             "label" : "JESB",
             "type" : "entry",
-            "documentation" : "Represents an optionally-specified secondary JES subsystem. A request to a secondary JES subsystem must include the job name and job id, rather than a job correlator."
-         },
-         {
-            "type" : "entry",
-            "label" : "Files NNNs",
-            "documentation" : "Comma separated files list to retrieve",
-            "property" : "files",
+            "documentation" : "Represents an optionally-specified secondary JES subsystem. A request to a secondary JES subsystem must include the job name and job id, rather than a job correlator.",
             "required" : "0"
          },
          {
+            "label" : "Files NNNs",
+            "property" : "files",
+            "required" : "0",
+            "documentation" : "Comma separated files list to retrieve",
+            "type" : "entry"
+         },
+         {
+            "required" : "0",
             "documentation" : "Pushes to retrieve the JCL for the specified job.",
             "type" : "checkbox",
             "label" : "Retrieve job's JCL",
-            "required" : "0",
             "property" : "include_jcl"
          }
       ],
       "description" : "You can use this operation to list the spool files for a batch job on z/OS.",
-      "name" : "Jobs - Get spool file content",
-      "attachCredentials" : "true",
-      "method" : "GET",
-      "resultProperty" : {
-         "show" : "true",
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/getSpoolFiles"
-      },
-      "basicAuth" : "true",
-      "stepName" : "jobs - get spool file content",
-      "endpoint" : "/restjobs/jobs/"
-   },
-   "data set - write data to a zos data set or member" : {
-      "endpoint" : "/restfiles/ds/#{dataset-name}",
-      "stepName" : "data set - write data to a zos data set or member",
-      "basicAuth" : "true",
-      "resultProperty" : {
-         "show" : "true",
-         "format" : [
-            "json",
-            "propertySheet"
-         ],
-         "default" : "/myJob/createDataset"
-      },
-      "method" : "PUT",
-      "attachCredentials" : "true",
-      "name" : "Data Set - Write data",
-      "description" : "You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.",
       "hasConfig" : "true",
       "fields" : [
-         "dataset-name",
-         "volser",
-         "member-name",
-         "Content-Type",
-         "X-IBM-Data-Type",
-         "X-IBM-Migrated-Recall",
-         "X-IBM-Obtain-ENQ",
-         "X-IBM-Session-Ref",
-         "X-IBM-Release-ENQ",
-         "stored-data"
+         "jobname",
+         "jobid",
+         "correlator",
+         "X-IBM-Record-Range",
+         "mode",
+         "JESB",
+         "files",
+         "include_jcl"
       ],
+      "stepName" : "jobs - get spool file content",
+      "method" : "GET",
+      "basicAuth" : "true",
+      "name" : "Jobs - Get spool file content",
+      "attachCredentials" : "true",
+      "resultProperty" : {
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true",
+         "default" : "/myJob/getSpoolFiles"
+      }
+   },
+   "jobs - submit a job" : {
+      "resultProperty" : {
+         "default" : "/myJob/submitJob",
+         "show" : "true",
+         "format" : [
+            "json",
+            "propertySheet"
+         ]
+      },
+      "basicAuth" : "true",
+      "attachCredentials" : "true",
+      "name" : "Jobs - Submit a job",
+      "fields" : [
+         "JESB",
+         "Content-Type",
+         "X-IBM-Intrdr-Class",
+         "X-IBM-Intrdr-Recfm",
+         "X-IBM-Intrdr-Lrecl",
+         "X-IBM-Intrdr-Mode",
+         "X-IBM-User-Correlator",
+         "X-IBM-JCL-Symbol-name",
+         "X-IBM-Notification-URL",
+         "file",
+         "code"
+      ],
+      "hasConfig" : "true",
+      "method" : "PUT",
+      "stepName" : "jobs - submit a job",
+      "endpoint" : "/restjobs/jobs",
+      "contentType" : "text/plain",
       "parameters" : [
          {
-            "property" : "dataset-name",
-            "required" : "1",
-            "label" : "Data set name",
+            "property" : "JESB",
+            "label" : "JESB",
+            "documentation" : "Represents an optionally-specified secondary JES subsystem. If you omit this value, the request is processed by the primary JES subsystem.",
             "type" : "entry",
-            "documentation" : "The name of a z/OS data set that you are going to create."
-         },
-         {
-            "label" : "Volser",
-            "type" : "entry",
-            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
-            "property" : "volser",
             "required" : "0"
          },
          {
-            "label" : "Member name",
-            "type" : "entry",
-            "documentation" : "Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.",
-            "property" : "member-name",
-            "required" : "0"
-         },
-         {
-            "refiner" : "remove_blank_header",
-            "documentation" : "The data is interpreted according to the content-type as one of binary, text, record or 'diff -e' format according a combination of the \"Content-Type\" and the value of the X-IBM-Data-Type custom header, if present.",
-            "label" : "Content Type",
-            "type" : "entry",
-            "in" : "header",
             "required" : "0",
-            "property" : "Content-Type"
-         },
-         {
-            "property" : "X-IBM-Data-Type",
-            "in" : "header",
-            "label" : "X-IBM-Data-Type",
+            "refiner" : "convert_not_set",
+            "documentation" : "Set to text/plain when the optional header X-IBM-Intrdr-Mode is set to TEXT or is omitted, and the job JCL is included in the request. Set to application/octet-stream when optional header X-IBM-Intrdr-Mode is set to RECORD or BINARY, and the JCL for the job to be submitted is included in the HTTP request. Set to application/json when the job to be submitted resides in a data set or UNIX file, which is identified in a JSON document (included as input with this request).",
+            "type" : "select",
             "option" : [
                {
                   "value" : "__IS__NOT__SET__",
                   "name" : "not set"
                },
                {
-                  "name" : "text",
-                  "value" : "text"
+                  "value" : "text/plain",
+                  "name" : "text/plain"
                },
                {
-                  "name" : "binary",
-                  "value" : "binary"
+                  "value" : "application/octet-stream",
+                  "name" : "application/octet-stream"
                },
                {
-                  "name" : "record",
-                  "value" : "record"
+                  "value" : "application/json",
+                  "name" : "application/json"
                }
             ],
+            "label" : "Content-Type",
+            "in" : "header",
+            "value" : "__IS__NOT__SET__",
+            "property" : "Content-Type"
+         },
+         {
+            "required" : "0",
+            "type" : "entry",
+            "refiner" : "remove_blank_header",
+            "documentation" : "A single character that specifies the internal reader class; the default is A. This value defines the default message class (MSGCLASS) for the job.",
+            "in" : "header",
+            "label" : "X-IBM-Intrdr-Class",
+            "property" : "X-IBM-Intrdr-Class"
+         },
+         {
+            "required" : "0",
             "refiner" : "convert_not_set",
+            "label" : "X-IBM-Intrdr-Recfm",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "name" : "F",
+                  "value" : "F"
+               },
+               {
+                  "value" : "V",
+                  "name" : "V"
+               }
+            ],
+            "in" : "header",
+            "value" : "__IS__NOT__SET__",
+            "property" : "X-IBM-Intrdr-Recfm",
+            "documentation" : "A single character that specifies the internal reader record format - F or V. When submitting a job from a data set, you can omit this header. Otherwise, this value must match the record format of the data set. When not submitting a job from a data set, if you omit this header or specify a value other than F or V, the default of F is used.",
+            "type" : "select"
+         },
+         {
+            "validator" : "is_int",
+            "required" : "0",
+            "property" : "X-IBM-Intrdr-Lrecl",
+            "label" : "X-IBM-Intrdr-Lrecl",
+            "in" : "header",
+            "refiners" : [
+               "convert_to_int",
+               "remove_blank_header"
+            ],
+            "documentation" : "An integer value specifying the internal reader logical record length (LRECL). When submitting a job from a data set, you can omit this header. Otherwise, this value must match the LRECL of the data set. When not submitting a job from a data set, if you omit this header or specify a non-integer value, the default of 80 is used.",
+            "type" : "entry"
+         },
+         {
+            "property" : "X-IBM-Intrdr-Mode",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "name" : "TEXT",
+                  "value" : "TEXT"
+               },
+               {
+                  "value" : "RECORD",
+                  "name" : "RECORD"
+               },
+               {
+                  "value" : "BINARY",
+                  "name" : "BINARY"
+               }
+            ],
+            "label" : "X-IBM-Intrdr-Mode",
+            "value" : "__IS__NOT__SET__",
+            "in" : "header",
             "type" : "select",
-            "documentation" : "When set to 'text' and \"Content-Type\" is \"application/x-ibm-diff-e\", the input consists of commands in the same format as produced by the z/OS UNIX 'diff -e' command. These commands are used to add, replace and delete lines in the target data set.",
-            "value" : "__IS__NOT__SET__"
+            "refiner" : "convert_not_set",
+            "htmlDocumentation" : "<pre>A keyword that specifies the format of the input job: TEXT, RECORD, or BINARY.\nWhen submitting a job from a data set, you can omit this header. Otherwise, this value must be set to RECORD.\nWhen not submitting a job from a data set, observe the following rules:\n- If you omit this header, the TEXT keyword is used by default.\n- If you specify the BINARY keyword, the X-IBM-Intrdr-Recfm header must be omitted or set to F (the default).\n- If you specify the RECORD keyword or BINARY keyword, you must set Content-Type to application/octet-stream.</pre>",
+            "required" : "0"
+         },
+         {
+            "htmlDdocumentation" : "<pre>Specifies the user portion of the job correlator. In z/OS, a job correlator can be used to associate each job with a unique 64-character value, which provides you with a means to query a job in the system and track it through execution.\nA job correlator consists of a 31-byte system-defined portion and a colon character (:), followed by a 32-byte user portion. The system-defined portion contains the following values:\n8-byte job ID\n8-byte MAS name for the system on which the job resides\n8-byte sequence value\n7-bytes of reserved space.\nFollowing the system value is the colon character (:) separator and the second string: an optional 32-character user-defined value (the user portion). This value is 1 - 32 characters in length, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 31) can be any combination of uppercase alphabetic, numeric (0-9), or special. Blank characters are not supported.\n\nIf specified, the user portion is combined with the system portion, producing the full job correlator that will be returned in the job-correlator property of the JSON job document. If the user portion is not specified, the returned job correlator is the 32-byte system value, ending with the colon (:).\n\nIf this header is specified when JES3 is the primary job entry subsystem, an error will result and no job is submitted.</pre>",
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "required" : "0",
+            "property" : "X-IBM-User-Correlator",
+            "label" : "X-IBM-User-Correlator",
+            "in" : "header"
+         },
+         {
+            "required" : "0",
+            "type" : "entry",
+            "htmlDocumentation" : "<pre>Specifies the name and value for a JCL symbol. The symbol name is included in the header, at the name position. The characters following 'X-IBM-JCL-Symbol-' up to the colon separator (:) form the symbol name. The data following the colon specifies the value for the symbol.\nA symbol name is 1 - 8 characters, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 7) can be any combination of uppercase alphabetic, numeric (0-9), or special.\n\nA symbol value is limited to 255 characters. Multiple symbol names and values can be specified, up to a limit of 128.\n\nExample: X-IBM-JCL-Symbol-MBR: ABC specifies symbol name MBR with value ABC. Specifying this custom header and submitting a job that uses //MYDD DSN=MY.DATASET(&MBR.),DISP=SHR in the JCL will cause ABC to be substituted as the member name.\n\nIf this header is specified when JES3 is the primary job entry subsystem, an error will result and no job will be submitted.</pre>",
+            "refiner" : "remove_blank_header",
+            "in" : "header",
+            "label" : "X-IBM-JCL-Symbol-name",
+            "property" : "X-IBM-JCL-Symbol-name"
+         },
+         {
+            "property" : "X-IBM-Notification-URL",
+            "in" : "header",
+            "label" : "X-IBM-Notification-URL",
+            "type" : "entry",
+            "refiner" : "remove_blank_header",
+            "documentation" : "Specifies a destination URL for receiving an HTTP POST when the job is no longer eligible for execution (that is, when the job reaches the output queue or purge queue). The notification is in the form of a JSON document (Content-Type: application/json), which contains job status information.",
+            "required" : "0"
+         },
+         {
+            "required" : "0",
+            "type" : "entry",
+            "htmlDocumentation" : "<pre>File to be run from z/OS, application/json mode. Examples: \n- Partitioned data set (fully qualified)    : //'MYJOBS.TEST.CNTL(TESTJOBX)'\n- Partitioned data set (non-fully qualified): //TEST.CNTL(TESTJOBX)\n- Sequential data set                       : //'MYJOBS.TEST.JOB1'\n- UNIX file                                 : /u/myjobs/job1</pre>",
+            "label" : "file",
+            "property" : "file"
+         },
+         {
+            "property" : "code",
+            "label" : "Code",
+            "type" : "textarea",
+            "documentation" : "Code that is going to be run from request in text/plain or application/octet-stream modes.",
+            "required" : "0"
+         }
+      ],
+      "description" : "You can use this operation to submit a job to run on z/OS."
+   },
+   "jobs - obtain status" : {
+      "fields" : [
+         "jobname",
+         "jobid",
+         "correlator",
+         "jobstatus",
+         "timeout"
+      ],
+      "hasConfig" : "true",
+      "method" : "GET",
+      "stepName" : "jobs - obtain status",
+      "endpoint" : "/restjobs/jobs/",
+      "description" : "You can use this operation to obtain the status of a batch job on z/OS",
+      "parameters" : [
+         {
+            "property" : "jobname",
+            "label" : "Jobname",
+            "type" : "entry",
+            "documentation" : "Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job.",
+            "required" : "0"
+         },
+         {
+            "property" : "jobid",
+            "label" : "Jobid",
+            "type" : "entry",
+            "documentation" : "Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job.",
+            "required" : "0"
+         },
+         {
+            "required" : "0",
+            "documentation" : "Identifies the job. Use either the job name and job ID combination or the job correlator to identify the job.\nTo use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). The correlator can be one that you have obtained from the \"job-correlator\" property in a returned JSON job document.",
+            "type" : "entry",
+            "label" : "Correlator",
+            "property" : "correlator"
+         },
+         {
+            "property" : "jobstatus",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "value" : "ACTIVE",
+                  "name" : "ACTIVE"
+               },
+               {
+                  "value" : "OUTPUT",
+                  "name" : "OUTPUT"
+               }
+            ],
+            "label" : "Wait for the Job Status",
+            "in" : "query",
+            "value" : "__IS__NOT__SET__",
+            "documentation" : "This param tells to procedure to wait until the status of the job is changed in set param. Checks are being done every 10 seconds. Timing out(if parameter is set) will push this procedure to fail.",
+            "type" : "select",
+            "refiner" : "convert_not_set",
+            "required" : "0"
+         },
+         {
+            "refiner" : "convert_to_int",
+            "type" : "entry",
+            "documentation" : "Timeout in seconds. If procedure works or awaits more then Timeout, then it will fail.",
+            "required" : "0",
+            "property" : "timeout",
+            "label" : "Timeout"
+         }
+      ],
+      "resultProperty" : {
+         "show" : "true",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "default" : "/myJob/jobStatus"
+      },
+      "basicAuth" : "true",
+      "attachCredentials" : "true",
+      "name" : "Jobs - Obtain status"
+   },
+   "console - unsolicited message result" : {
+      "resultProperty" : {
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true",
+         "default" : "/myJob/resultUnsolicited"
+      },
+      "name" : "Console - Unsolicited messages result",
+      "attachCredentials" : "true",
+      "basicAuth" : "true",
+      "method" : "GET",
+      "stepName" : "console - unsolicited message result",
+      "fields" : [
+         "consolename",
+         "defcn",
+         "Dkey-number"
+      ],
+      "hasConfig" : "true",
+      "parameters" : [
+         {
+            "documentation" : "It is the name of the EMCS console that is used to issue the command. The name must be 2 - 8 characters long, and cannot be defcn, which is reserved.",
+            "type" : "entry",
+            "required" : "0",
+            "property" : "consolename",
+            "label" : "Consolename"
+         },
+         {
+            "value" : "1",
+            "label" : "defcn",
+            "property" : "defcn",
+            "required" : "0",
+            "type" : "checkbox",
+            "documentation" : "Indicates that the name of the console that is used to issue the command is generated by the REST Console API, by adding CN to the logon user ID. For example, if the logon user ID is CJOEY, the console name is CJOEYCN. If the user ID is longer than 6 characters, the user ID is truncated. For example, if the user ID is ZOSMFAD, then the console name is ZOSMFACN."
+         },
+         {
+            "documentation" : "Specifies the command to issue.",
+            "type" : "entry",
+            "required" : "1",
+            "property" : "Dkey-number",
+            "label" : "Dkey-number",
+            "in" : "body"
+         }
+      ],
+      "description" : "Use this operation to get the result for detecting a keyword in unsolicited messages after an Issue Command request. The command must have been issued with the unsol-key field.",
+      "endpoint" : "/restconsoles/consoles/defcn/solmsgs/#{Dkey-number}",
+      "contentType" : "application/json"
+   },
+   "jobs - cancel and purge" : {
+      "parameters" : [
+         {
+            "label" : "Jobname",
+            "property" : "jobname",
+            "required" : "0",
+            "type" : "entry",
+            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job."
+         },
+         {
+            "type" : "entry",
+            "documentation" : "Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.",
+            "required" : "0",
+            "property" : "jobid",
+            "label" : "Jobid"
+         },
+         {
+            "required" : "0",
+            "htmlDocumentation" : "<pre>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.\nTo use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). \nThe correlator can be one that you have obtained from the \"job-correlator\" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the \"url\" property of a JSON job document.</pre>",
+            "type" : "entry",
+            "label" : "Correlator",
+            "property" : "correlator"
+         },
+         {
+            "in" : "header",
+            "value" : "__IS__NOT__SET__",
+            "label" : "X-IBM-Job-Modify-Version",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "name" : "1.0 - process asynchronously",
+                  "value" : "1.0"
+               },
+               {
+                  "value" : "2.0",
+                  "name" : "2.0 - process synchronously"
+               }
+            ],
+            "property" : "X-IBM-Job-Modify-Version",
+            "type" : "select",
+            "required" : "0",
+            "refiner" : "convert_not_set",
+            "htmlDocumentation" : "<pre style=\"white-space:pre-wrap; word-wrap:break-word;\">Use this header to specify whether the request is to be processed asynchronously or synchronously, as follows:\n1.0\nSpecifies that the request is to be processed asynchronously. In response, the caller receives an HTTP status code of 202 Accepted, with no indication of the success or failure of the request. To verify that the initial request was performed, the caller can issue the service described in Obtain the status of a job.\n2.0\nSpecifies that the request is to be processed synchronously. In response, the caller receives an HTTP status code, which indicates the results of the request. For a successful request, the caller also receives the JSON job feedback document, which includes details about the job that was cancelled.\nIf this header is omitted, the request is processed asynchronously by default.\n\nSynchronous processing is supported for JES2 only. On systems running JES3, the z/OS jobs REST interface services must run asynchronously.</pre>"
+         }
+      ],
+      "description" : "You can use this operation to cancel a job and purge its output.",
+      "endpoint" : "/restjobs/jobs/",
+      "method" : "DELETE",
+      "stepName" : "jobs - cancel and purge",
+      "fields" : [
+         "jobname",
+         "jobid",
+         "correlator",
+         "X-IBM-Job-Modify-Version"
+      ],
+      "hasConfig" : "true",
+      "name" : "Jobs - Cancel and Purge",
+      "attachCredentials" : "true",
+      "basicAuth" : "true",
+      "resultProperty" : {
+         "default" : "/myJob/deleteJob",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true"
+      }
+   },
+   "data set - retrieve the contents of a zOS data set or member" : {
+      "resultProperty" : {
+         "format" : [
+            "json",
+            "propertySheet",
+            "file"
+         ],
+         "show" : "true",
+         "default" : "/myJob/readDataset"
+      },
+      "attachCredentials" : "true",
+      "name" : "Data Set - Read data",
+      "basicAuth" : "true",
+      "method" : "GET",
+      "stepName" : "data set - retrieve the contents of a zOS data set or member",
+      "fields" : [
+         "dataset-name",
+         "volser",
+         "member-name",
+         "If-None-Match",
+         "X-IBM-Data-Type",
+         "X-IBM-Return-Etag",
+         "X-IBM-Migrated-Recall",
+         "X-IBM-Record-Range",
+         "X-IBM-Obtain-ENQ",
+         "X-IBM-Session-Ref",
+         "X-IBM-Release-ENQ"
+      ],
+      "hasConfig" : "true",
+      "description" : "You can use this operation to retrieve the contents of a sequential data set, or a member of a partitioned data set (PDS or PDSE). To retrieve the contents of an uncataloged data set, include the volume serial on the request.",
+      "parameters" : [
+         {
+            "type" : "entry",
+            "documentation" : "The name of a z/OS data set that you are going to create.",
+            "required" : "1",
+            "property" : "dataset-name",
+            "label" : "Data set name"
+         },
+         {
+            "required" : "0",
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
+            "type" : "entry",
+            "label" : "Volser",
+            "property" : "volser"
+         },
+         {
+            "type" : "entry",
+            "documentation" : "Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.",
+            "required" : "0",
+            "property" : "member-name",
+            "label" : "Member name"
+         },
+         {
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "documentation" : "This header is optional; use it to specify the ETag token to be used to correlate this request with a previous request. If the data on the z/OS host has not changed since the ETag token was generated, z/OSMF returns a status of HTTP 304 Not Modified. For the initial request to the resource, you can omit this header.",
+            "property" : "If-None-Match",
+            "in" : "header",
+            "label" : "If-None-Match"
          },
          {
             "refiner" : "convert_not_set",
+            "property" : "X-IBM-Data-Type",
+            "value" : "__IS__NOT__SET__",
+            "in" : "header",
+            "label" : "X-IBM-Data-Type",
             "option" : [
                {
                   "name" : "not set",
                   "value" : "__IS__NOT__SET__"
                },
                {
-                  "value" : "wait",
-                  "name" : "wait"
+                  "value" : "text",
+                  "name" : "text"
                },
                {
-                  "value" : "nowait",
-                  "name" : "nowait"
+                  "value" : "binary",
+                  "name" : "binary"
                },
                {
-                  "value" : "nowait",
-                  "name" : "record"
+                  "name" : "record",
+                  "value" : "record"
                }
             ],
-            "label" : "X-IBM-Migrated-Recall",
-            "in" : "header",
-            "property" : "X-IBM-Migrated-Recall",
-            "documentation" : "This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously.",
-            "value" : "__IS__NOT__SET__",
-            "type" : "select"
+            "type" : "select",
+            "documentation" : "This header is optional; use it to indicate whether data conversion is to be performed on the returned data. When set to text, data conversion is performed. The data transfer process converts each record from EBCDIC to the charset specified on the \"Content-Type\" header of the request. If no charset is specified, the default is ISO8859-1. A newline (NL) character from the response charset is inserted between logical records. For data sets with fixed-length records, trailing blanks are removed. When set to binary, no data conversion is performed. The data transfer process returns each record as-is, without translation. No delimiters are added between records. The response Content-Type is \"application/octet-stream\". When set to record, no data conversion is performed. Each logical record is preceded by the 4-byte big endian record length of the record that follows. This length does not include the prefix length. So, a zero-length record is 4 bytes of zeros with nothing following. If you omit this header, the default is text; the response is converted."
          },
          {
-            "type" : "select",
-            "documentation" : "This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.",
+            "property" : "X-IBM-Return-Etag",
             "value" : "__IS__NOT__SET__",
-            "label" : "X-IBM-Obtain-ENQ",
+            "in" : "header",
+            "label" : "X-IBM-Return-Etag",
             "option" : [
                {
                   "value" : "__IS__NOT__SET__",
                   "name" : "not set"
+               },
+               {
+                  "value" : "true",
+                  "name" : "true"
+               }
+            ],
+            "type" : "select",
+            "documentation" : "This header is optional; set it to 'true' to force the response to include an \"Etag\" header, regardless of the size of the response data. If this header is not present or set to something other than 'true', then the default is to only send an Etag in the response for data sets smaller than a system determined length, which is at least 8MB. If X-IBM-Record-Range is present, then this header may not be specified with the value \"true\" and an Etag will never be returned.End of change. If this header is enabled for very large data sets, then performance is impacted since the data set must be read twice by the system.",
+            "refiner" : "convert_not_set"
+         },
+         {
+            "refiner" : "convert_not_set",
+            "property" : "X-IBM-Migrated-Recall",
+            "in" : "header",
+            "value" : "__IS__NOT__SET__",
+            "label" : "X-IBM-Migrated-Recall",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "name" : "wait",
+                  "value" : "wait"
+               },
+               {
+                  "name" : "nowait",
+                  "value" : "nowait"
+               },
+               {
+                  "name" : "record",
+                  "value" : "nowait"
+               }
+            ],
+            "type" : "select",
+            "documentation" : "This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously."
+         },
+         {
+            "htmlDocumentation" : "<pre>Use this header to retrieve a range of records from a data set. You can specify this range using either of the following formats:\nSSS-EEE\nWhere SSS identifies the start record and EEE identifies the end record to be retrieved. Both values are relative offsets (0-based).\nWhen EEE is set to 0, records through the end of the data set are retrieved.\nWhen SSS is omitted (i.e. -EEE), the final EEE records of the data set are retrieved.\nSSS,NNN\nWhere SSS identifies the start record and NNN identifies the number of records to be retrieved.\nNNN must be greater than zero.\nUsage notes:\nIf X-IBM-Record-Range is specified, then an ETag header will not be returned and the If-None-Match request header is ignored.\nIf X-IBM-Record-Range header is present on the request, then header X-IBM-Return-Etag=true may not be specified.\nIf no records are found in the range specified, an exception is returned.</pre>",
+            "type" : "entry",
+            "required" : "0",
+            "property" : "X-IBM-Record-Range",
+            "refiners" : "remove_blank_header",
+            "in" : "header",
+            "label" : "X-IBM-Record-Range"
+         },
+         {
+            "refiner" : "convert_not_set",
+            "documentation" : "This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.",
+            "type" : "select",
+            "option" : [
+               {
+                  "name" : "not set",
+                  "value" : "__IS__NOT__SET__"
+               },
+               {
+                  "name" : "None",
+                  "value" : null
                },
                {
                   "name" : "EXCL",
@@ -1218,33 +1128,399 @@
                   "value" : "SHRW"
                }
             ],
-            "refiner" : "convert_not_set",
-            "property" : "X-IBM-Obtain-ENQ",
-            "in" : "header"
+            "label" : "X-IBM-Obtain-ENQ",
+            "in" : "header",
+            "value" : "__IS__NOT__SET__",
+            "property" : "X-IBM-Obtain-ENQ"
          },
          {
-            "property" : "X-IBM-Session-Ref",
-            "in" : "header",
             "label" : "X-IBM-Session-Ref",
-            "type" : "entry",
+            "in" : "header",
+            "property" : "X-IBM-Session-Ref",
             "documentation" : "This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.",
+            "type" : "entry",
             "refiner" : "remove_blank_header"
          },
          {
-            "refiner" : "remove_blank_header",
-            "documentation" : "This header is optional; it may be specified with a value \"true\" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.",
             "label" : "X-IBM-Release-ENQ",
-            "type" : "entry",
             "in" : "header",
-            "property" : "X-IBM-Release-ENQ"
+            "property" : "X-IBM-Release-ENQ",
+            "documentation" : "This header is optional; it may be specified with a value \"true\" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header.",
+            "refiner" : "remove_blank_header",
+            "type" : "entry"
+         }
+      ],
+      "endpoint" : "/restfiles/ds/#{dataset-name}"
+   },
+   "jobs - zosmf info" : {
+      "fields" : [],
+      "hasConfig" : "true",
+      "method" : "GET",
+      "stepName" : "jobs - zosmf info",
+      "endpoint" : "/info",
+      "parameters" : [],
+      "description" : "You can use this operation to retrieve information about z/OSMF on a particular z/OS system.",
+      "resultProperty" : {
+         "show" : "true",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "default" : "/myJob/systemInfo"
+      },
+      "basicAuth" : "true",
+      "name" : "System - Info",
+      "attachCredentials" : "true"
+   },
+   "console - command response" : {
+      "resultProperty" : {
+         "default" : "/myJob/commandResponse",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true"
+      },
+      "basicAuth" : "true",
+      "attachCredentials" : "true",
+      "name" : "Console - Command response",
+      "fields" : [
+         "consolename",
+         "defcn",
+         "Ckey-number"
+      ],
+      "hasConfig" : "true",
+      "method" : "GET",
+      "stepName" : "console - command response",
+      "endpoint" : "/restconsoles/consoles/defcn/solmsgs/#{Ckey-number}",
+      "contentType" : "application/json",
+      "parameters" : [
+         {
+            "required" : "0",
+            "type" : "entry",
+            "documentation" : "It is the name of the EMCS console that is used to issue the command. The name must be 2 - 8 characters long, and cannot be defcn, which is reserved.",
+            "label" : "Consolename",
+            "property" : "consolename"
          },
          {
-            "documentation" : "The data to write to dataset.",
-            "type" : "textarea",
-            "label" : "Data",
-            "in" : "body",
-            "property" : "stored-data"
+            "value" : "1",
+            "label" : "defcn",
+            "property" : "defcn",
+            "required" : "0",
+            "type" : "checkbox",
+            "documentation" : "Indicates that the name of the console that is used to issue the command is generated by the REST Console API, by adding CN to the logon user ID. For example, if the logon user ID is CJOEY, the console name is CJOEYCN. If the user ID is longer than 6 characters, the user ID is truncated. For example, if the user ID is ZOSMFAD, then the console name is ZOSMFACN."
+         },
+         {
+            "documentation" : "Specifies the command to issue.",
+            "type" : "entry",
+            "required" : "1",
+            "property" : "Ckey-number",
+            "label" : "Ckey-number",
+            "in" : "body"
          }
-      ]
+      ],
+      "description" : "Use this operation to get the response to a command that was issued asynchronously with the Issue Command service."
+   },
+   "data set - delete a sequential and partitioned data set" : {
+      "resultProperty" : {
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true",
+         "default" : "/myJob/deleteDataset"
+      },
+      "name" : "Data Set - Delete",
+      "attachCredentials" : "true",
+      "basicAuth" : "true",
+      "stepName" : "data set - delete a sequential and partitioned data set",
+      "method" : "DELETE",
+      "hasConfig" : "true",
+      "fields" : [
+         "dataset-name",
+         "volume"
+      ],
+      "parameters" : [
+         {
+            "property" : "dataset-name",
+            "label" : "Data set name",
+            "type" : "entry",
+            "documentation" : "The name of a z/OS data set, that you are going to delete.",
+            "required" : "1"
+         },
+         {
+            "property" : "volume",
+            "label" : "Volume",
+            "type" : "entry",
+            "documentation" : "Volume is where the data set is resided, when the data set is uncatalogued.",
+            "required" : "0"
+         }
+      ],
+      "description" : "You can use this operation to delete sequential and partitioned data sets on a z/OS system.",
+      "endpoint" : "/restfiles/ds/#{dataset-name}"
+   },
+   "data set - write data to a zos data set or member" : {
+      "method" : "PUT",
+      "stepName" : "data set - write data to a zos data set or member",
+      "fields" : [
+         "dataset-name",
+         "volser",
+         "member-name",
+         "Content-Type",
+         "X-IBM-Data-Type",
+         "X-IBM-Migrated-Recall",
+         "X-IBM-Obtain-ENQ",
+         "X-IBM-Session-Ref",
+         "X-IBM-Release-ENQ",
+         "stored-data",
+         "stored-data-file"
+      ],
+      "hasConfig" : "true",
+      "parameters" : [
+         {
+            "type" : "entry",
+            "documentation" : "The name of a z/OS data set that you are going to create.",
+            "required" : "1",
+            "property" : "dataset-name",
+            "label" : "Data set name"
+         },
+         {
+            "required" : "0",
+            "type" : "entry",
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
+            "label" : "Volser",
+            "property" : "volser"
+         },
+         {
+            "documentation" : "Identifies the name of the PDS or PDSE member to which to write. Include this parameter for a PDS or PDSE member write request.",
+            "type" : "entry",
+            "required" : "0",
+            "property" : "member-name",
+            "label" : "Member name"
+         },
+         {
+            "label" : "Content Type",
+            "in" : "header",
+            "property" : "Content-Type",
+            "required" : "0",
+            "documentation" : "The data is interpreted according to the content-type as one of binary, text, record or 'diff -e' format according a combination of the \"Content-Type\" and the value of the X-IBM-Data-Type custom header, if present.",
+            "refiner" : "remove_blank_header",
+            "type" : "entry"
+         },
+         {
+            "type" : "select",
+            "documentation" : "When set to 'text' and \"Content-Type\" is \"application/x-ibm-diff-e\", the input consists of commands in the same format as produced by the z/OS UNIX 'diff -e' command. These commands are used to add, replace and delete lines in the target data set.",
+            "property" : "X-IBM-Data-Type",
+            "value" : "__IS__NOT__SET__",
+            "in" : "header",
+            "option" : [
+               {
+                  "name" : "not set",
+                  "value" : "__IS__NOT__SET__"
+               },
+               {
+                  "name" : "text",
+                  "value" : "text"
+               },
+               {
+                  "value" : "binary",
+                  "name" : "binary"
+               },
+               {
+                  "name" : "record",
+                  "value" : "record"
+               }
+            ],
+            "label" : "X-IBM-Data-Type",
+            "refiner" : "convert_not_set"
+         },
+         {
+            "refiner" : "convert_not_set",
+            "property" : "X-IBM-Migrated-Recall",
+            "value" : "__IS__NOT__SET__",
+            "in" : "header",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "value" : "wait",
+                  "name" : "wait"
+               },
+               {
+                  "name" : "nowait",
+                  "value" : "nowait"
+               },
+               {
+                  "value" : "nowait",
+                  "name" : "record"
+               }
+            ],
+            "label" : "X-IBM-Migrated-Recall",
+            "type" : "select",
+            "documentation" : "This header is optional; use it to specify how a migrated data set is handled. By default, a migrated data set is recalled synchronously."
+         },
+         {
+            "refiner" : "convert_not_set",
+            "documentation" : "This header is optional; set it to one of the following values to request that a system ENQ be obtained and held after the completion of this request. If not specified, then no ENQs will be held after the completion of this request. A successful response will include an X-IBM-Session-Ref response header that can be added as a request header to subsequent requests to specify affinity to the TSO address space holding this ENQ.",
+            "type" : "select",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "name" : "EXCL",
+                  "value" : "EXCL"
+               },
+               {
+                  "value" : "SHRW",
+                  "name" : "SHRW"
+               }
+            ],
+            "label" : "X-IBM-Obtain-ENQ",
+            "value" : "__IS__NOT__SET__",
+            "in" : "header",
+            "property" : "X-IBM-Obtain-ENQ"
+         },
+         {
+            "documentation" : "This header is optional; include it with the value returned from a previous X-IBM-Session-Ref response header to indicate that your request should be executed in the TSO address space that was previously reserved with a X-IBM-Obtain-ENQ request header. This address space will not be used for other requests and if not used at least once every 10 minutes it will be terminated. The X-IBM-Obtain-ENQ and X-IBM-Session-Ref headers are mutually exclusive.",
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "label" : "X-IBM-Session-Ref",
+            "in" : "header",
+            "property" : "X-IBM-Session-Ref"
+         },
+         {
+            "in" : "header",
+            "label" : "X-IBM-Release-ENQ",
+            "property" : "X-IBM-Release-ENQ",
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "documentation" : "This header is optional; it may be specified with a value \"true\" to request that the ENQ held by the associated TSO address space be released. This header must be specified along with a valid X-IBM-Session-Ref header."
+         },
+         {
+            "type" : "textarea",
+            "documentation" : "The data to write to dataset.",
+            "property" : "stored-data",
+            "label" : "Data"
+         },
+         {
+            "documentation" : "The data to write to dataset. If file is not set then data from the property above is used.",
+            "type" : "entry",
+            "label" : "Data from file",
+            "property" : "stored-data-file"
+         }
+      ],
+      "description" : "You can use this operation to write data to an existing sequential data set, or a member of a partitioned data set (PDS or PDSE). To write to an uncataloged data set, include a volume serial on the request.",
+      "endpoint" : "/restfiles/ds/#{dataset-name}",
+      "resultProperty" : {
+         "default" : "/myJob/createDataset",
+         "format" : [
+            "json",
+            "propertySheet"
+         ],
+         "show" : "true"
+      },
+      "attachCredentials" : "true",
+      "name" : "Data Set - Write data",
+      "basicAuth" : "true"
+   },
+   "data set - list zOS data sets on a system" : {
+      "endpoint" : "/restfiles/ds",
+      "parameters" : [
+         {
+            "type" : "entry",
+            "documentation" : "The search parameter that identifies the cataloged data sets to be listed.",
+            "required" : "1",
+            "property" : "dslevel",
+            "in" : "query",
+            "label" : "Dslevel"
+         },
+         {
+            "property" : "volser",
+            "label" : "Volser",
+            "in" : "query",
+            "documentation" : "A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.",
+            "type" : "entry",
+            "required" : "0"
+         },
+         {
+            "documentation" : "An optional search parameter that specifies the first data set name to return in the response document. The length of the data set name that you specify cannot exceed 44 characters, and cannot contain wildcards. If the data set name is not found for the given search, then the next data set matching the search will be returned.",
+            "type" : "entry",
+            "required" : "0",
+            "property" : "start_num",
+            "label" : "Start",
+            "in" : "query"
+         },
+         {
+            "refiner" : "convert_not_set",
+            "in" : "header",
+            "value" : "__IS__NOT__SET__",
+            "label" : "X-IBM-Attributes. If not set - dsname used.",
+            "option" : [
+               {
+                  "value" : "__IS__NOT__SET__",
+                  "name" : "not set"
+               },
+               {
+                  "value" : "dsname",
+                  "name" : "dsname"
+               },
+               {
+                  "name" : "base",
+                  "value" : "base"
+               },
+               {
+                  "value" : "vol",
+                  "name" : "vol"
+               }
+            ],
+            "property" : "X-IBM-Attributes",
+            "type" : "select",
+            "documentation" : "Extends search."
+         },
+         {
+            "required" : "0",
+            "refiner" : "remove_blank_header",
+            "type" : "entry",
+            "documentation" : "This header value specifies the maximum number of items to return. To request that all items be returned, set this header to 0. If you omit this header, or specify an incorrect value, up to 1000 items are returned by default.",
+            "in" : "header",
+            "value" : "0",
+            "label" : "Max items returned (1000 max, 0 means no limit)",
+            "property" : "X-IBM-Max-Items"
+         },
+         {
+            "type" : "checkbox",
+            "documentation" : "If checked, then \"totalRows\" property is returned if more data sets than the maximum requested are available.",
+            "required" : "0",
+            "property" : "totalRows",
+            "label" : "Return totalRows"
+         }
+      ],
+      "description" : "List the z/OS data sets on a system.",
+      "hasConfig" : "true",
+      "fields" : [
+         "dslevel",
+         "volser",
+         "start_num",
+         "X-IBM-Attributes",
+         "X-IBM-Max-Items",
+         "totalRows"
+      ],
+      "stepName" : "data set - list zOS data sets on a system",
+      "method" : "GET",
+      "basicAuth" : "true",
+      "name" : "Data Set - List",
+      "attachCredentials" : "true",
+      "resultProperty" : {
+         "default" : "/myJob/datasetList",
+         "show" : "true",
+         "format" : [
+            "json",
+            "propertySheet"
+         ]
+      }
    }
 }

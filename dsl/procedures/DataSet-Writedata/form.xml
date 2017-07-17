@@ -134,8 +134,16 @@
   <value></value>
 </formElement>
 <formElement>
+  <documentation>The data to write to dataset. If file is not set then data from the property above is used.</documentation>
+  <label>Data from file:</label>
+  <property>stored-data-file</property>
+  <required>0</required>
+  <type>entry</type>
+  <value></value>
+</formElement>
+<formElement>
   <documentation>Results will be saved into this property/property sheet.</documentation>
-  <label>Property sheet name for results:</label>
+  <label>Property sheet name or filename for results:</label>
   <property>resultPropertySheet</property>
   <required>1</required>
   <type>entry</type>

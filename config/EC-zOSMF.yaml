@@ -47,3 +47,12 @@ procedures:
   - name: Jobs - Obtain status
     $ref: ./Jobs/status.yaml
 
+  - name: Console - Issue Command
+    $ref: ./Console/issue.yaml
+
+  - name: Console - Command response
+    $ref: ./Console/response.yaml
+
+  - name: Console - Unsolicited messages result
+    $ref: ./Console/unsolicited.yaml
+

@@ -101,8 +101,8 @@ sub define_processors {
 
 
     $self->define_processor('data set - write data to a zos data set or member', 'serialize_body', sub{ my ($self, $body) = @_; return $body->{'stored-data'};} );
-    $self->define_processor('data set - retrieve the contents of a zOS data set or member', 'parse_response', sub{my ($self, $response) = @_; my $data = $response->content; print($data); $data =~ s/'/\\'/ig; my $res = {}; $res->{'data'} = $data; return $res;});
-    $self->define_processor('jobs - get spool file content', 'parse_response', sub{my ($self, $response) = @_; my $data = $response->content; print($data); $data =~ s/'/\\'/ig; my $res = {}; $res->{'data'} = $data; return $res;});
+    $self->define_processor('data set - retrieve the contents of a zOS data set or member', 'parse_response', \&save_data_into_file);
+    $self->define_processor('jobs - get spool file content', 'parse_response', \&save_data_into_file );
 }
 
 sub spool_files_list_response {
@@ -138,9 +138,25 @@ sub convert_arr_to_hash_by_key{
     return $res;
 }
 
-
-
-
+#deprecated for now
+sub save_data_into_file{
+    my ($self, $response, $step_name) = @_;
+    my $result_format = $self->plugin->parameters($step_name)->{resultFormat};
+    #to be updated
+    if ($result_format ne 'file'){
+        my $data = $response->content; 
+        print($data); 
+        #$data =~ s/'/\\'/ig; 
+        my $res = {}; 
+        $res->{'data'} = $data; 
+        return $res;
+    }
+    else{
+        my $res = {};
+        $res->{'data'}  = $response->content;
+        return $res;
+    }
+}
 
 
 

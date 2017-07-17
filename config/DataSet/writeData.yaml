@@ -95,6 +95,9 @@ parameters:
   - property: stored-data
     label: Data
     type: textarea
-    in: body
     documentation: The data to write to dataset.
+  - property: stored-data-file
+    label: Data from file
+    type: entry
+    documentation: The data to write to dataset. If file is not set then data from the property above is used.
 

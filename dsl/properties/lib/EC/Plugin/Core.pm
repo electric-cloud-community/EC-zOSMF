@@ -238,7 +238,7 @@ Moves propertysheet to a new path
 
 sub move_property_sheet {
     my ($self, $root_old, $root_new) = @_;
-    
+
     my $property_sheet_id = $self->ec->getProperty($root_old)->findvalue('//propertySheetId')->string_value;
 
     my $properties = $self->ec->getProperties({propertySheetId => $property_sheet_id});
@@ -247,7 +247,7 @@ sub move_property_sheet {
         my $name = $node->findvalue('propertyName')->string_value;
         $self->move_property(join('/', $root_old, $name), join('/', $root_new, $name));
     }
-        
+
     $self->ec()->deleteProperty($root_old);
 
     return 1;
@@ -339,11 +339,11 @@ sub bail_out {
 }
 
 =item B<finish_procedure>
- 
+
 Finishing execution with success exit code.
- 
+
     $plugin->finish_procedure("Some minor issue, but we took care of it");
- 
+
 =cut
 
 sub finish_procedure {
@@ -708,9 +708,9 @@ sub gen_random_numbers {
 }
 
 =item B<set_pipeline_summary>
- 
+
 Sets pipeline summary (only if the job step runs in a pipeline)
- 
+
 =cut
 
 sub set_pipeline_summary {
@@ -719,13 +719,13 @@ sub set_pipeline_summary {
     unless($self->in_pipeline) {
         return;
     }
- 
+
     eval {
         $self->ec->setProperty("/myPipelineStageRuntime/ec_summary/$name", $message);
         1;
     };
 }
- 
+
 sub in_pipeline {
     my ($self) = @_;
 

@@ -22,31 +22,37 @@ parameters:
     in: body
     type: entry
     label: Volser
+    refiner: remove_blank_header
     documentation: A parameter that identifies the volume serials to be searched for data sets with names that match the specified dslevel parameter.
     required: 0
   - property: unit
     in: body
     type: entry
     label: Unit
+    refiner: remove_blank_header
     documentation: Device type.
     required: 0
   - property: dsorg
     in: body
     type: entry
     label: Dsorg
+    refiner: remove_blank_header
     documentation: Data set organization.
     required: 0
   - property: alcunit
     in: body
     type: entry
     label: Alcunit
+    refiner: remove_blank_header
     documentation: Unit of space allocation.
     required: 0
   - property: primary
     in: body
     type: entry
     label: Primary
-    refiner: convert_to_int
+    refiners: 
+      - convert_to_int
+      - remove_blank_header
     validators:
       - is_int
     documentation: Primary space allocation.
@@ -55,7 +61,9 @@ parameters:
     in: body
     type: entry
     label: Secondary
-    refiner: convert_to_int
+    refiners: 
+      - convert_to_int
+      - remove_blank_header
     validators:
       - is_int
     documentation: Secondary space allocation.
@@ -64,7 +72,9 @@ parameters:
     in: body
     type: entry
     label: Dirblk
-    refiner: convert_to_int
+    refiners: 
+      - convert_to_int
+      - remove_blank_header
     validators:
       - is_int
     documentation: Number of directory blocks.
@@ -73,7 +83,9 @@ parameters:
     in: body
     type: entry
     label: Avgblk
-    refiner: convert_to_int
+    refiners: 
+      - convert_to_int
+      - remove_blank_header
     validators:
       - is_int
     documentation: Average block.
@@ -82,13 +94,16 @@ parameters:
     in: body
     type: entry
     label: Recfm
+    refiners: remove_blank_header
     documentation: Record format.
     required: 0
   - property: blksize
     in: body
     type: entry
     label: Blksize
-    refiner: convert_to_int
+    refiners: 
+      - convert_to_int
+      - remove_blank_header
     validator: is_int
     documentation: Block size.
     required: 0
@@ -96,7 +111,9 @@ parameters:
     in: body
     type: entry
     label: Lrecl
-    refiner: convert_to_int
+    refiners: 
+      - convert_to_int
+      - remove_blank_header
     validators:
       - is_int
     documentation: Record length.
@@ -105,17 +122,20 @@ parameters:
     in: body
     type: entry
     label: Storeclass
+    refiner: remove_blank_header
     documentation: Storage class.
     required: 0
   - property: mgntclass
     in: body
     type: entry
     label: Mgntclass
+    refiner: remove_blank_header
     documentation: Storage class.
     required: 0
   - property: dataclass
     in: body
     type: entry
     label: Dataclass
+    refiner: remove_blank_header
     documentation: Data class.
     required: 0

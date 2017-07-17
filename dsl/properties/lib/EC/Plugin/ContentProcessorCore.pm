@@ -40,7 +40,7 @@ sub run_parse_response {
 
     my $processor = $self->{processors}->{$step_name}->{'parse_response'};
     if ($processor) {
-        $processor->($self, $response);
+        $processor->($self, $response, $step_name);
     }
     else {
         $self->parse_response($response);

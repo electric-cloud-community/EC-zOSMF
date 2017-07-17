@@ -53,6 +53,18 @@ You can use this operation to cancel a job and purge its output.
 
 You can use this operation to obtain the status of a batch job on z/OS
 
+## Console - Issue Command
+
+Use this operation to issue a command by using a system console.
+
+## Console - Command response
+
+Use this operation to get the response to a command that was issued asynchronously with the Issue Command service.
+
+## Console - Unsolicited messages result
+
+Use this operation to get the result for detecting a keyword in unsolicited messages after an Issue Command request. The command must have been issued with the unsol-key field.
+
 
 
 # Building the plugin

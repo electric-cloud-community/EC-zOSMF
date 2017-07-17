@@ -83,8 +83,11 @@ sub define_hooks {
     $self->define_hook('data set - create a sequential and partitioned data set', 'request', \&check_create_dataset_request);
 
     $self->define_hook('data set - delete a sequential and partitioned data set', 'request', \&check_delete_dataset_request);
-    $self->define_hook('data set - write data to a zos data set or member', 'request', \&check_volser_member_in_request);
+    $self->define_hook('data set - write data to a zos data set or member', 'request', \&write_dataset_hook_in_request);
     $self->define_hook('data set - retrieve the contents of a zOS data set or member', 'request', \&check_volser_member_in_request);
+    $self->define_hook('data set - retrieve the contents of a zOS data set or member', 'content_callback', \&read_dataset_content_callback_request);
+    $self->define_hook('data set - retrieve the contents of a zOS data set or member', 'after', \&read_dataset_after_request);
+
     
 
     $self->define_hook('jobs - submit a job', 'request', \&check_submit_job_request);
@@ -208,6 +211,103 @@ sub check_submit_job_request{
 
 sub check_delete_dataset_request{
     my ($self, $request) = @_;
+
+}
+
+
+sub read_dataset_content_callback_request {
+    my ($self) = @_;
+    # use Data::Dumper;
+    # print(Dumper($self->plugin->parameters));
+    # print "ddd  ".$self->plugin->parameters->{resultProperty};
+    # if ($self->plugin->parameters($self->plugin->current_step_name)->{resultProperty} eq 'file'){
+
+    my $file;
+    print "outtype: ".$self->plugin->parameters($self->plugin->current_step_name)->{resultFormat};
+    print "outfile: ".$self->plugin->parameters($self->plugin->current_step_name)->{resultPropertySheet};
+    if ($self->plugin->parameters($self->plugin->current_step_name)->{resultFormat} eq 'file' && $self->plugin->parameters($self->plugin->current_step_name)->{resultPropertySheet}){
+        $file = $self->plugin->parameters($self->plugin->current_step_name)->{resultPropertySheet};
+    }
+    else{
+        #TO BE RE-DONE.. bad..
+        $file = '/tmp/'.time.rand(1_000_000).'.out';
+    }
+    $self->{retrieve_data_filename} = $file;
+    $self->plugin->parameters($self->plugin->current_step_name)->{resultPropertySheet};
+    print "FILE: $file\n";
+    $self->plugin->logger->debug("Streaming response to $file");
+
+    $_[1] = sub {
+        my ($chunk, $res) = @_;
+
+        my $fh = $self->{retrieve_data_fh};
+        unless($fh) {
+            open $fh, '>' . $file or die "Cannot open file $file: $!";
+            if (-B $chunk){
+                binmode($fh);
+            }
+            $self->{retrieve_data_fh} = $fh;
+            $self->plugin->logger->debug("Opened filehandle for writing");
+        }
+        print $fh $chunk;
+    };
+    #}
+}
+
+sub read_dataset_after_request {
+    my ($self) = @_;
+
+    my $fh = $self->{retrieve_data_fh};
+    if ($fh) {
+        $self->plugin->logger->debug("Closing filehandle");
+        close $fh;
+        if ($self->plugin->parameters($self->plugin->current_step_name)->{resultFormat} ne 'file'){
+            open($fh, $self->{retrieve_data_filename}) || $self->plugin->bail_out("Something wrong on reading temp file");
+            while(<$fh>){
+                print $_;
+            }
+            close($fh);
+            unlink($self->{retrieve_data_filename});
+        }
+    }
+    $self->plugin->logger->info("Saved response under file ".$self->plugin->parameters($self->plugin->current_step_name)->{resultPropertySheet});
+}
+
+
+
+sub write_dataset_hook_in_request{
+    my ($self, $request) = @_;
+ 
+    #checking if we need to add -volser
+    $self->check_volser_member_in_request($request);
+
+    if (exists($self->plugin->parameters($self->plugin->current_step_name)->{'stored-data-file'}) && $self->plugin->parameters($self->plugin->current_step_name)->{'stored-data-file'}){
+        my $data_file = $self->plugin->parameters($self->plugin->current_step_name)->{'stored-data-file'};
+        if (-e $data_file){
+            open my $fh, $data_file or die $!;
+            print "YEP: $data_file\n";
+            if (-B $data_file){
+                binmode $fh;
+            }
+            my $buffer;
+            $request->content(sub {
+                my $bytes_read = read($fh, $buffer, 1024);
+                if ($bytes_read) {
+                    return $buffer;
+                }
+                else {
+                    close $fh;
+                    return undef;
+                }
+            });          
+        }
+        else{
+            $self->bail_out("File $data_file doesn't exist");
+        }
+    }
+    else{
+        $request->content($self->plugin->parameters->{'stored-data'})
+    }
 
 }
 

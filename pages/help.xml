@@ -1,4 +1,4 @@
-
+<!-- HELP GEN VERSION 1 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -12,7 +12,7 @@
         <h1>@PLUGIN_KEY@</h1>
         <p>Plugin Version @PLUGIN_VERSION@</p>
         <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
-        <p>Revised on <!-- REVISION DATE BEGIN -->July 10, 2017<!-- REVISION DATE END --></p>
+        <p>Revised on <!-- REVISION DATE BEGIN -->July 17, 2017<!-- REVISION DATE END --></p>
         <p>
             <!-- DESCRIPTION BEGIN -->This plugin allows to work with zOSMF REST API.
 <!-- DESCRIPTION END -->
@@ -34,7 +34,10 @@
 <li><a href="#JobsSubmitajob">Jobs - Submit a job</a></li>
 <li><a href="#JobsList">Jobs - List</a></li>
 <li><a href="#JobsCancelandPurge">Jobs - Cancel and Purge</a></li>
-<li><a href="#JobsObtainstatus">Jobs - Obtain status</a></li><!-- TOC END -->
+<li><a href="#JobsObtainstatus">Jobs - Obtain status</a></li>
+<li><a href="#ConsoleIssueCommand">Console - Issue Command</a></li>
+<li><a href="#ConsoleCommandresponse">Console - Command response</a></li>
+<li><a href="#ConsoleUnsolicitedmessagesresult">Console - Unsolicited messages result</a></li><!-- TOC END -->
         </ul>
         <h2>Configuration</h2>
         <div id="CreateConfiguration">
@@ -144,10 +147,11 @@
         </div>
         <h1>Procedures</h1>
         <!-- PROCEDURES BEGIN -->
-            <div id="Submitajob">
-                <a name="Submitajob" id="Submitajob" />
+                <div id="Submitajob">
+                <!-- Submitajob METADATA BEGIN -->
                 <h3>Submit a job</h3>
                 <p>You can use this operation to submit a job to run on z/OS.</p>
+                <!-- Submitajob METADATA END -->
                 <!-- Submitajob BEGIN -->
             <table class="grid">
                 <thead>
@@ -185,10 +189,11 @@
             </table>
         <!-- Submitajob END -->
             </div>
-            <div id="JobsSubmitajob">
-                <a name="JobsSubmitajob" id="JobsSubmitajob" />
-                <h3>Jobs - Submit a job</h3>
-                <p>You can use this operation to submit a job to run on z/OS.</p>
+                <div id="JobsSubmitajob">
+                <!-- JobsSubmitajob METADATA BEGIN -->
+            <h3>Jobs - Submit a job</h3>
+            <p>You can use this operation to submit a job to run on z/OS.</p>
+        <!-- JobsSubmitajob METADATA END -->
                 <!-- JobsSubmitajob BEGIN -->
             <table class="grid">
                 <thead>
@@ -246,10 +251,11 @@
             </table>
         <!-- JobsSubmitajob END -->
             </div>
-            <div id="11">
-                <a name="11" id="11" />
+                <div id="11">
+                <!-- 11 METADATA BEGIN -->
                 <h3>11</h3>
                 <p>List the z/OS data sets on a system.</p>
+                <!-- 11 METADATA END -->
                 <!-- 11 BEGIN -->
             <table class="grid">
                 <thead>
@@ -275,10 +281,11 @@
             </table>
         <!-- 11 END -->
             </div>
-            <div id="DataSetListzOSdatasetsonasystem">
-                <a name="DataSetListzOSdatasetsonasystem" id="DataSetListzOSdatasetsonasystem" />
+                <div id="DataSetListzOSdatasetsonasystem">
+                <!-- DataSetListzOSdatasetsonasystem METADATA BEGIN -->
                 <h3>Data Set - List zOS data sets on a system</h3>
                 <p>List the z/OS data sets on a system.</p>
+                <!-- DataSetListzOSdatasetsonasystem METADATA END -->
                 <!-- DataSetListzOSdatasetsonasystem BEGIN -->
             <table class="grid">
                 <thead>
@@ -316,10 +323,11 @@
             </table>
         <!-- DataSetListzOSdatasetsonasystem END -->
             </div>
-            <div id="DataSetCreateasequentialandpartitioneddataset">
-                <a name="DataSetCreateasequentialandpartitioneddataset" id="DataSetCreateasequentialandpartitioneddataset" />
+                <div id="DataSetCreateasequentialandpartitioneddataset">
+                <!-- DataSetCreateasequentialandpartitioneddataset METADATA BEGIN -->
                 <h3>Data Set - Create a sequential and partitioned data set</h3>
                 <p>You can use this operation to create sequential and partitioned data sets on a z/OS system.</p>
+                <!-- DataSetCreateasequentialandpartitioneddataset METADATA END -->
                 <!-- DataSetCreateasequentialandpartitioneddataset BEGIN -->
             <table class="grid">
                 <thead>
@@ -446,14 +454,19 @@
                     <td>Data</td>
                     <td>The data to write to dataset.</td>
                 </tr>
+                <tr>
+                    <td>Data from file</td>
+                    <td>The data to write to dataset. If file is not set then data from the property above is used.</td>
+                </tr>
                  </tbody>
             </table>
         <!-- DataSetWritedatatoazOSdatasetormember END -->
             </div>
-            <div id="DataSetDeleteasequentialandpartitioneddataset">
-                <a name="DataSetDeleteasequentialandpartitioneddataset" id="DataSetDeleteasequentialandpartitioneddataset" />
+                <div id="DataSetDeleteasequentialandpartitioneddataset">
+                <!-- DataSetDeleteasequentialandpartitioneddataset METADATA BEGIN -->
                 <h3>Data Set - Delete a sequential and partitioned data set</h3>
                 <p>You can use this operation to delete sequential and partitioned data sets on a z/OS system.</p>
+                <!-- DataSetDeleteasequentialandpartitioneddataset METADATA END -->
                 <!-- DataSetDeleteasequentialandpartitioneddataset BEGIN -->
             <table class="grid">
                 <thead>
@@ -475,10 +488,11 @@
             </table>
         <!-- DataSetDeleteasequentialandpartitioneddataset END -->
             </div>
-            <div id="DataSetList">
-                <a name="DataSetList" id="DataSetList" />
-                <h3>Data Set - List</h3>
-                <p>List the z/OS data sets on a system.</p>
+                <div id="DataSetList">
+                <!-- DataSetList METADATA BEGIN -->
+            <h3>Data Set - List</h3>
+            <p>List the z/OS data sets on a system.</p>
+        <!-- DataSetList METADATA END -->
                 <!-- DataSetList BEGIN -->
             <table class="grid">
                 <thead>
@@ -569,14 +583,19 @@
                     <td>Data</td>
                     <td>The data to write to dataset.</td>
                 </tr>
+                <tr>
+                    <td>Data from file</td>
+                    <td>The data to write to dataset. If file is not set then data from the property above is used.</td>
+                </tr>
                  </tbody>
             </table>
         <!-- DataSetWritedata END -->
             </div>
-            <div id="DataSetCreate">
-                <a name="DataSetCreate" id="DataSetCreate" />
-                <h3>Data Set - Create</h3>
-                <p>You can use this operation to create sequential and partitioned data sets on a z/OS system.</p>
+                <div id="DataSetCreate">
+                <!-- DataSetCreate METADATA BEGIN -->
+            <h3>Data Set - Create</h3>
+            <p>You can use this operation to create sequential and partitioned data sets on a z/OS system.</p>
+        <!-- DataSetCreate METADATA END -->
                 <!-- DataSetCreate BEGIN -->
             <table class="grid">
                 <thead>
@@ -650,10 +669,11 @@
             </table>
         <!-- DataSetCreate END -->
             </div>
-            <div id="DataSetDelete">
-                <a name="DataSetDelete" id="DataSetDelete" />
-                <h3>Data Set - Delete</h3>
-                <p>You can use this operation to delete sequential and partitioned data sets on a z/OS system.</p>
+                <div id="DataSetDelete">
+                <!-- DataSetDelete METADATA BEGIN -->
+            <h3>Data Set - Delete</h3>
+            <p>You can use this operation to delete sequential and partitioned data sets on a z/OS system.</p>
+        <!-- DataSetDelete METADATA END -->
                 <!-- DataSetDelete BEGIN -->
             <table class="grid">
                 <thead>
@@ -736,10 +756,11 @@
             </table>
         <!-- DataSetReaddata END -->
             </div>
-            <div id="JobsSpoolfileslist">
-                <a name="JobsSpoolfileslist" id="JobsSpoolfileslist" />
-                <h3>Jobs - Spool files list</h3>
-                <p>You can use this operation to list the spool files for a batch job on z/OS.</p>
+                <div id="JobsSpoolfileslist">
+                <!-- JobsSpoolfileslist METADATA BEGIN -->
+            <h3>Jobs - Spool files list</h3>
+            <p>You can use this operation to list the spool files for a batch job on z/OS.</p>
+        <!-- JobsSpoolfileslist METADATA END -->
                 <!-- JobsSpoolfileslist BEGIN -->
             <table class="grid">
                 <thead>
@@ -765,10 +786,11 @@
             </table>
         <!-- JobsSpoolfileslist END -->
             </div>
-            <div id="JobsGetspoolfilecontent">
-                <a name="JobsGetspoolfilecontent" id="JobsGetspoolfilecontent" />
-                <h3>Jobs - Get spool file content</h3>
-                <p>You can use this operation to list the spool files for a batch job on z/OS.</p>
+                <div id="JobsGetspoolfilecontent">
+                <!-- JobsGetspoolfilecontent METADATA BEGIN -->
+            <h3>Jobs - Get spool file content</h3>
+            <p>You can use this operation to list the spool files for a batch job on z/OS.</p>
+        <!-- JobsGetspoolfilecontent METADATA END -->
                 <!-- JobsGetspoolfilecontent BEGIN -->
             <table class="grid">
                 <thead>
@@ -815,10 +837,11 @@ To use a job correlator on this request, specify the full job correlator for the
             </table>
         <!-- JobsGetspoolfilecontent END -->
             </div>
-            <div id="JobsList">
-                <a name="JobsList" id="JobsList" />
-                <h3>Jobs - List</h3>
-                <p>You can use this operation to list the jobs for an owner, prefix, or job ID.</p>
+                <div id="JobsList">
+                <!-- JobsList METADATA BEGIN -->
+            <h3>Jobs - List</h3>
+            <p>You can use this operation to list the jobs for an owner, prefix, or job ID.</p>
+        <!-- JobsList METADATA END -->
                 <!-- JobsList BEGIN -->
             <table class="grid">
                 <thead>
@@ -852,10 +875,11 @@ To use a job correlator on this request, specify the full job correlator for the
             </table>
         <!-- JobsList END -->
             </div>
-            <div id="JobsCancelandPurge">
-                <a name="JobsCancelandPurge" id="JobsCancelandPurge" />
-                <h3>Jobs - Cancel and Purge</h3>
-                <p>You can use this operation to cancel a job and purge its output.</p>
+                <div id="JobsCancelandPurge">
+                <!-- JobsCancelandPurge METADATA BEGIN -->
+            <h3>Jobs - Cancel and Purge</h3>
+            <p>You can use this operation to cancel a job and purge its output.</p>
+        <!-- JobsCancelandPurge METADATA END -->
                 <!-- JobsCancelandPurge BEGIN -->
             <table class="grid">
                 <thead>
@@ -885,10 +909,11 @@ To use a job correlator on this request, specify the full job correlator for the
             </table>
         <!-- JobsCancelandPurge END -->
             </div>
-            <div id="JobsObtainstatus">
-                <a name="JobsObtainstatus" id="JobsObtainstatus" />
-                <h3>Jobs - Obtain status</h3>
-                <p>You can use this operation to obtain the status of a batch job on z/OS</p>
+                <div id="JobsObtainstatus">
+                <!-- JobsObtainstatus METADATA BEGIN -->
+            <h3>Jobs - Obtain status</h3>
+            <p>You can use this operation to obtain the status of a batch job on z/OS</p>
+        <!-- JobsObtainstatus METADATA END -->
                 <!-- JobsObtainstatus BEGIN -->
             <table class="grid">
                 <thead>
@@ -923,10 +948,11 @@ To use a job correlator on this request, specify the full job correlator for the
             </table>
         <!-- JobsObtainstatus END -->
             </div>
-            <div id="SystemInfo">
-                <a name="SystemInfo" id="SystemInfo" />
-                <h3>System - Info</h3>
-                <p>You can use this operation to retrieve information about z/OSMF on a particular z/OS system.</p>
+                <div id="SystemInfo">
+                <!-- SystemInfo METADATA BEGIN -->
+            <h3>System - Info</h3>
+            <p>You can use this operation to retrieve information about z/OSMF on a particular z/OS system.</p>
+        <!-- SystemInfo METADATA END -->
                 <!-- SystemInfo BEGIN -->
             <table class="grid">
                 <thead>
@@ -939,6 +965,124 @@ To use a job correlator on this request, specify the full job correlator for the
                  </tbody>
             </table>
         <!-- SystemInfo END -->
+            </div>
+                <div id="ConsoleIssueCommand">
+                <!-- ConsoleIssueCommand METADATA BEGIN -->
+            <h3>Console - Issue Command</h3>
+            <p>Use this operation to issue a command by using a system console.</p>
+        <!-- ConsoleIssueCommand METADATA END -->
+                <!-- ConsoleIssueCommand BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Consolename</td>
+                    <td>It is the name of the EMCS console that is used to issue the command. The name must be 2 - 8 characters long, and cannot be defcn, which is reserved.</td>
+                </tr>
+                <tr>
+                    <td>defcn</td>
+                    <td>Indicates that the name of the console that is used to issue the command is generated by the REST Console API, by adding CN to the logon user ID. For example, if the logon user ID is CJOEY, the console name is CJOEYCN. If the user ID is longer than 6 characters, the user ID is truncated. For example, if the user ID is ZOSMFAD, then the console name is ZOSMFACN.</td>
+                </tr>
+                <tr>
+                    <td class="required">Command</td>
+                    <td>Specifies the command to issue.</td>
+                </tr>
+                <tr>
+                    <td>Sol-key</td>
+                    <td>Specifies a keyword that you want to detect in solicited messages, that is, the command response. Case is not significant.</td>
+                </tr>
+                <tr>
+                    <td>Detect-time</td>
+                    <td>Indicates how long the console attempts to detect the value of unsol-key in the unsolicited messages. The unit is seconds. For example, if the value of detect-time is 10, the console checks the unsolicited messages for 10 seconds. The default is 30 seconds.</td>
+                </tr>
+                <tr>
+                    <td>Async</td>
+                    <td>Indicates the method of issuing the command:
+Y
+Asynchronously
+N
+Synchronously. This is the default.</td>
+                </tr>
+                <tr>
+                    <td>System</td>
+                    <td>Name of the system in the same sysplex that the command is routed to. The default is the local system.</td>
+                </tr>
+                <tr>
+                    <td>Unsol-detect-sync</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Unsol-detect-timeout</td>
+                    <td>Indicates how long, in seconds, the request is blocked when the value for unsol-detect-sync is Y and the detection result has not been completed. The default value, 20 seconds, is used when this field is not specified and the value for unsol-detect-sync is Y.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- ConsoleIssueCommand END -->
+            </div>
+                <div id="ConsoleCommandresponse">
+                <!-- ConsoleCommandresponse METADATA BEGIN -->
+            <h3>Console - Command response</h3>
+            <p>Use this operation to get the response to a command that was issued asynchronously with the Issue Command service.</p>
+        <!-- ConsoleCommandresponse METADATA END -->
+                <!-- ConsoleCommandresponse BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Consolename</td>
+                    <td>It is the name of the EMCS console that is used to issue the command. The name must be 2 - 8 characters long, and cannot be defcn, which is reserved.</td>
+                </tr>
+                <tr>
+                    <td>defcn</td>
+                    <td>Indicates that the name of the console that is used to issue the command is generated by the REST Console API, by adding CN to the logon user ID. For example, if the logon user ID is CJOEY, the console name is CJOEYCN. If the user ID is longer than 6 characters, the user ID is truncated. For example, if the user ID is ZOSMFAD, then the console name is ZOSMFACN.</td>
+                </tr>
+                <tr>
+                    <td class="required">Ckey-number</td>
+                    <td>Specifies the command to issue.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- ConsoleCommandresponse END -->
+            </div>
+                <div id="ConsoleUnsolicitedmessagesresult">
+                <!-- ConsoleUnsolicitedmessagesresult METADATA BEGIN -->
+            <h3>Console - Unsolicited messages result</h3>
+            <p>Use this operation to get the result for detecting a keyword in unsolicited messages after an Issue Command request. The command must have been issued with the unsol-key field.</p>
+        <!-- ConsoleUnsolicitedmessagesresult METADATA END -->
+                <!-- ConsoleUnsolicitedmessagesresult BEGIN -->
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Consolename</td>
+                    <td>It is the name of the EMCS console that is used to issue the command. The name must be 2 - 8 characters long, and cannot be defcn, which is reserved.</td>
+                </tr>
+                <tr>
+                    <td>defcn</td>
+                    <td>Indicates that the name of the console that is used to issue the command is generated by the REST Console API, by adding CN to the logon user ID. For example, if the logon user ID is CJOEY, the console name is CJOEYCN. If the user ID is longer than 6 characters, the user ID is truncated. For example, if the user ID is ZOSMFAD, then the console name is ZOSMFACN.</td>
+                </tr>
+                <tr>
+                    <td class="required">Dkey-number</td>
+                    <td>Specifies the command to issue.</td>
+                </tr>
+                 </tbody>
+            </table>
+        <!-- ConsoleUnsolicitedmessagesresult END -->
             </div>
 <!-- PROCEDURES END -->
     </div>

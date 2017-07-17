@@ -17,7 +17,7 @@ use URI;
 use Carp qw(confess);
 
 #according to http://docs.electric-cloud.com/eflow_doc/7_3/User/HTML/content/properties.htm#propertySheet
-#this fields will get "_" prefix to prevent job failure on saving 
+#this fields will get "_" prefix to prevent job failure on saving
 use constant {
     RESULT_PROPERTY_SHEET_FIELD => 'resultPropertySheet',
     FORBIDDEN_FIELD_NAME_PREFIX => '_'
@@ -158,7 +158,7 @@ sub generate_step_request {
     $endpoint =~ s/#\{($key)\}/$parameters_replacer->($1)/ge;
 
     my $uri = URI->new($endpoint);
-    my %query = ();
+    my %query = $uri->query_form;
     my %body = ();
     my %headers = ();
 
@@ -252,6 +252,7 @@ sub request {
         $self->logger->info("Proxy set for request");
         $ua->requests_redirectable([qw/GET POST PUT PATCH GET HEAD OPTIONS DELETE/]);
     }
+    $self->logger->info($request->method . ' ' . $request->uri);
     my $response = $ua->request($request, $callback);
     return $response;
 }
@@ -384,6 +385,9 @@ sub save_parsed_data {
         my $json = encode_json($parsed_data);
         $self->ec->setProperty($property_name, $json);
         $self->logger->info("Saved answer under $property_name");
+    }
+    elsif ($selected_format eq 'file') {
+        #saving data implementation is on Hooks side!
     }
     else {
         $self->bail_out("Cannot process format $selected_format: not implemented");
