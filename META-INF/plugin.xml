@@ -4,7 +4,7 @@
   <version>1.0.0</version>
   <author>Electric Cloud</author>
   <authorUrl>https://electric-cloud.com/support</authorUrl>
-  <category>Utility</category>
+  <category>z/OS</category>
   <commander-version min="6.0" />
   <description>zOSMF Integration</description>
   <configure>ec_config</configure>
