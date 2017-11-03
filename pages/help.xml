@@ -12,7 +12,7 @@
         <h1>@PLUGIN_KEY@</h1>
         <p>Plugin Version @PLUGIN_VERSION@</p>
         <hr style="margin-left: -10px; margin-top: 10px; height: 1px; width: 100%; color: #5981BD;" noshade="noshade" />
-        <p>Revised on <!-- REVISION DATE BEGIN -->July 17, 2017<!-- REVISION DATE END --></p>
+        <p>Revised on <!-- REVISION DATE BEGIN -->November 3, 2017<!-- REVISION DATE END --></p>
         <p>
             <!-- DESCRIPTION BEGIN -->This plugin allows to work with zOSMF REST API.
 <!-- DESCRIPTION END -->
@@ -225,7 +225,12 @@
                 </tr>
                 <tr>
                     <td>X-IBM-Intrdr-Mode</td>
-                    <td></td>
+                    <td><pre>A keyword that specifies the format of the input job: TEXT, RECORD, or BINARY.
+When submitting a job from a data set, you can omit this header. Otherwise, this value must be set to RECORD.
+When not submitting a job from a data set, observe the following rules:
+- If you omit this header, the TEXT keyword is used by default.
+- If you specify the BINARY keyword, the X-IBM-Intrdr-Recfm header must be omitted or set to F (the default).
+- If you specify the RECORD keyword or BINARY keyword, you must set Content-Type to application/octet-stream.</pre></td>
                 </tr>
                 <tr>
                     <td>X-IBM-User-Correlator</td>
@@ -233,7 +238,11 @@
                 </tr>
                 <tr>
                     <td>X-IBM-JCL-Symbol-name</td>
-                    <td></td>
+                    <td><pre>Specifies the name and value for a JCL symbol. The symbol name is included in the header, at the name position. The characters following 'X-IBM-JCL-Symbol-' up to the colon separator (:) form the symbol name. The data following the colon specifies the value for the symbol.
+A symbol name is 1 - 8 characters, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 7) can be any combination of uppercase alphabetic, numeric (0-9), or special.
+A symbol value is limited to 255 characters. Multiple symbol names and values can be specified, up to a limit of 128.
+Example: X-IBM-JCL-Symbol-MBR: ABC specifies symbol name MBR with value ABC. Specifying this custom header and submitting a job that uses //MYDD DSN=MY.DATASET(&MBR.),DISP=SHR in the JCL will cause ABC to be substituted as the member name.
+If this header is specified when JES3 is the primary job entry subsystem, an error will result and no job will be submitted.</pre></td>
                 </tr>
                 <tr>
                     <td>X-IBM-Notification-URL</td>
@@ -241,7 +250,11 @@
                 </tr>
                 <tr>
                     <td>file</td>
-                    <td></td>
+                    <td><pre>File to be run from z/OS, application/json mode. Examples: 
+- Partitioned data set (fully qualified)    : //'MYJOBS.TEST.CNTL(TESTJOBX)'
+- Partitioned data set (non-fully qualified): //TEST.CNTL(TESTJOBX)
+- Sequential data set                       : //'MYJOBS.TEST.JOB1'
+- UNIX file                                 : /u/myjobs/job1</pre></td>
                 </tr>
                 <tr>
                     <td>Code</td>
@@ -738,7 +751,18 @@
                 </tr>
                 <tr>
                     <td>X-IBM-Record-Range</td>
-                    <td></td>
+                    <td><pre>Use this header to retrieve a range of records from a data set. You can specify this range using either of the following formats:
+SSS-EEE
+Where SSS identifies the start record and EEE identifies the end record to be retrieved. Both values are relative offsets (0-based).
+When EEE is set to 0, records through the end of the data set are retrieved.
+When SSS is omitted (i.e. -EEE), the final EEE records of the data set are retrieved.
+SSS,NNN
+Where SSS identifies the start record and NNN identifies the number of records to be retrieved.
+NNN must be greater than zero.
+Usage notes:
+If X-IBM-Record-Range is specified, then an ETag header will not be returned and the If-None-Match request header is ignored.
+If X-IBM-Record-Range header is present on the request, then header X-IBM-Return-Etag=true may not be specified.
+If no records are found in the range specified, an exception is returned.</pre></td>
                 </tr>
                 <tr>
                     <td>X-IBM-Obtain-ENQ</td>
@@ -780,7 +804,9 @@
                 </tr>
                 <tr>
                     <td>Correlator</td>
-                    <td></td>
+                    <td><pre>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
+To use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). 
+The correlator can be one that you have obtained from the "job-correlator" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the "url" property of a JSON job document.</pre></td>
                 </tr>
                  </tbody>
             </table>
@@ -815,11 +841,20 @@ To use a job correlator on this request, specify the full job correlator for the
                 </tr>
                 <tr>
                     <td>X-IBM-Record-Range</td>
-                    <td></td>
+                    <td><pre>Use this header to retrieve a range of records from a spool file. You can specify this range using either of the following formats:
+SSS-EEE
+where SSS identifies the start record and EEE identifies the end record to be retrieved. Both values are relative offsets (0-based). When EEE is set to 0, records through the end of the spool file are retrieved.
+SSS,NNN
+where SSS identifies the start record and NNN identifies the number of records to be retrieved.</pre></td>
                 </tr>
                 <tr>
                     <td>Mode</td>
-                    <td></td>
+                    <td><pre style="white-space:pre-wrap; word-wrap:break-word;">text
+The z/OS jobs REST interface translates records from the server codepage to the client codepage and returns the records with Content-Type: plain/text. Trailing spaces are removed and newline characters are used as record separators. This value is the default if you omit the mode parameter.
+binary
+The z/OS jobs REST interface performs no translation and returns the records with Content-Type: application/octet-stream.
+record
+The z/OS jobs REST interface performs no translation and returns the records with Content-Type: application/octet-stream. The z/OS jobs REST interface prefixes each record with a 4-byte (big endian) length.</pre></td>
                 </tr>
                 <tr>
                     <td>JESB</td>
@@ -869,7 +904,9 @@ To use a job correlator on this request, specify the full job correlator for the
                 </tr>
                 <tr>
                     <td>User-correlator</td>
-                    <td></td>
+                    <td><pre style="white-space:pre-wrap; word-wrap:break-word;">The user portion of the job correlator. This value is 1 - 32 characters in length, where the first character must be uppercase alphabetic (A-Z) or special ($, #, @). The remaining characters (up to 31) can be any combination of uppercase alphabetic, numeric (0-9), or special. Blank characters are not supported.
+This query parameter is mutually exclusive with jobid.
+This value is processed by the JES2 subsystem only; the JES3 subsystem does not process the correlator and, instead, indicates zero job matches. For a system with JES3 as the primary subsystem, and one or more JES2 secondary subsystems, the primary JES3 subsystem does not process the correlator, however, the JES2 secondary subsystems can process the correlator.</pre></td>
                 </tr>
                  </tbody>
             </table>
@@ -899,11 +936,19 @@ To use a job correlator on this request, specify the full job correlator for the
                 </tr>
                 <tr>
                     <td>Correlator</td>
-                    <td></td>
+                    <td><pre>Identifies the job for which the spool files are to be listed. Use either the job name and job ID combination or the job correlator to identify the job.
+To use a job correlator on this request, specify the full job correlator for the job: The 31-byte system portion, a semicolon, and the user portion (up to 32 bytes). 
+The correlator can be one that you have obtained from the "job-correlator" property in a returned JSON job document. Alternatively, you can specify the complete URL as provided in the "url" property of a JSON job document.</pre></td>
                 </tr>
                 <tr>
                     <td>X-IBM-Job-Modify-Version</td>
-                    <td></td>
+                    <td><pre style="white-space:pre-wrap; word-wrap:break-word;">Use this header to specify whether the request is to be processed asynchronously or synchronously, as follows:
+1.0
+Specifies that the request is to be processed asynchronously. In response, the caller receives an HTTP status code of 202 Accepted, with no indication of the success or failure of the request. To verify that the initial request was performed, the caller can issue the service described in Obtain the status of a job.
+2.0
+Specifies that the request is to be processed synchronously. In response, the caller receives an HTTP status code, which indicates the results of the request. For a successful request, the caller also receives the JSON job feedback document, which includes details about the job that was cancelled.
+If this header is omitted, the request is processed asynchronously by default.
+Synchronous processing is supported for JES2 only. On systems running JES3, the z/OS jobs REST interface services must run asynchronously.</pre></td>
                 </tr>
                  </tbody>
             </table>
@@ -1014,7 +1059,11 @@ Synchronously. This is the default.</td>
                 </tr>
                 <tr>
                     <td>Unsol-detect-sync</td>
-                    <td></td>
+                    <td><pre style="white-space:pre-wrap; word-wrap:break-word;">Indicates how to detect the keyword that is specified with the unsol-key field from unsolicited messages:
+Y
+Synchronously detect the keyword from unsolicited messages. The request is not returned until the unsol-detect-timeout value has elapsed or the detection result is complete.
+N
+Asynchronously detect the keyword from unsolicited messages. The request is returned immediately with the detection-url. The client application must invoke the value of detection-url to poll the result of the detection asynchronously. This is the default is the field is not specified.</pre></td>
                 </tr>
                 <tr>
                     <td>Unsol-detect-timeout</td>

@@ -15,21 +15,21 @@ def pluginDir = getProperty("/projects/$pluginName/pluginDir").value
 //List of procedure steps to which the plugin configuration credentials need to be attached
 // ** steps with attached credentials
 def stepsWithAttachedCredentials = [
-  [procedureName: 'Jobs - Spool files list', stepName: 'jobs - spool files list'],
-  [procedureName: 'Data Set - Delete', stepName: 'data set - delete a sequential and partitioned data set'],
-  [procedureName: 'System - Info', stepName: 'jobs - zosmf info'],
-  [procedureName: 'Console - Issue Command', stepName: 'console - issue command'],
-  [procedureName: 'Data Set - Read data', stepName: 'data set - retrieve the contents of a zOS data set or member'],
-  [procedureName: 'Jobs - Get spool file content', stepName: 'jobs - get spool file content'],
-  [procedureName: 'Data Set - Write data', stepName: 'data set - write data to a zos data set or member'],
   [procedureName: 'Data Set - List', stepName: 'data set - list zOS data sets on a system'],
+  [procedureName: 'Jobs - Cancel and Purge', stepName: 'jobs - cancel and purge'],
+  [procedureName: 'Console - Issue Command', stepName: 'console - issue command'],
+  [procedureName: 'Jobs - Spool files list', stepName: 'jobs - spool files list'],
   [procedureName: 'Jobs - List', stepName: 'jobs - list jobs'],
+  [procedureName: 'Console - Command response', stepName: 'console - command response'],
   [procedureName: 'Jobs - Submit a job', stepName: 'jobs - submit a job'],
+  [procedureName: 'Jobs - Get spool file content', stepName: 'jobs - get spool file content'],
+  [procedureName: 'Data Set - Delete', stepName: 'data set - delete a sequential and partitioned data set'],
+  [procedureName: 'Data Set - Read data', stepName: 'data set - retrieve the contents of a zOS data set or member'],
+  [procedureName: 'System - Info', stepName: 'jobs - zosmf info'],
+  [procedureName: 'Data Set - Write data', stepName: 'data set - write data to a zos data set or member'],
   [procedureName: 'Jobs - Obtain status', stepName: 'jobs - obtain status'],
   [procedureName: 'Data Set - Create', stepName: 'data set - create a sequential and partitioned data set'],
-  [procedureName: 'Console - Unsolicited messages result', stepName: 'console - unsolicited message result'],
-  [procedureName: 'Jobs - Cancel and Purge', stepName: 'jobs - cancel and purge'],
-  [procedureName: 'Console - Command response', stepName: 'console - command response']
+  [procedureName: 'Console - Unsolicited messages result', stepName: 'console - unsolicited message result']
 ]
 // ** end steps with attached credentials       
 project pluginName, {
