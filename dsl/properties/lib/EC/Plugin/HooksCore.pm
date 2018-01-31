@@ -43,8 +43,8 @@ sub before_hook {
 }
 
 sub after_hook {
-    my ($self, $step_name) = @_;
-    $self->_run($step_name, AFTER_HOOK);
+    my ($self, $step_name, $parsed) = @_;
+    $self->_run($step_name, AFTER_HOOK, $parsed);
 }
 
 sub parameters_hook {

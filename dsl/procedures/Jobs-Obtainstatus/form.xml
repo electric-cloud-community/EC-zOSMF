@@ -64,7 +64,7 @@ To use a job correlator on this request, specify the full job correlator for the
 </formElement>
 <formElement>
   <documentation>Results will be saved into this property/property sheet.</documentation>
-  <label>Property sheet name or filename for results:</label>
+  <label>Property sheet name for results:</label>
   <property>resultPropertySheet</property>
   <required>1</required>
   <type>entry</type>

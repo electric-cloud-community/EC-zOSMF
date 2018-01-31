@@ -22,7 +22,7 @@ use constant {
     RESULT_PROPERTY_SHEET_FIELD => 'resultPropertySheet',
     FORBIDDEN_FIELD_NAME_PREFIX => '_'
 };
-use constant FORBIDDEN_FIELD_NAME_PROPERTY_SHEET => qw(acl createTime lastModifiedBy modifyTime owner propertySheetId);
+use constant FORBIDDEN_FIELD_NAME_PROPERTY_SHEET => qw(acl createTime lastModifiedBy modifyTime owner propertySheetId description);
 
 
 =head2 after_init_hook
@@ -167,20 +167,18 @@ sub generate_step_request {
         my $value = $parameters->{$name};
         next unless $field->{in};
 
+        if($field->{noEmptyString} || $self->config->{options}->{noEmptyString}) {
+            next unless(defined $value && $value ne '');
+        }
+
         if ($field->{in} eq 'query') {
-            if (defined $value) {
-                $query{$name} = $value;
-            }
+            $query{$name} = $value;
         }
         elsif ($field->{in} eq 'body') {
-            if (defined $value) {
-                $body{$name} = $value;
-            }
+            $body{$name} = $value;
         }
         elsif ($field->{in} eq 'header') {
-            if (defined $value) {
-                $headers{$name} = $value;
-            }
+            $headers{$name} = $value;
         }
     }
 
@@ -244,7 +242,6 @@ sub request {
     my $callback = undef;
 
     $self->hooks->content_callback_hook($step_name, $callback);
-    $self->logger->trace('Content callback', $callback);
     # my @request_parameters = $self->hooks->request_parameters_hook($step_name, $request);
 
     if ($self->{proxy}) {
@@ -276,7 +273,7 @@ sub run_one_step{
     my $request = $self->generate_step_request($step_name, $config, $parameters);
     $self->hooks->request_hook($step_name, $request); # request can be altered by the hook
     $self->logger->info("Going to run request");
-    $self->logger->trace("Request", $request);
+    $self->logger->trace("Request", $request->as_string);
     my $response = $self->request($step_name, $request);
     $self->hooks->response_hook($step_name, $response);
 
@@ -294,7 +291,7 @@ sub run_one_step{
 
     $self->save_parsed_data($step_name, $parsed);
 
-    $self->hooks->after_hook($step_name);
+    $self->hooks->after_hook($step_name, $parsed);
 
     $self->{last_run_data} = $parsed;
 }
@@ -318,6 +315,11 @@ Running step: $step_name
         $self->hooks->define_hooks;
         $self->content_processor->define_processors;
         my $parameters = $self->parameters($step_name);
+
+        for my $param_name (sort keys %$parameters) {
+            my $value = $self->safe_log($param_name, $parameters->{$param_name});
+            $self->logger->info(qq{Got parameter "$param_name" with value "$value"});
+        }
         $self->logger->debug('Parameters', $parameters);
 
         $self->batch_commander->before_batch_hook($step_name);
@@ -335,6 +337,17 @@ Running step: $step_name
         $self->ec->setProperty('/myCall/summary', $error);
         die $error;
     };
+}
+
+sub safe_log {
+    my ($self, $param_name, $param_value) = @_;
+
+    if ($self->{hidden}->{$param_name}) {
+        return '*******';
+    }
+    else {
+        return $param_value;
+    }
 }
 
 sub parse_response {
@@ -448,10 +461,41 @@ sub grab_parameters {
     unless ($fields && scalar @$fields) {
         die "No fields defined for step $step_name";
     }
+
     my $parameters = $self->get_params_as_hashref(@$fields);
+    for my $param_name (keys %$parameters) {
+        if ($parameters->{$param_name} && $self->get_param_type($step_name, $param_name) eq 'credential') {
+            my $cred = $self->get_step_credential($parameters->{$param_name});
+            $parameters->{"${param_name}UserName"} = $cred->{userName};
+            $parameters->{"${param_name}Password"} = $cred->{password};
+            $self->{hidden}->{"${param_name}Password"} = 1;
+        }
+    }
+
     $self->validate($step_name, $parameters);
     $parameters = $self->refine($step_name, $parameters);
     return $parameters;
+}
+
+sub get_param_type {
+    my ($self, $step_name, $param_name) = @_;
+
+    my $step_config = $self->config->{$step_name};
+    my $parameters = $step_config->{parameters};
+    my ($param) = grep { $_->{property} eq $param_name } @$parameters;
+    return $param->{type} || '';
+}
+
+sub get_step_credential {
+    my ($self, $cred_name) = @_;
+
+    return {} unless $cred_name;
+
+    my $xpath = $self->ec->getFullCredential($cred_name);
+    my $user_name = $xpath->findvalue('//userName')->string_value;
+    my $password = $xpath->findvalue('//password')->string_value;
+
+    return {userName => $user_name, password => $password};
 }
 
 sub refine {
@@ -526,6 +570,9 @@ sub get_config_values {
     my $config_property_sheet = "/projects/$plugin_project_name/ec_plugin_cfgs/$config_name";
     my $property_sheet_id = $self->ec->getProperty($config_property_sheet)->findvalue('//propertySheetId')->string_value;
 
+    unless($property_sheet_id) {
+        $self->bail_out(qq{No config named $config_name found});
+    }
     my $properties = $self->ec->getProperties({propertySheetId => $property_sheet_id});
 
     my $retval = {};
@@ -596,14 +643,14 @@ sub _self_flatten_map {
             $value = \%copy;
         }
         if (ref $value ne 'HASH') {
-            $value ||= '';
+            $value = '' unless defined $value;
             $value = "$value";
         }
         if (ref $value) {
             if ($check){
                 foreach my $bad_key(FORBIDDEN_FIELD_NAME_PROPERTY_SHEET){
                     if (exists $value->{$bad_key}){
-                        $self->fix_propertysheet_forbidden_key($value, $bad_key);              
+                        $self->fix_propertysheet_forbidden_key($value, $bad_key);
                     }
                 }
             }
@@ -614,7 +661,7 @@ sub _self_flatten_map {
             if ($check){
                 foreach my $bad_key(FORBIDDEN_FIELD_NAME_PROPERTY_SHEET){
                     if ($key eq $bad_key){
-                        $self->fix_propertysheet_forbidden_key(\$key, $bad_key);              
+                        $self->fix_propertysheet_forbidden_key(\$key, $bad_key);
                     }
                 }
             }
@@ -624,6 +671,9 @@ sub _self_flatten_map {
     }
     return \%retval;
 }
+
+
+
 
 
 1;

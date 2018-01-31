@@ -38,7 +38,7 @@ The correlator can be one that you have obtained from the &quot;job-correlator&q
 </formElement>
 <formElement>
   <documentation>Results will be saved into this property/property sheet.</documentation>
-  <label>Property sheet name or filename for results:</label>
+  <label>Property sheet name for results:</label>
   <property>resultPropertySheet</property>
   <required>1</required>
   <type>entry</type>
