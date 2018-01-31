@@ -119,7 +119,7 @@ parameters:
 
       A symbol value is limited to 255 characters. Multiple symbol names and values can be specified, up to a limit of 128.
 
-      Example: X-IBM-JCL-Symbol-MBR: ABC specifies symbol name MBR with value ABC. Specifying this custom header and submitting a job that uses //MYDD DSN=MY.DATASET(&amp;MBR.),DISP=SHR in the JCL will cause ABC to be substituted as the member name.
+      Example: X-IBM-JCL-Symbol-MBR: ABC specifies symbol name MBR with value ABC. Specifying this custom header and submitting a job that uses //MYDD DSN=MY.DATASET(&MBR.),DISP=SHR in the JCL will cause ABC to be substituted as the member name.
 
       If this header is specified when JES3 is the primary job entry subsystem, an error will result and no job will be submitted.</pre>
     required: 0
