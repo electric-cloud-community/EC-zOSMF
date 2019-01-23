@@ -1,10 +1,11 @@
 <plugin>
   <key>EC-zOSMF</key>
   <label>EC-zOSMF</label>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <author>Electric Cloud</author>
   <authorUrl>https://electric-cloud.com/support</authorUrl>
   <category>Mainframe</category>
+  <ecSupportLevel>10</ecSupportLevel>
   <commander-version min="6.0" />
   <description>zOSMF Integration</description>
   <configure>ec_config</configure>
